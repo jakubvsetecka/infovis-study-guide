@@ -70,6 +70,40 @@ $c_3$ & 2 & 3 & \textbf{211} \\
 \end{tabular}
 \end{center}
 
+\begin{center}
+\begin{tikzpicture}[x=1cm,y=1cm,font=\scriptsize]
+  % 3x3 confusion grid. row 0 = top (true c1), col 0 = left (pred c1).
+  % cell(row r, col c): x = c, y = -r  (so r grows downward)
+  % gray level = confusion intensity (0..1); diagonal = dark hits.
+  \foreach \r in {0,1,2}{
+    \foreach \c in {0,1,2}{
+      \fill[gray!8] (\c,-\r) rectangle (\c+1,-\r-1);}}
+  % diagonal hits (dark / bold)
+  \foreach \i in {0,1,2}{
+    \fill[tuwdark] (\i,-\i) rectangle (\i+1,-\i-1);}
+  % bright off-diagonal confusion: true c3 (row 2) predicted c2 (col 1)
+  \fill[examorange] (1,-2) rectangle (2,-3);
+  % grid lines
+  \foreach \k in {0,1,2,3}{
+    \draw[gray!55] (\k,0)--(\k,-3);
+    \draw[gray!55] (0,-\k)--(3,-\k);}
+  % diagonal cell labels (hits)
+  \foreach \i in {0,1,2}{
+    \node[white] at (\i+0.5,-\i-0.5) {\textbf{hit}};}
+  % confusion label
+  \node[white] at (1.5,-2.5) {conf.};
+  % column headers (predicted)
+  \node[anchor=south] at (0.5,0.05) {$c_1$};
+  \node[anchor=south] at (1.5,0.05) {$c_2$};
+  \node[anchor=south] at (2.5,0.05) {$c_3$};
+  \node[anchor=south,tuwdark] at (1.5,0.45) {predicted};
+  % row headers (true)
+  \node[anchor=east] at (-0.05,-0.5) {$c_1$};
+  \node[anchor=east] at (-0.05,-1.5) {$c_2$};
+  \node[anchor=east] at (-0.05,-2.5) {$c_3$};
+  \node[rotate=90,anchor=south,tuwdark] at (-0.6,-1.5) {true};
+\end{tikzpicture}
+\end{center}
 \sketchnote{A square grid; bold diagonal = hits; bright off-diagonal cell =
 a systematic confusion (e.g.\ on MNIST many true 9's land in the ``4'' column).}
 

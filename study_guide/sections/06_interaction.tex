@@ -66,6 +66,43 @@ Targets are the aspect of the data of interest (nouns).
   \item \term{Spatial data}: \term{shape}.
 \end{itemize}
 
+\begin{center}
+\begin{tikzpicture}[>=Stealth,font=\footnotesize,
+  lvl/.style={draw=rulec,rounded corners=2pt,fill=boxgray,inner sep=2pt,align=center},
+  leaf/.style={draw=rulec,rounded corners=2pt,inner sep=2pt,align=center}]
+  % ===== ACTIONS column =====
+  \node[lvl,fill=tuwblue!20] (analyze) at (0,4.2) {\textbf{Analyze}};
+  \node[leaf] (consume) at (-1.3,3.4) {Consume\\\scriptsize discover/present/enjoy};
+  \node[leaf] (produce) at (1.4,3.4) {Produce\\\scriptsize annotate/record/derive};
+  \draw (analyze) -- (consume); \draw (analyze) -- (produce);
+
+  \node[lvl,fill=tuwblue!20] (search) at (0,2.5) {\textbf{Search} (2$\times$2)};
+  \node[leaf,align=center] (st) at (0,1.55)
+    {\scriptsize\begin{tabular}{@{}l@{\,}c@{\;}c@{}}
+      & T.\,known & T.\,unkn.\\
+      L.\,known & lookup & browse\\
+      L.\,unkn. & locate & explore
+    \end{tabular}};
+  \draw (search) -- (st);
+
+  \node[lvl,fill=tuwblue!20] (query) at (0,0.6) {\textbf{Query}};
+  \node[leaf] (qsc) at (0,-0.1) {\scriptsize identify $\cdot$ compare $\cdot$ summarize};
+  \draw (query) -- (qsc);
+
+  % ===== TARGETS column =====
+  \node[lvl,fill=keygreen!20] (targets) at (6.0,4.2) {\textbf{Targets}};
+  \node[leaf] (t1) at (6.0,3.4) {all data\\\scriptsize trends/outliers/features};
+  \node[leaf] (t2) at (6.0,2.6) {one attr\\\scriptsize value/extremes/distribution};
+  \node[leaf] (t3) at (6.0,1.8) {many attrs\\\scriptsize dependency/corr./similarity};
+  \node[leaf] (t4) at (6.0,1.0) {network\\\scriptsize topology/paths};
+  \node[leaf] (t5) at (6.0,0.2) {spatial\\\scriptsize shape};
+  \draw (targets) -- (t1); \draw (targets) -- (t2); \draw (targets) -- (t3);
+  \draw (targets) -- (t4); \draw (targets) -- (t5);
+
+  % link the two columns: actions on targets
+  \draw[->,pitred,thick] (2.6,2.5) -- (4.6,2.5) node[midway,above]{\scriptsize on};
+\end{tikzpicture}
+\end{center}
 \sketchnote{Draw the Actions tree (Analyze$\to$Consume/Produce; Search 2$\times$2 table; Query: identify/compare/summarize) next to the Targets list (all-data / one-attr / many-attr / network / spatial). This single diagram answers most "name the task" exam questions.}
 
 \subsection{Interaction Techniques}

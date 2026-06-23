@@ -119,6 +119,27 @@ stability across time steps; keeps the mental map over a sequence\\
 \begin{algobox}[PCA -- 1D projection sketch]
 Centre the data, find the direction of maximum variance (first eigenvector of
 the covariance matrix), and project points onto it.
+\begin{center}
+\begin{tikzpicture}[scale=1.0,>=Stealth]
+  % tilted point cloud (rotated ellipse), PC1 along 30 deg
+  \begin{scope}[rotate=30]
+    \draw[rulec] (0,0) ellipse [x radius=2.2cm, y radius=0.8cm];
+    % PC1 arrow along long axis
+    \draw[->,tuwblue,very thick] (-2.6,0) -- (2.6,0) node[above,font=\footnotesize] {PC1};
+    % PC2 orthogonal, discarded
+    \draw[->,gray!60,thick] (0,-1.0) -- (0,1.2) node[right,font=\footnotesize] {PC2};
+  \end{scope}
+  % a few sample points (in rotated frame coords, drawn via scope)
+  \begin{scope}[rotate=30]
+    \foreach \px/\py in {-1.6/0.45, -0.6/-0.3, 0.4/0.35, 1.4/-0.25, 0.9/0.5} {
+      \fill[tuwdark] (\px,\py) circle (1.3pt);
+      % perpendicular onto PC1 (the x-axis of rotated frame)
+      \draw[dashed,pitred,thin] (\px,\py) -- (\px,0);
+      \fill[pitred] (\px,0) circle (1pt);
+    }
+  \end{scope}
+\end{tikzpicture}
+\end{center}
 \sketchnote{Draw an elongated 2D point cloud. Draw an arrow through its long
 axis (PC1). Drop a perpendicular from each point onto that line; the feet of
 the perpendiculars are the 1D coordinates. PC2 is orthogonal and discarded.}
@@ -126,6 +147,42 @@ the perpendiculars are the 1D coordinates. PC2 is orthogonal and discarded.}
 
 \begin{algobox}[Recursive subdivision -- mosaic / treemap sketch]
 Both split a rectangle proportionally and recurse.
+\begin{center}
+\begin{tikzpicture}[scale=1.0,line join=round]
+  % --- Mosaic: width by A, then each column's height by B ---
+  \begin{scope}
+    \node[above,font=\footnotesize\bfseries,tuwdark] at (1.4,2.0) {Mosaic};
+    % three columns of widths 1.4, 0.9, 0.5 (A proportions); total 2.8 wide, 1.8 tall
+    % column 1
+    \fill[tuwblue!25] (0,0) rectangle (1.4,1.1);
+    \fill[tuwblue!12] (0,1.1) rectangle (1.4,1.8);
+    % column 2
+    \fill[keygreen!25] (1.4,0) rectangle (2.3,0.7);
+    \fill[keygreen!12] (1.4,0.7) rectangle (2.3,1.8);
+    % column 3
+    \fill[examorange!25] (2.3,0) rectangle (2.8,1.3);
+    \fill[examorange!12] (2.3,1.3) rectangle (2.8,1.8);
+    % borders
+    \draw[white,thin] (1.4,0)--(1.4,1.8) (2.3,0)--(2.3,1.8)
+                      (0,1.1)--(1.4,1.1) (1.4,0.7)--(2.3,0.7) (2.3,1.3)--(2.8,1.3);
+    \draw[tuwdark,thin] (0,0) rectangle (2.8,1.8);
+  \end{scope}
+  % --- Treemap: nested rectangles ---
+  \begin{scope}[xshift=3.6cm]
+    \node[above,font=\footnotesize\bfseries,tuwdark] at (1.4,2.0) {Treemap};
+    \draw[tuwdark,thin] (0,0) rectangle (2.8,1.8);
+    \fill[tuwblue!20] (0.04,0.04) rectangle (1.6,1.76);
+    \fill[keygreen!20] (1.64,0.94) rectangle (2.76,1.76);
+    \fill[examorange!20] (1.64,0.04) rectangle (2.76,0.9);
+    % recurse inside first child
+    \draw[tuwdark!60,thin] (0.04,0.04) rectangle (1.6,1.76);
+    \draw[tuwdark!60,thin] (0.04,0.9) rectangle (0.85,1.76);
+    \draw[tuwdark!60,thin] (0.04,0.04) rectangle (1.6,0.9);
+    \draw[tuwdark!60,thin] (1.64,0.94) rectangle (2.76,1.76);
+    \draw[tuwdark!60,thin] (1.64,0.04) rectangle (2.76,0.9);
+  \end{scope}
+\end{tikzpicture}
+\end{center}
 \sketchnote{Mosaic: split the full width by variable~A's proportions, then
 split each resulting column's height by variable~B's conditional proportions;
 tile area = joint frequency. Treemap: split the rectangle by the top-level
@@ -133,12 +190,65 @@ children's summed values, then recurse inside each child; leaf area = value.}
 \end{algobox}
 
 \begin{algobox}[Hexagon binning sketch]
+\begin{center}
+\begin{tikzpicture}[scale=1.0]
+  % hexagon parameters: minimum size gives the diameter (point-to-point)
+  \def\hs{0.7cm}     % hex minimum size
+  \def\dx{0.606}     % horizontal spacing approx = 0.866*0.7
+  \def\dy{0.525}     % vertical row offset = 0.75*0.7
+  % grid of hexagons, offset rows; shade two by "count"
+  \foreach \row in {0,1,2} {
+    \foreach \col in {0,1,2,3} {
+      \pgfmathsetmacro{\cx}{\col*0.866*0.7 + mod(\row,2)*0.433*0.7}
+      \pgfmathsetmacro{\cy}{\row*0.525}
+      % choose a couple of shaded ones
+      \ifnum\row=1 \ifnum\col=1 \def\fc{tuwblue!55}\else\def\fc{none}\fi
+      \else \ifnum\row=1 \def\fc{none}\else \def\fc{none}\fi \fi
+      \node[regular polygon, regular polygon sides=6, draw=tuwblue!50, thin,
+            minimum size=\hs, inner sep=0pt] at (\cx,\cy) {};
+    }
+  }
+  % shade specific hexagons by count
+  \node[regular polygon, regular polygon sides=6, draw=tuwblue!50, thin,
+        fill=tuwblue!55, minimum size=\hs, inner sep=0pt]
+        at ({1*0.866*0.7 + 0.433*0.7},{1*0.525}) {};
+  \node[regular polygon, regular polygon sides=6, draw=tuwblue!50, thin,
+        fill=tuwblue!25, minimum size=\hs, inner sep=0pt]
+        at ({2*0.866*0.7},{2*0.525}) {};
+  % scatter dots overlaid
+  \foreach \px/\py in {0.5/0.5,0.7/0.6,0.9/0.45,1.0/0.55,0.6/0.4,
+                       1.05/1.0,1.3/0.95,1.7/1.05,0.4/1.0,2.0/0.4} {
+    \fill[tuwdark] (\px,\py) circle (1pt);
+  }
+\end{tikzpicture}
+\end{center}
 \sketchnote{Overlay a hexagonal grid on the scatterplot, count points per
 hexagon, and fill each hexagon with a sequential colour by count. Replaces a
 dense black blob with a readable density field.}
 \end{algobox}
 
 \begin{algobox}[KDE -- bandwidth sketch]
+\begin{center}
+\begin{tikzpicture}[scale=1.0,>=Stealth]
+  % axis
+  \draw[->] (0,0) -- (6,0) node[right,font=\footnotesize] {$x$};
+  \draw[->] (0,0) -- (0,2.2) node[above,font=\footnotesize] {density};
+  % data points (ticks)
+  \foreach \dx in {1.0,1.4,1.7,3.6,4.0,4.4} {
+    \draw[tuwdark,thick] (\dx,0) -- (\dx,-0.12);
+  }
+  % small individual kernels (bumps) over each point
+  \foreach \dx in {1.0,1.4,1.7,3.6,4.0,4.4} {
+    \draw[keygreen!70,thin,smooth] plot[domain=\dx-0.7:\dx+0.7,samples=20]
+      (\x, {0.35*exp(-((\x-\dx)*(\x-\dx))/(2*0.13))});
+  }
+  % bolder summed (good bandwidth) bimodal curve above
+  \draw[tuwblue,very thick,smooth] plot[domain=0.1:5.6,samples=80]
+    (\x, {0.55*exp(-((\x-1.37)*(\x-1.37))/(2*0.22))
+          + 0.55*exp(-((\x-4.0)*(\x-4.0))/(2*0.22)) + 0.05});
+  \node[tuwblue,font=\footnotesize] at (5.4,1.65) {sum};
+\end{tikzpicture}
+\end{center}
 \sketchnote{Place a small bump (kernel) on each data point on the x-axis and
 sum them into a smooth curve. Show three curves: tiny bandwidth (spiky,
 overfit), good bandwidth (smooth bimodal), huge bandwidth (one flat hump,
@@ -146,6 +256,28 @@ oversmoothed).}
 \end{algobox}
 
 \begin{algobox}[Force-directed layout sketch]
+\begin{center}
+\begin{tikzpicture}[scale=1.0,>=Stealth,
+    nd/.style={circle,draw=tuwblue,fill=tuwblue!15,thick,minimum size=6mm,inner sep=0pt,font=\footnotesize}]
+  % five nodes
+  \node[nd] (a) at (0,1.4) {1};
+  \node[nd] (b) at (1.4,2.0) {2};
+  \node[nd] (c) at (1.8,0.6) {3};
+  \node[nd] (d) at (3.3,1.6) {4};
+  \node[nd] (e) at (3.4,0.2) {5};
+  % edges (one labelled spring)
+  \draw[tuwdark] (a) -- node[above,font=\scriptsize,sloped] {spring} (b);
+  \draw[tuwdark] (a) -- (c);
+  \draw[tuwdark] (b) -- (c);
+  \draw[tuwdark] (b) -- (d);
+  \draw[tuwdark] (d) -- (e);
+  \draw[tuwdark] (c) -- (e);
+  % repulsion arrows (push apart) between two non-adjacent nodes
+  \draw[->,pitred,thin] (b) -- ($(b)!0.35!(e)$);
+  \draw[->,pitred,thin] (e) -- ($(e)!0.35!(b)$);
+  \node[pitred,font=\scriptsize] at ($(b)!0.5!(e)+(0.55,0)$) {repel};
+\end{tikzpicture}
+\end{center}
 \sketchnote{Nodes as charged particles repel each other; edges act as springs
 pulling connected nodes together. Iterate until the energy settles. Draw a
 small graph with well-separated nodes and short, roughly equal-length edges,
@@ -153,12 +285,62 @@ clusters visibly grouped.}
 \end{algobox}
 
 \begin{algobox}[Layered (Sugiyama) layout sketch]
+\begin{center}
+\begin{tikzpicture}[scale=1.0,>=Stealth,
+    nd/.style={circle,draw=tuwblue,fill=tuwblue!15,thick,minimum size=5.5mm,inner sep=0pt,font=\scriptsize}]
+  % three layer baselines (dashed)
+  \foreach \y/\lbl in {2.4/L1, 1.2/L2, 0/L3} {
+    \draw[dashed,rulec] (-0.4,\y) -- (5.0,\y);
+    \node[gray,font=\scriptsize] at (5.3,\y) {\lbl};
+  }
+  % layer 1
+  \node[nd] (a) at (1.0,2.4) {a};
+  \node[nd] (b) at (3.2,2.4) {b};
+  % layer 2
+  \node[nd] (c) at (0.6,1.2) {c};
+  \node[nd] (d) at (2.2,1.2) {d};
+  \node[nd] (e) at (3.8,1.2) {e};
+  % layer 3
+  \node[nd] (f) at (1.4,0) {f};
+  \node[nd] (g) at (3.4,0) {g};
+  % downward edges, minimal crossings
+  \draw[->,tuwdark] (a) -- (c);
+  \draw[->,tuwdark] (a) -- (d);
+  \draw[->,tuwdark] (b) -- (e);
+  \draw[->,tuwdark] (b) -- (d);
+  \draw[->,tuwdark] (c) -- (f);
+  \draw[->,tuwdark] (d) -- (f);
+  \draw[->,tuwdark] (d) -- (g);
+  \draw[->,tuwdark] (e) -- (g);
+\end{tikzpicture}
+\end{center}
 \sketchnote{Draw horizontal layers (rows). Place each node in a layer by its
 topological rank; route all edges downward; reorder nodes within layers to
 minimize crossings; insert dummy nodes for edges spanning multiple layers.}
 \end{algobox}
 
 \begin{algobox}[Counterfactual explanation sketch]
+\begin{center}
+\begin{tikzpicture}[scale=1.0,>=Stealth]
+  % feature space axes
+  \draw[->] (0,0) -- (4.6,0) node[right,font=\footnotesize] {$x_1$};
+  \draw[->] (0,0) -- (0,3.0) node[above,font=\footnotesize] {$x_2$};
+  % curved decision boundary
+  \draw[tuwblue,very thick,smooth] plot[domain=0.2:4.2,samples=60]
+    (\x, {1.4 + 0.8*sin((\x*55)) });
+  % region labels
+  \node[pitred,font=\scriptsize] at (0.9,0.5) {rejected};
+  \node[keygreen,font=\scriptsize] at (3.6,2.6) {accepted};
+  % query point (rejected side)
+  \fill[pitred] (1.6,0.7) circle (2pt);
+  \node[pitred,font=\scriptsize,below] at (1.6,0.6) {query};
+  % counterfactual: nearest point across boundary
+  \fill[keygreen] (2.05,1.85) circle (2pt);
+  \node[keygreen,font=\scriptsize,right] at (2.1,1.95) {counterfactual};
+  % arrow from query to counterfactual
+  \draw[->,tuwdark,thick] (1.6,0.7) -- (2.05,1.85);
+\end{tikzpicture}
+\end{center}
 \sketchnote{Plot the decision boundary in feature space with the query point on
 the ``rejected'' side. The counterfactual is the nearest point across the
 boundary; draw the short arrow from query to that point -- the minimal,
@@ -166,6 +348,15 @@ sparse change that flips the outcome.}
 \end{algobox}
 
 \begin{algobox}[Partial dependence sketch]
+\begin{center}
+\begin{tikzpicture}[scale=1.0,>=Stealth]
+  \draw[->] (0,0) -- (5.0,0) node[right,font=\footnotesize] {feature value};
+  \draw[->] (0,0) -- (0,2.6) node[above,font=\footnotesize,align=center] {avg.\\prediction};
+  % smooth response curve (rising then plateau)
+  \draw[tuwblue,very thick,smooth] plot[domain=0.2:4.6,samples=60]
+    (\x, {0.4 + 1.7/(1+exp(-2.2*(\x-2.2)))});
+\end{tikzpicture}
+\end{center}
 \sketchnote{x-axis = one feature's value, y-axis = average model prediction.
 For each grid value of the feature, set it for all rows, predict, and average.
 Plot the resulting curve; its slope shows the feature's marginal effect.}

@@ -149,6 +149,37 @@ Sorted $n=9$: median $=6$ (5th value); lower half $\{4,5,5,6\}\Rightarrow$
 Q1$=5$; upper half $\{7,8,20\}\Rightarrow$ Q3$=8$; IQR$=3$; upper fence
 $=8+1.5\cdot3=12.5\Rightarrow 20$ is an \term{outlier}; whisker max (non-outlier)
 $=8$.
+\begin{center}
+\begin{tikzpicture}[font=\scriptsize, x=0.42cm, y=1cm]
+  % ---- boxplot (top) ----
+  % axis 0..22 at y=2
+  \draw[->,>=Stealth] (-0.5,2) -- (22,2) node[right] {value};
+  \foreach \x in {4,5,6,7,8,20}
+    \draw (\x,1.92) -- (\x,2.08) node[above=1pt] {\x};
+  % whiskers from 4 to 5 and 8 to 8 (max non-outlier = 8)
+  \draw[thick] (4,2.6) -- (5,2.6); % lower whisker line
+  \draw[thick] (4,2.45) -- (4,2.75); % lower cap
+  % box 5..8
+  \draw[thick, fill=tuwblue!20] (5,2.3) rectangle (8,2.9);
+  % median at 6
+  \draw[thick, pitred] (6,2.3) -- (6,2.9);
+  % upper whisker (box top = 8 = whisker max, draw small cap)
+  \draw[thick] (8,2.45) -- (8,2.75);
+  % outlier at 20
+  \fill[pitred] (20,2.6) circle (0.16cm);
+  \node[pitred, above=2pt] at (20,2.75) {outlier};
+  % ---- histogram (bottom), bins width 2 ----
+  % bins: [4,6):{4,5,5}=3 ; [6,8):{6,6,6,7}=4 ; [8,10):{8}=1 ; [20,22):{20}=1
+  \draw[->,>=Stealth] (-0.5,0) -- (22,0) node[right] {value};
+  \draw[->,>=Stealth] (-0.5,0) -- (-0.5,1.3) node[above] {count};
+  \fill[keygreen!50] (4,0) rectangle (6,0.9);
+  \fill[keygreen!50] (6,0) rectangle (8,1.2);
+  \fill[keygreen!50] (8,0) rectangle (10,0.3);
+  \fill[keygreen!50] (20,0) rectangle (22,0.3);
+  \foreach \x in {4,6,8,10,20,22}
+    \draw (\x,-0.06) -- (\x,0.06) node[below=2pt] {\x};
+\end{tikzpicture}
+\end{center}
 \sketchnote{Boxplot: box from 5 to 8, median line at 6, lower whisker to 4,
 upper whisker to 8, a separate dot at 20 marked as outlier. Histogram (bins of
 width 2): tall bar around 5--6, smaller bars at 4 and 7--8, an isolated low bar
@@ -167,6 +198,25 @@ scatter, but heavy cars are typically high). The car's \term{polyline} is the
 one that is \term{low on the mpg axis and high on the weight axis} (and, for a
 heavy car, high on horsepower). Trace the single line crossing those positions
 and highlight it.
+\begin{center}
+\begin{tikzpicture}[font=\scriptsize]
+  % three vertical axes at x=0,2.5,5 ; y from 0 (low) to 4 (high)
+  \foreach \x/\lab in {0/mpg, 2.5/weight, 5/horsepower}{
+    \draw[thick] (\x,0) -- (\x,4);
+    \node[below] at (\x,0) {\lab};
+    \node[above=2pt] at (\x,4) {high};
+    \node[below=10pt] at (\x,0) {low};
+  }
+  % faded background lines
+  \draw[gray!55] (0,3.0) -- (2.5,1.4) -- (5,2.2);
+  \draw[gray!55] (0,2.5) -- (2.5,2.0) -- (5,1.6);
+  \draw[gray!55] (0,3.4) -- (2.5,1.0) -- (5,1.2);
+  \draw[gray!55] (0,2.0) -- (2.5,2.6) -- (5,2.8);
+  % highlighted outlier: low mpg, high weight, high horsepower
+  \draw[ultra thick, pitred] (0,0.5) -- (2.5,3.7) -- (5,3.5);
+  \fill[pitred] (0,0.5) circle (1.6pt) (2.5,3.7) circle (1.6pt) (5,3.5) circle (1.6pt);
+\end{tikzpicture}
+\end{center}
 \sketchnote{Three vertical axes; one bold polyline starting low on mpg, rising
 to the top of the weight axis, staying high on horsepower; other lines faded.}
 \end{qbox}
@@ -227,6 +277,21 @@ Sketch the 1D PCA projection of an elongated 2D cloud tilted at about
 $30^{\circ}$.
 
 \medskip\noindent\textbf{Model answer.}
+\begin{center}
+\begin{tikzpicture}[font=\scriptsize, rotate=30]
+  % elongated cloud tilted 30 deg (whole picture rotated)
+  \draw[tuwblue, dashed] (0,0) ellipse (2.6cm and 0.8cm);
+  % PC1 arrow along long axis (x), PC2 short axis (y)
+  \draw[->,>=Stealth, ultra thick, keygreen] (-2.9,0) -- (2.9,0) node[right] {PC1};
+  \draw[->,>=Stealth, thick, gray] (0,-1.1) -- (0,1.1) node[above] {PC2 (discarded)};
+  % data points and their perpendicular projections (feet) onto PC1
+  \foreach \px/\py in {-2.0/0.4, -1.2/-0.3, -0.4/0.5, 0.3/-0.2, 1.0/0.4, 1.8/-0.35, -1.6/-0.5, 0.7/0.5}{
+    \fill[pitred] (\px,\py) circle (1.4pt);
+    \draw[gray!60, thin] (\px,\py) -- (\px,0);
+    \fill[keygreen] (\px,0) circle (1.0pt);
+  }
+\end{tikzpicture}
+\end{center}
 \sketchnote{Draw the tilted elliptical cloud. Draw PC1 as an arrow along its
 long axis (max variance). Project each point perpendicularly onto PC1; the feet
 of those perpendiculars are the 1D coordinates. PC2 (orthogonal, short axis) is

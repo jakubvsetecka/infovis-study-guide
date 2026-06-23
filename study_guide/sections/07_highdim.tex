@@ -251,28 +251,32 @@ A classic exam task: given a 2D point cloud elongated along a diagonal, draw the
 direction of maximum variance) and the second PC orthogonal to it. To get the
 \term{1D projection}, drop a \emph{perpendicular} from each point onto PC1 and
 read off its position along that line.
+\begin{center}
+\begin{tikzpicture}[scale=1.0,>={Stealth[round]}]
+  % PC1 line direction endpoints used for the perpendicular projection
+  \coordinate (O) at (0,0);
+  \coordinate (P1) at (1.85,1.46);
+  % point cloud along a diagonal; foot = perpendicular projection onto PC1
+  \foreach \x/\y in {-1.6/-1.3,-1.1/-0.7,-0.8/-1.0,-0.4/-0.1,-0.2/-0.5,
+                     0.1/0.3,0.3/-0.1,0.6/0.7,0.9/0.4,1.3/1.1,
+                     1.6/0.9,-0.6/-0.4,1.0/0.9}{
+    \fill[tuwblue!55] (\x,\y) circle (1.6pt);
+    \draw[dotted,tuwdark!70] (\x,\y) -- ($(O)!(\x,\y)!(P1)$);
+    \fill[pitred] ($(O)!(\x,\y)!(P1)$) circle (1.1pt);}
+  % PC1 (long axis, slope ~0.79) through the centroid (origin)
+  \draw[->,thick,pitred] (0,0) -- (1.85,1.46) node[right]{\footnotesize PC1};
+  \draw[pitred] (0,0) -- (-1.85,-1.46);
+  % PC2 orthogonal
+  \draw[->,thick,keygreen] (0,0) -- (-0.63,0.80) node[above left]{\footnotesize PC2};
+  % centroid marker
+  \fill[tuwdark] (0,0) circle (1.4pt) node[below right,font=\scriptsize]{mean};
+  \node[tuwdark,font=\scriptsize,align=center] at (2.6,-0.55)
+        {feet of $\perp$\\$=$ 1D scores};
+\end{tikzpicture}
+\end{center}
 \sketchnote{Ellipse-shaped cloud; arrow PC1 along the long axis through the
 centroid; short orthogonal arrow PC2; for each point a thin line dropped at a
 right angle onto PC1; the feet of those perpendiculars are the 1D PCA scores.}
-
-\begin{center}
-\begin{tikzpicture}[scale=1.0,>={Stealth[round]}]
-  % point cloud along a diagonal
-  \foreach \p in {(-1.6,-1.3),(-1.1,-0.7),(-0.8,-1.0),(-0.4,-0.1),(-0.2,-0.5),
-                  (0.1,0.3),(0.3,-0.1),(0.6,0.7),(0.9,0.4),(1.3,1.1),(1.6,0.9),
-                  (0.0,0.0),(-0.6,-0.4),(1.0,0.9)}{
-    \fill[tuwblue!55] \p circle (1.6pt);}
-  % PC1 (long axis)
-  \draw[->,thick,red] (0,0) -- (1.7,1.35) node[right]{\footnotesize PC1};
-  \draw[red] (0,0) -- (-1.7,-1.35);
-  % PC2 orthogonal
-  \draw[->,thick,keygreen] (0,0) -- (-0.55,0.7) node[above left]{\footnotesize PC2};
-  % one example perpendicular projection
-  \draw[dotted,tuwdark] (0.6,0.7) -- (0.79,0.46);
-  \fill[red] (0.79,0.46) circle (1.3pt);
-  \node[tuwdark,font=\scriptsize] at (2.4,0.1) {project $\perp$ onto PC1};
-\end{tikzpicture}
-\end{center}
 \end{exambox}
 
 \begin{algobox}[MDS -- Multidimensional Scaling]

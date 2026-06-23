@@ -1,0 +1,296 @@
+\section{Appendix: 2023 Exam Bridge}
+
+\begin{exambox}[Read this first --- different instructor, different syllabus]
+The 2023 \textit{Information Visualization VO} final exam was set by
+\term{Gschwandtner, Aigner \& Miksch} and is a \term{45-question multiple-choice}
+paper. Your 2026 course (\term{Manuela Waldner}) uses an open-ended format
+(describe / sketch / strategy / critique / lists) plus multiple-choice on
+\textit{algorithms}. Treat this appendix accordingly:
+\begin{itemize}
+  \item \textbf{Part A} re-uses 2023 questions whose topics your main guide
+        \emph{already} covers --- good drill on shared fundamentals.
+  \item \textbf{Part B} is a compact reference for topics that appear in the
+        2023 paper but are \emph{not} emphasised in Waldner's topic list
+        (time-oriented data, maps, text vis, the Visual Analytics process,
+        legacy multivariate glyphs). These are \textcolor{pitred}{lower
+        probability} for your exam --- skim, don't memorise.
+\end{itemize}
+Conversely, the 2023 paper barely touches what Waldner stresses most
+(dimensionality reduction, scagnostics, scalable InfoVis, VIS4ML, sets) --- so
+do not treat the old exam as a coverage map.
+\end{exambox}
+
+% =====================================================================
+\subsection{Part A --- Practice on shared fundamentals}
+% =====================================================================
+Answers and rationales follow each block. These map to the main-guide sections
+shown in brackets.
+
+\begin{qbox}[Graphs, trees \& dynamic layout (\textrightarrow\ \S9)]
+\textbf{Q. Force-directed layout.} A force-directed layout algorithm \dots\ (mark all)
+\begin{enumerate}[label=\alph*.]
+  \item models the graph after a physical system
+  \item is a method to reorder rows/columns of a matrix
+  \item is a graph-drawing method for node-link diagrams
+  \item is used to compute heatmap colours
+  \item includes an energy \emph{maximisation} algorithm
+\end{enumerate}
+\textbf{A: a, c.} It is a spring/charge physical analogy that \emph{minimises}
+energy (so e is false --- minimisation, not maximisation).
+
+\medskip
+\textbf{Q. Edge design in node-link graphs.} (mark all)
+\begin{enumerate}[label=\alph*.]
+  \item Polyline edges with multiple bends are allowed, but bends should be minimised.
+  \item Lombardi (curved) drawings are preferred by users even with no task advantage.
+  \item For directed edges, arrows should not overlap other edges/arrow heads.
+  \item Straight-line representations allow bends to reduce crossings.
+\end{enumerate}
+\textbf{A: a, c.} d is self-contradictory (straight lines have no bends); b
+overstates the evidence.
+
+\medskip
+\textbf{Q. Treemaps.} A treemap \dots\ (mark all): is non-space-filling / visualises
+hierarchies / can be squarified / can be nested / shows vegetation.\\
+\textbf{A: visualises hierarchies, squarified, nested.} A treemap \emph{is}
+space-filling (containment encodes hierarchy, area encodes the leaf value).
+
+\medskip
+\textbf{Q. Dynamic-graph aesthetics.} (mark all): scalability only for
+vertices/edges / temporal aliases don't matter / ``reducing cognitive load'' =
+less to keep in mind / preserve the mental map.\\
+\textbf{A: reduce cognitive load, preserve the mental map.} This is the
+\term{mental-map preservation} idea --- see graph morphing / foresighted layout
+in \S9.
+
+\medskip
+\textbf{Q. Tree encoding.} Which encoding has: parent--child links, ``layered''
+\& ``radial'' layouts, no cycles; PRO intuitive/overview, CON large structures
+don't fit / aspect ratio?\\
+\textbf{A: Node-link (trees).} (Treemap/sunburst/icicle are space-filling;
+indentation is the outline form.)
+\end{qbox}
+
+\begin{qbox}[Interaction, models \& CMV (\textrightarrow\ \S1, \S6, \S12)]
+\textbf{Q. Multi-scale / semantic zoom.} A technique that shows different visual
+representations depending on \dots: colour chosen / geometric zoom only / zoom
+level \emph{and} available space / overview-vs-detail choice.\\
+\textbf{A: ``zoom level and available space'', and the overview/detail option.}
+This is \term{semantic zoom} (vs purely geometric).
+
+\medskip
+\textbf{Q. Focus+Context usability.} (mark all): overview+detail and fisheye
+help specific tasks / zooming hurts performance / F+C needs no prior knowledge /
+effectiveness depends on task and goals.\\
+\textbf{A: ``help specific tasks'' and ``depends on task and goals''.}
+
+\medskip
+\textbf{Q. Munzner's nested model captures \dots} (mark all):
+data/task abstraction / domain situation / pattern characteristics / search /
+algorithm / visual-encoding \& interaction idiom / image properties.\\
+\textbf{A: the four levels --- domain situation, data/task abstraction,
+visual-encoding/interaction idiom, algorithm.}
+
+\medskip
+\textbf{Q. InfoVis Reference Model --- interaction feeds back into \dots} (mark all):
+data transformation / table structure / visual mapping / view transformation.\\
+\textbf{A: data transformation, visual mapping, view transformation} --- the
+three user-controllable pipeline transforms.
+
+\medskip
+\textbf{Q. Coordinated Multiple Views \dots} (mark all): two+ views for one
+conceptual entity / combine techniques on different representations / colour for
+trends / cannot use brushing\&linking / always semantic zoom / often supported by
+brushing\&linking.\\
+\textbf{A: ``two+ views for one entity'', ``combine techniques'', ``often
+brushing \& linking''.}
+\end{qbox}
+
+\begin{qbox}[Perception, encoding \& data (\textrightarrow\ \S2--\S5)]
+\textbf{Q. Visual perception is \dots} bottom-up only / combination of bottom-up
+and top-down / top-down only. \quad\textbf{A: combination of both.}
+
+\medskip
+\textbf{Q. Image of similarity/proximity/closure groupings = ?}
+pre-attentive / visual variables / techniques / \term{Gestalt principles}.
+\quad\textbf{A: Gestalt principles.}
+
+\medskip
+\textbf{Q. Image of colour/orientation/size pop-out = ?}
+\term{pre-attentive attributes} / visual variables / Gestalt / techniques.
+\quad\textbf{A: pre-attentive attributes.}
+
+\medskip
+\textbf{Q. T-shirt sizes are measured on which scale?}
+\quad\textbf{A: ordinal} (ordered categories, no fixed interval).
+
+\medskip
+\textbf{Q. Expressiveness vs effectiveness.} Given encodings $a$ and $b$:
+``$a$ not expressive, $b$ expressive'' / both expressive / ``equally expressive,
+$b$ more effective''.\\
+\textbf{A (this paper): ``a is not expressive, b is expressive.''} Remember the
+two rules: \term{expressiveness} = encode all and only the data's information
+(match channel type to attribute type); \term{effectiveness} = most important
+attribute \textrightarrow\ most effective channel.
+
+\medskip
+\textbf{Q. Anscombe's Quartet illustrates \dots} random variables/different
+graphs / goals\&measures / \term{same statistics, different graphs}.
+\quad\textbf{A: same statistics, different graphs} --- always plot the data;
+summary statistics (mean, variance, correlation) can be identical for very
+different distributions.
+
+\medskip
+\textbf{Q. Data aggregation / summaries.} (mark all): scatterplots confirm
+expected 2D patterns / identical summary stats imply identical data / box-plots
+show enough to distinguish raw-data characters / \term{violin plots show more
+structure than box plots}.\\
+\textbf{A: ``scatterplots confirm patterns'' and ``violin > box for structure''.}
+(Box plots can hide multi-modality --- the Anscombe lesson again.)
+
+\medskip
+\textbf{Q. Parallel coordinates.} (mark all): better than scatterplots for two
+dims / \term{re-ordering axes reveals relations} / arranged in a matrix /
+\term{each dimension on one of multiple parallel axes}.\\
+\textbf{A: ``re-ordering axes reveals relations'' and ``one axis per dimension''.}
+\end{qbox}
+
+% =====================================================================
+\subsection{Part B --- Topics in 2023 but not in the main guide}
+% =====================================================================
+\begin{exambox}[Lower probability]
+Everything in Part B reflects the \textit{old} (Aigner/Miksch) syllabus. It is
+included for completeness in case a legacy question type is re-used. Prioritise
+the main guide first.
+\end{exambox}
+
+\subsubsection{Time-oriented data (Aigner et al.)}
+A large 2023 theme. Two ways to map the time dimension:
+\begin{keybox}[Time \textrightarrow\ space vs time \textrightarrow\ time]
+\begin{itemize}
+  \item \term{Static (time \textrightarrow\ space)}: time mapped to a spatial
+        axis (e.g.\ a line chart, a horizon graph). \textbf{Supports direct
+        comparison} between points in time and is \textbf{well suited to
+        explorative/analytic tasks}. Good for following trends \emph{and}
+        comparing.
+  \item \term{Animation (time \textrightarrow\ time)}: time mapped to real
+        playback time. \textbf{Simplest} conceptual mapping; \textbf{good for
+        following trends and movement}, but \textbf{poor for direct comparison}
+        between distant time points and weaker for explorative analysis (the
+        viewer must hold previous frames in memory).
+\end{itemize}
+\end{keybox}
+\textbf{Modelling viewpoints} for time: \term{ordered}, \term{branching}
+(alternative scenarios / what-ifs), \term{multiple perspectives} (several
+interpretations of the same span); time can also be \term{linear vs cyclic} and
+\term{time instant vs interval-based}. Mapping time to \emph{visual features}
+(e.g.\ colour) is possible but is not direct comparison.
+\begin{center}
+\begin{tikzpicture}[font=\scriptsize]
+  % ---- cyclic: spiral ----
+  \begin{scope}
+    \draw[->,>=Stealth, thick, tuwblue]
+      plot[smooth, domain=0:1080, samples=120, variable=\t]
+      ({(0.3+\t/1080*1.0)*cos(\t)},{(0.3+\t/1080*1.0)*sin(\t)});
+    \node[below=0.2cm] at (0,-1.4) {cyclic: spiral / ring};
+    \node[above] at (0,1.5) {periods align};
+  \end{scope}
+  % ---- linear axis ----
+  \begin{scope}[xshift=5cm]
+    \draw[->,>=Stealth, thick, tuwblue] (0,0) -- (3.2,0) node[right] {time};
+    \draw plot[smooth] coordinates {(0,0.4)(0.5,0.9)(1,0.3)(1.5,0.9)(2,0.3)(2.5,0.9)(3,0.4)};
+    \node[below=0.2cm] at (1.6,-0.3) {linear: straight axis};
+  \end{scope}
+\end{tikzpicture}
+\end{center}
+\sketchnote{Cyclic-time techniques wrap the axis into a ring/spiral (e.g.\ a
+spiral graph) so periodic patterns line up; linear-time techniques use a
+straight axis.}
+
+\subsubsection{Geospatial data \& maps}
+\begin{keybox}[Maps cheat-sheet]
+\begin{itemize}
+  \item \term{Phenomena dimensionality}: point (0-D, e.g.\ a city), line (1-D,
+        e.g.\ a street/river), area (2-D, e.g.\ a country region), surface (2.5-D,
+        specified by longitude, latitude \emph{and} height).
+  \item \term{Choropleth map}: colours predefined regions by a statistical
+        value. Assumes the value is (roughly) uniform within each region; better
+        than a cartogram at communicating \emph{where} regions are.
+  \item \term{Cartogram}: \emph{distorts} region geography so area encodes the
+        statistical value --- good for the magnitude, bad for recognisable
+        geography.
+  \item \term{Colour maps on maps}: sequential for ordered magnitude (e.g.\
+        population density); \term{diverging} for a signed change around a
+        neutral midpoint (e.g.\ better/worse than last year).
+  \item \term{Map projections}: \term{conformal} preserves local angles/shapes;
+        \term{equal-area} preserves area; \term{azimuthal} preserves direction
+        from a central point; \term{conic} projections make longitude/latitude
+        roughly orthogonal. No flat map preserves everything (sphere
+        \textrightarrow\ plane is lossy).
+\end{itemize}
+\end{keybox}
+
+\subsubsection{Text visualization}
+\begin{itemize}
+  \item \term{Word cloud / tag cloud}: term frequency mapped to font size (does
+        \emph{not} convey context/word order).
+  \item \term{ThemeRiver / stream graph}: a stacked-area flow showing how
+        themes/topics in a document collection change \emph{over time}.
+  \item Levels of text representation: \term{lexical} (tokens), \term{syntactic}
+        (a token's grammatical function), \term{semantic} (meaning). Text vis is
+        useful to compare patterns \emph{across} documents.
+\end{itemize}
+
+\subsubsection{Legacy multivariate / glyph techniques}
+\begin{keybox}[Glyphs, pixels, SDOF]
+\begin{itemize}
+  \item \term{Glyph / icon techniques}: built from graphical primitives; encode
+        \emph{multiple} data values in one mark's features (size, angle,
+        colour\dots). A glyph encodes several values, not one meaning as a whole.
+  \item \term{Chernoff faces}: a glyph mapping data dimensions to facial
+        features. Suspected to convey emotion; features are \emph{not} perceived
+        equally strongly (a known weakness), so they are \emph{not} ideal for
+        precise quantitative communication.
+  \item \term{Pixel-based techniques}: each data item = at least one pixel,
+        attribute value \textrightarrow\ colour map; designed for \emph{large/high}-dimensional
+        data, not low-dimensional only.
+  \item \term{Semantic Depth of Field (SDOF)}: blurs items by relevance (sharp =
+        relevant); can encode an extra dimension in a scatterplot. (A focus+context
+        cue, related to \S6.)
+\end{itemize}
+\end{keybox}
+
+\subsubsection{Visual Analytics process \& design methodology}
+\begin{keybox}[VA / methodology one-liners]
+\begin{itemize}
+  \item \term{Visual Analytics goal}: ``detect the expected and discover the
+        unexpected''; synthesise insight from massive, dynamic, ambiguous,
+        conflicting data. Components: \term{visualization} + \term{(data)
+        mining} + \term{human perception/interaction} in a loop (Keim et al.\
+        process: data \textrightarrow\ \{visualization, model\} with feedback).
+  \item \term{Knowledge crystallization loop}: first action is \term{forage for
+        data} (then structure \textrightarrow\ visualize \textrightarrow\ act).
+  \item \term{Visualization design triangle} (Miksch \& Aigner 2014): \term{data},
+        \term{users}, \term{tasks}.
+  \item \term{Design study methodology} (Sedlmair et al.\ 2012): a vis design
+        study fits when the data/task lie in the middle zone --- some required
+        information is in the user's head and/or the task is not yet crisply
+        defined (not fully automatable, not purely in-the-head).
+  \item \term{Guidance}: a computer-assisted process that actively helps resolve
+        a \emph{knowledge gap} the user hits during a VA session.
+  \item \term{Formative} evaluation = during analysis/design (problem analysis);
+        \term{summative} = after implementation.
+  \item \term{Problem analysis} asks: who are the users, what data do they work
+        with, what are their tasks. \term{User-/human-centred design} benefits:
+        higher user productivity, lower training/support cost.
+  \item \term{Interaction modelling}: capture requirements to build/evaluate
+        against, and validate the effectiveness/guidance of interaction designs.
+\end{itemize}
+\end{keybox}
+
+\begin{pitfall}[Don't over-invest here]
+If time is short, Part B is the first thing to cut. The 2026 exam's own topic
+slides do not list time-oriented data, maps, text vis, or the VA process ---
+they list dimensionality-reduction algorithms, scalable InfoVis, VIS4ML, sets,
+and the strategy/critique/validation question types in \S13.
+\end{pitfall}

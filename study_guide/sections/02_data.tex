@@ -113,6 +113,25 @@ topology explicitly).
   \item \term{Cyclic} -- values wrap around to the start (typically time: hour of day, day of week, month of year).
 \end{itemize}
 
+\begin{center}
+\begin{tikzpicture}[font=\small, >=Stealth]
+  % Sequential: single arrow
+  \node[align=center, tuwdark] at (1.4,1.1) {\bfseries Sequential};
+  \draw[->, thick, tuwblue] (0,0) -- (2.8,0);
+  \node[font=\scriptsize] at (1.4,-0.45) {min $\to$ max};
+
+  % Diverging: double-headed arrow with central block (neutral point)
+  \node[align=center, tuwdark] at (5.6,1.1) {\bfseries Diverging};
+  \draw[<->, thick, tuwblue] (4.2,0) -- (7.0,0);
+  \fill[pitred] (5.5,-0.16) rectangle (5.7,0.16);
+  \node[font=\scriptsize] at (5.6,-0.45) {$-\ \;0\ \;+$};
+
+  % Cyclic: circular arrow
+  \node[align=center, tuwdark] at (9.0,1.1) {\bfseries Cyclic};
+  \draw[->, thick, tuwblue] (9.55,0) arc (-30:300:0.55);
+  \node[font=\scriptsize] at (9.0,-0.6) {wraps around};
+\end{tikzpicture}
+\end{center}
 \sketchnote{Sequential = a single arrow $\rightarrow$; diverging = a double-headed arrow with a block in the middle $\leftarrow\!\blacksquare\!\rightarrow$; cyclic = a circular arrow $\circlearrowright$.}
 
 \begin{pitfall}[Easy point loss]

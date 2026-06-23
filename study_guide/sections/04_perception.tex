@@ -52,6 +52,36 @@ temporal cortex (object recognition, memory). Exam-relevant takeaway:
 \emph{luminance contrast drives edge detection}, which is why luminance is a
 good channel for fine spatial detail and hue is not.
 
+\begin{center}
+\begin{tikzpicture}[>=Stealth,font=\footnotesize]
+  % retina disk: periphery, parafovea, fovea
+  \fill[boxgray] (0,0) circle (1.8);
+  \draw[rulec] (0,0) circle (1.8);
+  \fill[tuwblue!25] (0,0) circle (1.05);
+  \draw[rulec] (0,0) circle (1.05);
+  \fill[examorange] (0,0) circle (0.28);
+  \node at (0,0) {};
+  % labels
+  \node[tuwdark] at (0,0.02) {\scriptsize fovea};
+  \node[tuwdark] at (0,-0.18) {\scriptsize ($2^\circ$)};
+  \node[tuwdark] at (0,0.7) {\scriptsize parafovea};
+  \node[tuwdark] at (0,1.45) {\scriptsize periphery};
+  % acuity arrow pointing outward, shrinking (tapered look via label)
+  \draw[->,tuwblue,line width=1pt] (0.28,-1.0) .. controls (1.2,-1.4) .. (2.4,-1.7);
+  \node[tuwblue] at (2.0,-1.35) {acuity $\downarrow$};
+  % gaze path: zig-zag fixations + saccades
+  \begin{scope}[shift={(5.2,0)}]
+    \foreach \p/\n in {{(-0.8,1.0)}/1,{(0.9,0.7)}/2,{(-0.3,-0.1)}/3,{(1.0,-0.6)}/4,{(-0.6,-1.1)}/5}
+      \fill[tuwdark] \p circle (0.07);
+    \draw[->,pitred,thick] (-0.8,1.0) -- (0.9,0.7);
+    \draw[->,pitred,thick] (0.9,0.7) -- (-0.3,-0.1);
+    \draw[->,pitred,thick] (-0.3,-0.1) -- (1.0,-0.6);
+    \draw[->,pitred,thick] (1.0,-0.6) -- (-0.6,-1.1);
+    \node[tuwdark,align=center] at (0.1,1.55) {\scriptsize fixation\\\scriptsize $\approx$200\,ms};
+    \node[pitred,align=center] at (-1.5,0.2) {\scriptsize saccade\\\scriptsize $\approx$20\,ms};
+  \end{scope}
+\end{tikzpicture}
+\end{center}
 \sketchnote{Retina disk with a small bright dot labelled \emph{fovea}
 ($2^\circ$), a ring \emph{parafovea}, and an outer ring \emph{periphery}; an
 arrow ``acuity'' pointing outward and shrinking. Beside it: a zig-zag gaze path
@@ -125,6 +155,35 @@ distance) would group them differently. The slides state explicitly:
 proximity.''}
 \end{keybox}
 
+\begin{center}
+\begin{tikzpicture}[>=Stealth,font=\footnotesize]
+  % (a) proximity alone -> two groups by distance
+  \begin{scope}
+    \node[tuwdark] at (1.3,2.0) {(a) proximity $\to$ 2 groups};
+    \foreach \p in {(0.0,1.2),(0.3,0.8),(0.5,1.1),(0.2,0.5),(0.6,0.6)}
+      \fill[tuwblue] \p circle (0.08);
+    \foreach \p in {(2.0,1.0),(2.3,0.7),(2.5,1.1),(2.2,0.4),(2.6,0.8)}
+      \fill[tuwblue] \p circle (0.08);
+    \draw[rulec,dashed] (0.3,0.85) ellipse (0.55 and 0.6);
+    \draw[rulec,dashed] (2.32,0.8) ellipse (0.55 and 0.6);
+  \end{scope}
+  % (b) connectedness/common region overrides proximity
+  \begin{scope}[shift={(5.0,0)}]
+    \node[tuwdark] at (1.3,2.0) {(b) connectedness overrides};
+    \foreach \p in {(0.0,1.2),(0.3,0.8),(0.5,1.1),(0.2,0.5)}
+      \fill[tuwblue] \p circle (0.08);
+    \foreach \p in {(2.0,1.0),(2.3,0.7),(2.5,1.1),(2.2,0.4)}
+      \fill[tuwblue] \p circle (0.08);
+    % the bridging point
+    \fill[pitred] (0.6,0.6) circle (0.09);
+    % connecting line links left point to right cluster
+    \draw[keygreen,line width=1.2pt] (0.6,0.6) -- (2.2,0.4);
+    % shaded common region enclosing right cluster + bridging point
+    \fill[keygreen,opacity=0.15] (0.55,0.6) ellipse (0.3 and 0.35);
+    \draw[keygreen,thick] plot[smooth cycle] coordinates {(0.4,0.55)(1.4,0.95)(2.6,1.15)(2.7,0.5)(1.5,0.25)(0.45,0.45)};
+  \end{scope}
+\end{tikzpicture}
+\end{center}
 \sketchnote{Two scatter clusters. (a) proximity alone $\to$ two groups by
 distance. (b) draw a connecting line / shaded blob that links one point from
 the left cluster to the right cluster $\to$ it now reads as belonging to the

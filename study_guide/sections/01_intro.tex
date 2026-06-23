@@ -45,6 +45,21 @@ Visualization serves three high-level goals, ordered here by how much \term{inte
 \end{tabular}
 \end{center}
 
+\begin{center}
+\begin{tikzpicture}[font=\small]
+  % wedge: thick on the left, thin on the right
+  \fill[tuwblue!70] (0,-0.9) -- (0,0.9) -- (9,0.1) -- (9,-0.1) -- cycle;
+  \node[white] at (1.4,0) {\bfseries more};
+  \node[tuwdark] at (8.0,0.45) {\bfseries less};
+  \node[tuwdark] at (4.5,1.3) {\bfseries Interactivity};
+  % goal labels underneath, aligned to wedge regions
+  \node[align=center] at (1.4,-1.45) {Exploration};
+  \node[align=center] at (4.5,-1.45) {Confirmation};
+  \node[align=center] at (7.6,-1.45) {Presentation};
+  \draw[-{Stealth[length=2mm]}, tuwdark] (0.2,-1.1) -- (8.8,-1.1)
+    node[midway, below, font=\scriptsize] {high $\rightarrow$ low interactivity};
+\end{tikzpicture}
+\end{center}
 \sketchnote{Draw a horizontal triangle/wedge for ``interactivity'' that is thick on the left (Exploration) and thin on the right (Presentation); label the three goals underneath.}
 
 Exploration is the open-ended, \emph{exploratory} mode; confirmation and presentation are the \emph{explanatory / confirmatory} modes. A dashboard (e.g.\ Tableau) is exploratory; John Snow's 1854 cholera map is confirmatory/presentational; a New York Times infographic is presentational.

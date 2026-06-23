@@ -36,6 +36,33 @@ dimensions it requires:
 pairwise relationship) and \term{containment} (an area enclosing/nesting items
 to show hierarchy). Links cannot be points; individual items can.
 
+\begin{center}
+\begin{tikzpicture}[font=\small, >=Stealth]
+  % Top row: item marks -- point, line, area
+  % Point (0D)
+  \fill[tuwblue] (0.8,1.5) circle (3pt);
+  \node[font=\scriptsize, align=center] at (0.8,0.95) {Point\\(0D)};
+  % Line (1D) -- a bar
+  \fill[tuwblue] (3.0,1.2) rectangle (3.3,1.85);
+  \node[font=\scriptsize, align=center] at (3.15,0.95) {Line\\(1D)};
+  % Area (2D) -- a filled blob
+  \fill[tuwblue] (5.3,1.5) ellipse (10pt and 7pt);
+  \node[font=\scriptsize, align=center] at (5.3,0.95) {Area\\(2D)};
+
+  % Bottom row: link marks -- connection, containment
+  % Connection: two nodes joined by an edge
+  \fill[tuwdark] (0.4,-0.7) circle (2.5pt);
+  \fill[tuwdark] (1.8,-0.7) circle (2.5pt);
+  \draw[thick, tuwdark] (0.4,-0.7) -- (1.8,-0.7);
+  \node[font=\scriptsize, align=center] at (1.1,-1.25) {Connection};
+  % Containment: big box with small boxes nested
+  \draw[thick, keygreen] (3.6,-1.1) rectangle (5.6,-0.3);
+  \fill[keygreen] (3.85,-0.95) rectangle (4.25,-0.45);
+  \fill[keygreen] (4.45,-0.95) rectangle (4.85,-0.45);
+  \fill[keygreen] (5.05,-0.95) rectangle (5.45,-0.45);
+  \node[font=\scriptsize, align=center] at (4.6,-1.5) {Containment};
+\end{tikzpicture}
+\end{center}
 \sketchnote{three rows of icons -- top: a dot (point/0D), a bar (line/1D), a
 filled blob (area/2D); bottom: two nodes joined by an edge (connection) and a
 big box with small boxes nested inside (containment).}

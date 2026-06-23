@@ -138,6 +138,48 @@ not sum to a whole. For ``many sets'' always reach for \textbf{UpSet} (or
 aggregation/matrix methods), not Euler/Venn.
 \end{pitfall}
 
+\begin{center}
+\begin{tikzpicture}[x=1cm,y=1cm,font=\scriptsize]
+  % --- geometry: matrix rows A,B,C at y=2,1,0 ; columns x=0..4 ---
+  \def\rA{2} \def\rB{1} \def\rC{0}
+  % intersection-size bars (top), sorted descending
+  % columns and the heights of their size bars
+  \foreach \x/\h in {0/1.7,1/1.3,2/1.0,3/0.7,4/0.45}{
+    \fill[tuwblue!70] (\x-0.18,2.55) rectangle (\x+0.18,{2.55+\h});}
+  \node[anchor=south,rotate=90,tuwdark] at (-1.05,3.4)
+        {\,intersection size};
+  % --- matrix dots ---
+  % membership pattern per column (filled rows). 1=filled
+  % col0: A   col1: A,B   col2: B,C   col3: A,B,C   col4: C
+  \foreach \x in {0,1,2,3,4}{
+    % empty dots everywhere first
+    \foreach \r in {\rA,\rB,\rC}{
+      \draw[gray!55,fill=gray!12] (\x,\r) circle (0.16);}}
+  % filled dots + connecting lines per column
+  % col0: A
+  \fill[tuwdark] (0,\rA) circle (0.16);
+  % col1: A,B
+  \draw[tuwdark,line width=1pt] (1,\rB)--(1,\rA);
+  \fill[tuwdark] (1,\rA) circle (0.16); \fill[tuwdark] (1,\rB) circle (0.16);
+  % col2: B,C
+  \draw[tuwdark,line width=1pt] (2,\rC)--(2,\rB);
+  \fill[tuwdark] (2,\rB) circle (0.16); \fill[tuwdark] (2,\rC) circle (0.16);
+  % col3: A,B,C
+  \draw[tuwdark,line width=1pt] (3,\rC)--(3,\rA);
+  \fill[tuwdark] (3,\rA) circle (0.16); \fill[tuwdark] (3,\rB) circle (0.16);
+  \fill[tuwdark] (3,\rC) circle (0.16);
+  % col4: C
+  \fill[tuwdark] (4,\rC) circle (0.16);
+  % --- row labels ---
+  \node[anchor=east] at (-0.55,\rA) {$A$};
+  \node[anchor=east] at (-0.55,\rB) {$B$};
+  \node[anchor=east] at (-0.55,\rC) {$C$};
+  % --- set-size bars (left, horizontal) ---
+  \foreach \r/\w in {\rA/1.3,\rB/1.6,\rC/1.0}{
+    \fill[keygreen!70] (-2.4,\r-0.16) rectangle (-2.4+\w,\r+0.16);}
+  \node[anchor=south,tuwdark] at (-1.9,2.5) {set size};
+\end{tikzpicture}
+\end{center}
 \sketchnote{An UpSet plot has three coupled parts. \emph{Top-left:} a small bar
 chart of total set sizes (sets $A,B,C$). \emph{Bottom-left:} the set rows
 $A,B,C$ as labels. \emph{Centre/bottom:} a dot matrix -- one column per
@@ -283,6 +325,42 @@ percentile grids), overlay statistics, and quantify findings so qualitative
 insights (``the curves rise steeply'') become reproducible numbers.
 \end{algobox}
 
+\begin{center}
+\begin{tikzpicture}[x=1cm,y=1cm,font=\scriptsize,>={Stealth[length=2mm]}]
+  % ---- LEFT: parameter-space scatterplot with a brushed region ----
+  \draw[rulec,thick] (0,0) rectangle (2.2,2.2);
+  \node[anchor=south,tuwdark] at (1.1,2.25) {parameters};
+  \fill[examorange!18] (0.9,0.7) rectangle (1.8,1.6); % brush
+  \foreach \p in {(0.3,0.4),(0.6,1.7),(1.4,1.9),(0.4,1.2)}{
+    \fill[gray!55] \p circle (1.3pt);}
+  \foreach \p in {(1.1,1.0),(1.5,1.3),(1.0,1.4),(1.6,0.9),(1.3,1.2)}{
+    \fill[examorange] \p circle (1.3pt);}
+  % ---- CENTRE: curve view (output curves), brushed in orange ----
+  \draw[rulec,thick] (3.0,0) rectangle (6.0,2.2);
+  \node[anchor=south,tuwdark] at (4.5,2.25) {output curves};
+  \draw[gray!50] plot[smooth] coordinates{(3.1,0.5)(3.9,1.3)(4.7,1.6)(5.9,1.7)};
+  \draw[gray!50] plot[smooth] coordinates{(3.1,0.4)(3.9,0.8)(4.7,1.0)(5.9,1.05)};
+  \draw[examorange,thick] plot[smooth]
+        coordinates{(3.1,0.6)(3.9,1.7)(4.7,2.0)(5.9,1.95)};
+  \draw[examorange,thick] plot[smooth]
+        coordinates{(3.1,0.55)(3.9,1.55)(4.7,1.85)(5.9,1.8)};
+  % ---- RIGHT: derived-output scatterplot ----
+  \draw[rulec,thick] (6.8,0) rectangle (9.0,2.2);
+  \node[anchor=south,tuwdark] at (7.9,2.25) {derived};
+  \foreach \p in {(7.1,0.5),(7.4,1.8),(8.6,0.7),(7.2,1.1)}{
+    \fill[gray!55] \p circle (1.3pt);}
+  \foreach \p in {(8.0,1.5),(8.4,1.7),(8.1,1.2),(8.5,1.4)}{
+    \fill[examorange] \p circle (1.3pt);}
+  % ---- linking arrows ----
+  \draw[->,tuwblue] (2.2,1.15) -- (3.0,1.15);
+  \draw[->,tuwblue] (6.0,1.15) -- (6.8,1.15);
+  % ---- data table below (brushed runs) ----
+  \draw[rulec,thick] (3.0,-1.1) rectangle (6.0,-0.2);
+  \foreach \y in {-0.45,-0.7,-0.95}{\draw[gray!40] (3.0,\y)--(6.0,\y);}
+  \draw[gray!40] (4.0,-0.2)--(4.0,-1.1); \draw[gray!40] (5.0,-0.2)--(5.0,-1.1);
+  \node[anchor=south,tuwdark] at (4.5,-0.18) {brushed runs (table)};
+\end{tikzpicture}
+\end{center}
 \sketchnote{Ensemble CMV: left column $=$ parameter-space scatterplots/histograms
 ($dT_v, dT_p, P_{low},\dots$) with a brushed region; centre $=$ a curve view of
 all members' output curves, brushed members in orange, context in grey; right
