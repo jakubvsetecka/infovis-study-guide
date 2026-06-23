@@ -1,0 +1,253 @@
+\section{Visual Encoding: Marks and Channels}
+
+The core of the design space of visual encodings is an \emph{orthogonal}
+combination of two aspects: graphical elements called \term{marks}, and
+\term{visual channels} that control their appearance. Even complex visual
+encodings can be decomposed and analysed in terms of their mark and channel
+structure (Munzner, Ch.~5; slides 21--22).
+
+\begin{keybox}[The one-sentence summary]
+A \term{mark} is a basic geometric primitive that depicts an item or a link;
+a \term{channel} controls the appearance of a mark. The effectiveness of a
+channel depends on its \emph{type}: \term{magnitude} (ordered) channels match
+ordered data, \term{identity} (categorical) channels match categorical data.
+\end{keybox}
+
+\subsection{Marks}
+
+A \term{mark} is a basic graphical element classified by the number of spatial
+dimensions it requires:
+\begin{itemize}
+  \item \term{Point} -- 0D mark. Conveys information only through \emph{position};
+        because its area is unconstrained, it \emph{can} be size-coded and
+        shape-coded (e.g.\ a bubble in a bubble chart).
+  \item \term{Line} -- 1D mark. A bar in a bar chart is a line mark. Its length
+        is "taken" by the encoded quantity, so it cannot be size-coded along that
+        same direction, but its \emph{width} can carry a second attribute.
+  \item \term{Area} -- 2D mark. Both size dimensions are intrinsically fixed by
+        its shape, so area marks are typically \emph{not} size- or shape-coded
+        (e.g.\ a country on a choropleth map). A 3D \term{volume} mark exists
+        but is rarely used.
+\end{itemize}
+
+\paragraph{Mark types for items vs.\ links.} For tabular data a mark is an
+\term{item}. For network data a mark can be a \term{node} (point/line/area) or a
+\term{link}. The two link mark types are: \term{connection} (a line showing a
+pairwise relationship) and \term{containment} (an area enclosing/nesting items
+to show hierarchy). Links cannot be points; individual items can.
+
+\sketchnote{three rows of icons -- top: a dot (point/0D), a bar (line/1D), a
+filled blob (area/2D); bottom: two nodes joined by an edge (connection) and a
+big box with small boxes nested inside (containment).}
+
+\subsection{Channels and the magnitude vs.\ identity split}
+
+A \term{visual channel} is a way to control mark appearance, \emph{independent}
+of mark dimensionality. The human perceptual system has two fundamentally
+different sensory modalities, which splits all channels into two families:
+
+\begin{keybox}[The fundamental split]
+\term{Identity / "what--where" channels} (psychophysics: \emph{metathetic})
+answer "what is it / where is it?" -- e.g.\ shape, color hue, spatial region,
+motion pattern. They suit \term{categorical} attributes. \\[2pt]
+\term{Magnitude / "how-much" channels} (psychophysics: \emph{prothetic}) answer
+"how much is there?" -- e.g.\ length, area, volume, luminance, saturation, tilt,
+position. They suit \term{ordered} (ordinal + quantitative) attributes.
+\end{keybox}
+
+\paragraph{List of channels.} Spatial: \term{aligned (common-scale) position},
+\term{unaligned position}, \term{depth} (3D position), \term{spatial region}.
+Color: \term{hue}, \term{saturation}, \term{luminance}. Size (one per added
+dimension): \term{length} (1D), \term{area} (2D), \term{volume} (3D). Motion:
+\term{motion pattern}, \term{direction}, \term{velocity}. Plus \term{angle/tilt},
+\term{curvature}, and \term{shape} (a complex phenomenon treated as one channel).
+
+\subsection{The two guiding principles}
+
+\begin{keybox}[Expressiveness \& Effectiveness (Mackinlay 1986)]
+\textbf{Expressiveness:} the encoding should express \emph{all of, and only,}
+the information in the data. Ordered data must be shown so the perceptual system
+senses order; unordered data must \emph{not} imply an order that does not exist.
+$\Rightarrow$ \emph{match channel type to attribute type}. \\[3pt]
+\textbf{Effectiveness:} the \emph{importance} of an attribute should match the
+\emph{salience} (noticeability) of its channel. $\Rightarrow$ \emph{most
+important attribute $\to$ most effective channel}; less important attributes get
+less effective channels.
+\end{keybox}
+
+\begin{pitfall}[Classic expressiveness violation]
+Encoding an unordered categorical attribute (e.g.\ country) with an ordered
+magnitude channel (e.g.\ luminance or length) implies a ranking that does not
+exist. This is "a common beginner's mistake." The reverse -- categorical hue
+for a quantitative attribute -- destroys perceived order. In both cases the
+expressiveness principle is violated even if the chart "works."
+\end{pitfall}
+
+\subsection{Channel effectiveness rankings}
+
+Combining the two principles yields two ranked lists (Munzner Fig.~5.6), most
+effective at the top. Spatial channels top \emph{both} lists and are the only
+ones effective for both data types -- choosing what to encode with position is
+the single most central encoding decision, because position-encoded attributes
+dominate the user's mental model.
+
+\begin{center}
+\begin{tabular}{@{}r l l@{}}
+\toprule
+Rank & \textbf{Magnitude (ordered)} & \textbf{Identity (categorical)} \\
+\midrule
+1 & Position on common scale (aligned) & Spatial region \\
+2 & Position on unaligned scale        & Color hue \\
+3 & Length (1D size)                   & Motion \\
+4 & Tilt / angle                       & Shape \\
+5 & Area (2D size)                     & \\
+6 & Depth (3D position)                & \\
+7 & Color luminance                    & \\
+8 & Color saturation                   & \\
+9 & Curvature                          & \\
+10 & Volume (3D size)                  & \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent Note: luminance and saturation are roughly equally effective, as are
+curvature and volume at the bottom.
+
+\subsection{Accuracy: Cleveland \& McGill and Stevens}
+
+\paragraph{Cleveland \& McGill (1984) accuracy ranking.} Controlled experiments
+on the magnitude channels gave an empirical ordering of elementary perceptual
+tasks, from most to least accurate:
+\begin{enumerate}[label=\arabic*.]
+  \item Position along a common scale (aligned)
+  \item Position along identical, non-aligned scales (unaligned)
+  \item Length
+  \item Angle / slope
+  \item Area
+  \item Volume $\approx$ Curvature $\approx$ Luminance (equivalence class)
+  \item Color hue \emph{(as a magnitude channel -- last; very different from its
+        2nd place as an identity channel)}
+\end{enumerate}
+Heer \& Bostock (2010) replicated this by crowdsourcing; the one discrepancy is
+that \emph{length and angle judgements turned out roughly equivalent}. These
+accuracy results are the primary basis for the channel rankings above.
+
+\paragraph{Stevens' power law.} Psychophysics shows that the apparent magnitude
+$S$ of a sensory channel follows a power function of the physical intensity $I$:
+\[
+  S = I^{\,n}.
+\]
+The exponent $n$ depends on the modality and ranges from sublinear $0.5$
+(brightness) to superlinear $3.5$ (electric current).
+\begin{itemize}
+  \item $n = 1$ (\term{length}): perception is accurate -- doubling the stimulus
+        doubles the perception.
+  \item $n < 1$ \term{compressive} (e.g.\ \term{area} $\approx 0.7$,
+        \term{brightness} $\approx 0.5$): the channel is perceptually
+        \emph{compressed} $\Rightarrow$ users \emph{underestimate} large values.
+        Doubling brightness looks much less than twice as bright.
+  \item $n > 1$ \term{expansive} (e.g.\ red--gray \term{saturation}, electric
+        current): the channel is \emph{magnified} $\Rightarrow$ users
+        \emph{overestimate}.
+\end{itemize}
+
+\begin{keybox}[Why position beats length -- Weber's Law]
+Perception is fundamentally \emph{relative}, not absolute (\term{Weber's Law}:
+$\delta I / I = K$). Unframed, unaligned bars are hard to compare; adding a
+\emph{common frame} or \emph{alignment} gives a common scale, turning a hard
+length judgement into an easy position judgement. This is why aligned position
+on a common scale ranks first.
+\end{keybox}
+
+\subsection{Channel characteristics}
+
+Effectiveness is analysed along five criteria: accuracy, discriminability,
+separability, popout, and grouping.
+
+\paragraph{Discriminability.} How many distinguishable \term{bins} (steps) does
+a channel provide? The number of attribute values shown must not exceed the
+channel's bin count. Example: \term{line width} has very few bins -- great for
+3--4 values, poor for hundreds (it starts looking like an area). If they
+mismatch, aggregate the attribute or pick another channel.
+
+\paragraph{Separability vs.\ integrality.} Channel pairs lie on a continuum from
+\term{separable} (can be attended independently) to \term{integral}
+(inextricably fused; the brain perceives an unanticipated combination).
+
+\begin{center}
+\begin{tabular}{@{}l l l@{}}
+\toprule
+Channel pair & Interference & Result \\
+\midrule
+Position $+$ hue            & none (fully separable) & two clean groupings \\
+Size $+$ hue                & some                   & hue hard to read on small marks \\
+Width $+$ height            & significant (integral) & fused into perceived \emph{area} (small/med/large) \\
+Red $+$ green (RGB axes)    & major (integral)       & perceived as one combined color \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent Integral is not "bad": horizontal$+$vertical size is a \emph{good}
+choice if you want a single attribute with three groups (small, flattened,
+large). Match the pair's character to the information.
+
+\paragraph{Popout (preattentive processing).} A distinct item "pops out" from
+distractors in time \emph{independent of the number of distractors} -- our
+low-level visual system processes the channel in massively parallel fashion
+(also called preattentive / tunable detection). Channels supporting popout
+include color hue, shape, tilt, size, proximity, motion, shadow direction.
+\begin{pitfall}[Popout does not combine]
+Popout works for \emph{one channel at a time}. A red circle does \emph{not} pop
+out from a field mixing \{red, blue\} $\times$ \{circle, square\} -- it requires
+\term{serial search} (time grows linearly with distractors). A few pairs are
+exceptions (space$+$color, motion$+$shape); never count on popout for three or
+more channels. Also, parallelism is \emph{not} preattentive.
+\end{pitfall}
+
+\paragraph{Grouping.} Strength of perceptual grouping cues, strongest first:
+\term{containment} (area) $>$ \term{connection} (line) $>$ \term{proximity}
+(spatial region) $>$ \term{similarity} (hue, motion, carefully chosen shape).
+This proximity strength is exactly why spatial region is the top categorical
+channel. Use shape and motion with care: a forward vs.\ backward "C" does not
+form a selectable group, while circle vs.\ star does.
+
+\subsection{Channel interference \& redundant encoding}
+
+Two ideas often confused:
+\begin{itemize}
+  \item \term{Interference} -- encoding \emph{different} attributes in
+        non-separable channels (size$+$hue, width$+$height) so the user cannot
+        recover each attribute. Avoid.
+  \item \term{Redundant encoding} -- encoding \emph{one} attribute in
+        \emph{two} channels at once (e.g.\ both hue \emph{and} shape, or both
+        position \emph{and} color) to make it very easily perceived. The cost is
+        that channels are "used up," so fewer total attributes can be shown.
+\end{itemize}
+
+\begin{exambox}[How this is examined]
+\textbf{Visualization Critique (open question).} Given a chart, you must:
+\begin{itemize}[leftmargin=1.4em]
+  \item Decompose it into \emph{marks} and \emph{channels} per attribute.
+  \item Check \emph{expressiveness}: is each attribute's channel type matched to
+        its data type? Flag categorical-on-magnitude (false order) or vice versa.
+  \item Check \emph{effectiveness}: is the most important attribute on the most
+        effective channel (position $>$ length $>$ angle $>$ area $>$ color)?
+  \item Invoke \emph{Stevens' power law} to argue over/underestimation: area
+        ($n\approx0.7$) and brightness ($n\approx0.5$) are underestimated;
+        saturation is overestimated; length ($n=1$) is accurate.
+  \item Spot \emph{channel interference} (e.g.\ width vs.\ height read as area;
+        small marks make hue unreadable) and suggest separable alternatives or
+        redundant encoding.
+\end{itemize}
+\textbf{MCQ on channel properties.} Be ready to: classify a channel as magnitude
+vs.\ identity; order channels by effectiveness; recall the Cleveland \& McGill
+ranking; identify separable vs.\ integral pairs; state which channels support
+popout; and distinguish redundant encoding from interference.
+\end{exambox}
+
+\begin{pitfall}[Common confusions to avoid]
+Hue is \emph{2nd} as an identity channel but \emph{last} as a magnitude channel.
+"Position on a common scale" $\neq$ "length" -- the frame/alignment is what makes
+position more accurate (Weber's Law). Effectiveness $=$ importance$\to$salience;
+expressiveness $=$ data type$\to$channel type. Do not mix them up.
+\end{pitfall}

@@ -1,0 +1,186 @@
+\section{Tasks and Interaction}
+
+This section covers the \emph{why} of visualization (Munzner's task abstraction, ch.~3) and the \emph{how} of interaction (selection, brushing \& linking, overview+detail, focus+context, dynamic queries, coordinated multiple views, high-dimensional brushing after Ward, and quantitative visual analytics). The unifying idea from the lecture: \term{interaction is a cognitive amplifier}. Static visualization fails for large data, multiple questions, and evolving hypotheses; interaction lets one display answer many questions over time.
+
+\begin{keybox}[The what--why--how chain (Munzner)]
+Every analysis instance is described by three orthogonal questions:
+\begin{itemize}
+  \item \term{What} is shown -- the data abstraction (dataset and attribute types).
+  \item \term{Why} is it used -- the \emph{task} abstraction: \term{actions} (verbs) on \term{targets} (nouns).
+  \item \term{How} is it built -- the idiom: encode, manipulate, facet, reduce.
+\end{itemize}
+Key principle: \textbf{why does not dictate how} -- the same goal can be served by many idioms. Tasks are stated in \emph{abstract} (domain-independent) terms so that two domain tasks ("contrast patients\dots" vs. "see if results match\dots") are recognised as the same abstract task ("compare values between two groups"). Complex activities are a \term{chained sequence} of tasks: the output of one becomes the input of the next (e.g. a \emph{discover} session feeds a later \emph{present} session).
+\end{keybox}
+
+\subsection{Task Abstraction: Actions (Munzner ch.~3)}
+
+Actions sit at three independent levels; usually you specify all three.
+
+\subsubsection{High level -- Analyze (consume vs.\ produce)}
+\begin{itemize}
+  \item \term{Consume} existing information:
+  \begin{itemize}
+    \item \term{Discover} -- find new knowledge; \emph{generate} or \emph{verify} a hypothesis (the classic motivation for sophisticated interactive idioms; close to \emph{explore}).
+    \item \term{Present} -- communicate something already understood to an audience (telling a story; decision support, teaching). Knowledge is known to the presenter in advance.
+    \item \term{Enjoy} -- casual encounters driven by curiosity (e.g. Name Voyager).
+  \end{itemize}
+  \item \term{Produce} new material for later use:
+  \begin{itemize}
+    \item \term{Annotate} -- add graphical/textual notes to existing elements (an annotation tied to data items can be seen as a new attribute).
+    \item \term{Record} -- save persistent artifacts (screenshots, bookmarks, parameter settings, interaction logs, a branching \emph{graphical history}); supports analytic provenance.
+    \item \term{Derive} -- compute new data from existing data (a.k.a.\ \emph{transform}). The data abstraction is an \emph{active design choice}: "don't just draw what you're given -- decide the right thing to show and create it." E.g. plot $\textit{trade balance}=\textit{exports}-\textit{imports}$ directly instead of two curves.
+  \end{itemize}
+\end{itemize}
+
+\subsubsection{Mid level -- Search (a 2$\times$2 of known/unknown)}
+Classified by whether the \emph{target} (identity, the \emph{what}) and the \emph{location} (the \emph{where}) are known.
+
+\begin{center}
+\begin{tabular}{l l l}
+\toprule
+ & \textbf{Target known} & \textbf{Target unknown} \\
+\midrule
+\textbf{Location known}   & \term{Lookup}  & \term{Browse} \\
+\textbf{Location unknown} & \term{Locate}  & \term{Explore} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent\emph{Lookup}: know what and where (look up "humans" in a known spot of a tree). \emph{Locate}: know what, not where (hunt for "rabbits"). \emph{Browse}: know roughly where, not exactly what (scan a subtree / a date column). \emph{Explore}: know neither -- start from an overview, hunt for outliers/anomalies. (The verb \term{find} is the generic synonym for a successful search.)
+
+\subsubsection{Low level -- Query (scope: one / some / all)}
+Once targets are found, query them at one of three scopes of increasing breadth:
+\begin{itemize}
+  \item \term{Identify} -- one target (return its characteristics, e.g. one US state's result).
+  \item \term{Compare} -- some targets (multiple; typically harder, needs richer idioms).
+  \item \term{Summarize} -- all targets. Synonym \term{overview}, extremely common in vis.
+\end{itemize}
+
+\subsection{Task Abstraction: Targets}
+Targets are the aspect of the data of interest (nouns).
+\begin{itemize}
+  \item \term{All data}: \term{trends} (a.k.a.\ \emph{patterns}: increases, peaks, plateaus), \term{outliers} (anomalies, deviants, surprises), \term{features} (task-dependent structures).
+  \item \term{One attribute}: an individual value, the \term{extremes} (min/max), or the whole \term{distribution}.
+  \item \term{Multiple attributes}: \term{dependency} (one depends on another), \term{correlation} (tendency to co-vary), \term{similarity} (quantitative closeness across all values).
+  \item \term{Network data}: \term{topology} (structure of interconnections) and \term{paths} between nodes.
+  \item \term{Spatial data}: \term{shape}.
+\end{itemize}
+
+\sketchnote{Draw the Actions tree (Analyze$\to$Consume/Produce; Search 2$\times$2 table; Query: identify/compare/summarize) next to the Targets list (all-data / one-attr / many-attr / network / spatial). This single diagram answers most "name the task" exam questions.}
+
+\subsection{Interaction Techniques}
+
+A useful working definition (Card et al.): "The use of computer-supported, \emph{interactive}, visual representations of abstract data to amplify cognition." Why interact: encoding determines which questions are easy, and there is \term{no single best visualization} -- interaction lets the user switch encodings and ask new questions on the fly.
+
+\begin{keybox}[Catalogue of techniques]
+\textbf{Change visual encoding}: change arrangement (e.g.\ re-baseline a stacked bar chart for easier sub-section comparison), change marks/channels, change shown dimensions, reorder/sort. \\
+\textbf{Selection \& highlighting}: mark items as interesting; highlight makes them stand out (color/emphasis). The most fundamental brush operation. \\
+\textbf{Brushing \& linking}: select in one view $\rightarrow$ \emph{linked highlighting} in all views. \\
+\textbf{Navigation}: pan/scroll and \textbf{zoom} (geometric vs.\ semantic). \\
+\textbf{Details-on-demand}: show full record for an item when requested. \\
+\textbf{Dynamic queries / filtering}: show items conditionally; interactive query refinement.
+\end{keybox}
+
+\subsubsection{Shneiderman's Visual Information-Seeking Mantra}
+\begin{algobox}[Shneiderman 1996]
+\begin{center}\itshape\large "Overview first, zoom and filter, then details on demand."\end{center}
+\begin{itemize}
+  \item \term{Overview} -- starting point; shows overall patterns; needed for navigation/orientation.
+  \item \term{Zoom \& filter} -- narrow to a region of interest, hide irrelevant items.
+  \item \term{Details on demand} -- inspect individual cases/variables only when asked.
+\end{itemize}
+\end{algobox}
+
+\subsubsection{Zoom: geometric vs.\ semantic; pan}
+\term{Geometric zoom} simply scales the view. \term{Semantic zoom} changes \emph{what} is shown / how items are rendered as scale changes (more or different content at finer levels), not just size. \term{Pan/scroll} provides a larger virtual screen but is clunky and shows only one piece at a time. Rule of thumb: a long pan is bad -- "zoom out, pan a little, zoom in."
+
+\subsubsection{Overview+Detail vs.\ Focus+Context}
+The \term{core problem}: large data needs both \emph{overview} (patterns) and \emph{detail} (inspection), but not both at full resolution at once. Zoom-in loses context, zoom-out loses detail, pan causes disorientation.
+\begin{itemize}
+  \item \term{Overview+detail} -- combine via \emph{space} (different screen regions for overview and detail) or via \emph{time} (alternate sequentially in the same place).
+  \item \term{Focus+context (F+C)} -- integrate a (zoomed) focus and its context within \emph{one} view; "seeing detail without losing the big picture." Focus $=$ detail, context $=$ structure.
+\end{itemize}
+
+\paragraph{F+C design space (three families).}
+\begin{itemize}
+  \item \term{Distortion-oriented} -- bend space; like a \emph{fisheye lens}: center enlarged, periphery compressed, everything stays visible but not equally emphasized (e.g.\ Perspective Wall).
+  \item \term{Views-/layers-based} -- separate views for focus and context (e.g.\ a small overview map / minimap, Macroscope).
+  \item \term{In-place} -- no geometric distortion; emphasize via color, blur, transparency (e.g.\ Semantic Depth of Field, SDOF).
+\end{itemize}
+
+\paragraph{Fisheye terminology (Furnas).} A fisheye view is computed from:
+\begin{itemize}
+  \item \term{Focal point} -- the item/coordinate the user focuses on.
+  \item \term{Level of Detail (LoD)} -- intrinsic a-priori importance of each data element.
+  \item \term{Distance from focus} -- how far an item is from the focal point.
+  \item \term{Degree-of-Interest (DOI) function} -- governs how each item is rendered, e.g.
+  \[
+    \text{DOI}(item) = \text{LoD}(item) - \text{Distance}(item,\,focus).
+  \]
+\end{itemize}
+DOI can be \emph{continuous} (smooth interpolation), \emph{filtering} (items past a threshold disappear), \emph{stepped} (discrete regions), or \emph{semantic} (rendering changes type at different levels).
+
+\begin{keybox}[Why F+C matters / trade-offs]
+\textbf{Benefits}: maintains orientation, reduces navigation effort, supports exploration; aligns well with the information-seeking mantra and data drill-down; also usable for presentation (SDOF). \emph{Requires interaction} (focusing, navigation) with smooth changes -- it is dynamic, not static. \\
+\textbf{Trade-offs}: distortion $\rightarrow$ spatial confusion; layers $\rightarrow$ split attention; in-place $\rightarrow$ limited expressiveness.
+\end{keybox}
+
+\subsubsection{Response-time budget}
+$\le 100$\,ms feels \emph{instantaneous}; $\le 1$\,s feels like \emph{free interaction}; $> 10$\,s loses the user's attention entirely (Card, Robertson \& Mackinlay 1991). Justifies why interactive idioms must keep latency low.
+
+\subsubsection{Seven categories of interaction (Yi et al.\ 2007)}
+A complementary taxonomy phrased as user intents: \term{Select} ("mark as interesting"), \term{Explore} ("show something else"), \term{Reconfigure} ("different arrangement"), \term{Encode} ("different representation"), \term{Abstract/Elaborate} ("more or less detail"), \term{Filter} ("show conditionally"), \term{Connect} ("show related items").
+
+\subsection{Linked Views / Coordinated Multiple Views (CMV)}
+\begin{keybox}[Why linking is crucial]
+A single 2D view cannot show all attributes of a multidimensional table. CMV shows \emph{various attributes simultaneously in several simple 2D views} (parallel coordinates, scatterplot matrix, histograms, box plots, \dots). \term{Brushing \& linking} ties them together: \textbf{select items in one view and they are highlighted in all views}. This reveals how a feature in one attribute relates to others -- e.g.\ which items are extreme in $X$ \emph{and} where they fall in $Y,Z,\dots$ Interaction (not a fancy single chart) is what makes multidimensional analysis tractable.
+\end{keybox}
+
+Open questions raised in the lecture for CMV/brushing: brushing \emph{reproducibility}, communicating results, keeping focus on analysis (not on fiddling with the interaction), whether brushing is always best, and how to improve it.
+
+\subsection{High-Dimensional Brushing (Ward, XmdvTool)}
+
+Traditionally brushes live in \emph{screen space} (paint/rubber-band a 2D region). Ward's contribution: \term{N-dimensional brushes defined in data space} rather than screen space, integrated into XmdvTool (which shows the same multivariate data via scatterplot matrices, star glyphs, parallel coordinates, and dimensional stacking).
+
+\begin{keybox}[Brush specification \& operations]
+\textbf{Specification (redundant on purpose):} direct manipulation (drag/resize the brush boxes per display) or indirect via the \emph{brush toolbox} (global resize: max/half/$\pm$10\%). \\
+\textbf{Brush structure:} a brush is a \emph{hyperbox} -- an extent (start..end) in each of the $N$ dimensions. \\
+\textbf{Per-display manipulation:} scatterplot (drag boxes in each plot of the $N\times N$ matrix), parallel coordinates (sliders on each axis), glyph and dimensional-stacking brush tools. \\
+\textbf{Brush operations:} highlighting, linking (default across all views), masking/deleting, moving average, quantitative (numeric) display.
+\end{keybox}
+
+\paragraph{Data-driven brushing ("painting").} Instead of setting bounds by hand in every dimension, the user \emph{paints} over data points of interest (shift+drag); a brush hyperbox is generated as the min/max along each axis of the painted points -- the \emph{data} drives the brush. Useful when bounds are unknown in dense data. (Demand-driven brushing $=$ the user specifies criteria, e.g.\ high in dim 1, low in dim 2, any in dim 3.)
+
+\paragraph{Compound / composite brushes.} Multiple brushes (XmdvTool supports four) combined with \term{boolean operators} AND, OR, XOR, NOT. With ramped (non-binary) coverage the operators become arithmetic on coverage $C\in[0,1]$:
+\[
+  C_{\text{OR}}=\max(C_A,C_B),\quad
+  C_{\text{AND}}=\min(C_A,C_B),\quad
+  C_{\text{XOR}}=1-\lvert 1-(C_A+C_B)\rvert .
+\]
+
+\paragraph{Brush boundaries / extents.} Containment is usually binary (\emph{stepped} boundary). A \term{ramped} boundary linearly drops coverage from 1 (inside, at the inner boundary) to 0 (outside) between an inner and outer boundary -- distinguishing data near the brush center from data near its edge.
+
+\paragraph{Structure-based brushing.} Brushing on a \emph{hierarchical/structural} representation of the data (e.g.\ a cluster tree) rather than on raw value extents -- select by structure, not just by per-dimension ranges.
+
+\begin{pitfall}[Brushing exam traps]
+Do not say a Ward brush is a screen-space rectangle -- its key novelty is that it is an \emph{N-dimensional hyperbox in data space}. Do not confuse \emph{data-driven} (paint the points, bounds inferred) with \emph{demand-driven} (state the criteria up front). AND $=\min$, OR $=\max$ for ramped coverage (not the other way round).
+\end{pitfall}
+
+\subsection{Quantitative Visual Analytics (Rado\v{s} et al.\ 2016)}
+The additional deck pushes interactive analysis from qualitative toward \term{reproducible and quantitative VA}, via four extension groups:
+\begin{itemize}
+  \item \term{Structured brushing} -- brushing characterised along three axes: \emph{brush anchoring}, \emph{brush extent}, \emph{brush movement}, each \emph{unconstrained}, \emph{constrained} (snapped to a grid of percentile cells), or \emph{automatic} (programmatic, reproducible) -- improving reproducibility.
+  \item \term{Percentile brushes} -- circle/rectangle and \emph{Mahalanobis} brushes; the Mahalanobis brush takes the underlying data \emph{distribution / covariance} into account so a single click+drag matches an elongated cluster.
+  \item \term{Linked statistics} -- overlay numeric summaries (mean, median, midrange, spread) directly on the view and in numerical tables, linking data to its statistics.
+  \item \term{Change visualization} -- traces/graphs of how statistics evolve while refining a brush, plus a difference-plot; supports iterative \term{drill-down} and \emph{query refinement}.
+\end{itemize}
+Underlying tension highlighted in class: \emph{complex interaction $+$ simple data} vs.\ \emph{simple interaction $+$ complex (pre-derived/aggregated) data} -- data derivation/aggregation can be moved into the system (on-the-fly data generation).
+
+\begin{exambox}[How this is asked]
+\begin{itemize}
+  \item \textbf{"Justify the interaction design"} (strategy questions): map each chosen technique to a task. State the \emph{why} (action $+$ target, e.g.\ \emph{explore} for \emph{outliers}; \emph{compare} \emph{distributions}), then pick the \emph{how} (overview first $\to$ filter $\to$ details-on-demand; F+C to keep orientation; CMV with linked highlighting). Remember \emph{why does not dictate how} and there is no single best vis -- argue trade-offs and the response-time budget ($<1$\,s).
+  \item \textbf{"Map the data items to a task"}: classify with Munzner -- which \emph{action} (lookup/locate/browse/explore $\times$ identify/compare/summarize) on which \emph{target} (trend/outlier/distribution/correlation/topology/path/shape).
+  \item \textbf{Brushing \& linking}: explain selecting in one view highlights the same items everywhere, and \emph{why} that is essential for multidimensional tables (relate a feature in one attribute to all others). For Ward: N-D hyperbox in data space, painting (data-driven), AND/OR/XOR/NOT composite brushes, ramped vs.\ stepped extents, structure-based brushing.
+  \item \textbf{Focus+context}: name the three families (distortion / views-layers / in-place), the fisheye DOI $=$ LoD $-$ distance, and the trade-offs (distortion $\to$ confusion, layers $\to$ split attention).
+\end{itemize}
+\end{exambox}

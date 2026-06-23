@@ -1,0 +1,151 @@
+\section{Foundations of Information Visualization}
+
+\subsection{What is Information Visualization?}
+
+The standard definition used in the lecture is from Card, Mackinlay \& Shneiderman:
+
+\begin{keybox}[Definition]
+\term{Information Visualization} is ``the use of \emph{computer-supported},
+\emph{interactive}, \emph{visual} representations of \emph{abstract data} to
+\emph{amplify cognition}.'' \hfill \textit{[Card et al., 1999]}
+\end{keybox}
+
+Each highlighted word is load-bearing:
+\begin{itemize}
+  \item \term{computer-supported} -- the visualization is generated and (re-)rendered by a computer, not drawn once by hand.
+  \item \term{interactive} -- the user can manipulate the view (filter, zoom, select, re-map). Interactivity is what distinguishes InfoVis from a static print figure.
+  \item \term{visual representation} -- data is encoded into visual marks and channels so the human visual system can read it.
+  \item \term{abstract data} -- the data has \emph{no inherent spatial mapping} (tables, networks, text), in contrast to scientific visualization where space is given (medical scans, flow fields).
+  \item \term{amplify cognition} -- the purpose. \emph{Cognition} = ``the mental process of acquiring knowledge and understanding through thought, experience, and the senses'' [Oxford]. A later Card quote sharpens the point: ``The purpose of information visualization is to amplify cognitive performance, \emph{not just to create interesting pictures.}''
+\end{itemize}
+
+\subsubsection{What -- Why -- How}
+The lecture frames the whole field with three questions (this maps directly onto Munzner's framework, see below):
+\begin{itemize}
+  \item \term{What?} Abstract data.
+  \item \term{Why?} To amplify cognition.
+  \item \term{How?} Visual representations + interactivity.
+\end{itemize}
+Mechanistically, visualization \term{expands human working memory}: instead of holding facts in the head, the user offloads them onto an external display (\term{external cognition}). The design challenge is to find the \term{most expressive and effective} visualization, turning insights into knowledge.
+
+\subsection{High-Level Goals: Exploration, Confirmation, Presentation}
+
+Visualization serves three high-level goals, ordered here by how much \term{interactivity} they typically need (most $\rightarrow$ least):
+
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Goal} & \textbf{Description} & \textbf{Interactivity} \\
+\midrule
+\term{Exploration}  & Searching / analysing data \emph{without} a prior & high \\
+                    & hypothesis, to find potentially useful info & \\
+\term{Confirmation} & Goal-oriented examination of \emph{hypotheses} & medium \\
+\term{Presentation} & Efficiently \& effectively \emph{communicate} facts & low \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\sketchnote{Draw a horizontal triangle/wedge for ``interactivity'' that is thick on the left (Exploration) and thin on the right (Presentation); label the three goals underneath.}
+
+Exploration is the open-ended, \emph{exploratory} mode; confirmation and presentation are the \emph{explanatory / confirmatory} modes. A dashboard (e.g.\ Tableau) is exploratory; John Snow's 1854 cholera map is confirmatory/presentational; a New York Times infographic is presentational.
+
+\begin{keybox}[Why we still need visualization -- Anscombe / Datasaurus]
+\term{Anscombe's Quartet} (and the \term{Datasaurus Dozen}) are four/twelve datasets with \emph{identical summary statistics} -- same mean ($\bar x{=}9,\bar y{=}7.5$), same variance ($s_x^2{=}11,s_y^2{=}4.12$), same correlation, same linear regression ($y=0.5x+3$) -- yet \emph{completely different shapes} when plotted. Summary statistics (and an LLM that only reads the numbers) can be badly misled; only the visualization reveals curvature, outliers, and clustering.
+\end{keybox}
+
+\subsection{The InfoVis Reference Model (Pipeline)}
+
+The lecture's ``How to visualize?'' answer is the classic \term{InfoVis reference model} (Card / Mackinlay): a pipeline of four data states connected by three transforms, all steerable by the user.
+
+\begin{center}
+\begin{tikzpicture}[
+  node distance=8mm and 9mm,
+  box/.style={draw, rounded corners=2pt, align=center, minimum height=8mm, inner sep=3pt, font=\small},
+  arr/.style={-{Stealth[length=2.2mm]}, thick}]
+  \node[box] (raw)  {Raw\\Data};
+  \node[box, right=of raw]  (tab)  {Data\\Tables};
+  \node[box, right=of tab]  (vis)  {Visual\\Structures};
+  \node[box, right=of vis]  (view) {Views};
+  \draw[arr] (raw)  -- node[above,font=\scriptsize]{Data}     node[below,font=\scriptsize]{Transf.} (tab);
+  \draw[arr] (tab)  -- node[above,font=\scriptsize]{Visual}   node[below,font=\scriptsize]{Mappings} (vis);
+  \draw[arr] (vis)  -- node[above,font=\scriptsize]{View}     node[below,font=\scriptsize]{Transf.} (view);
+  \node[draw, fit=(raw)(tab), inner sep=6pt, label=above:\footnotesize Data] {};
+  \node[draw, fit=(vis)(view), inner sep=6pt, label=above:\footnotesize Visual Form] {};
+  \node[below=14mm of tab, font=\small] (h) {Human Interaction (controls)};
+  \draw[arr] (h) -- (raw);
+  \draw[arr] (h) -- (tab);
+  \draw[arr] (h) -- (vis);
+  \draw[arr] (h) -- (view);
+\end{tikzpicture}
+\end{center}
+
+\begin{itemize}
+  \item \term{Raw Data} $\xrightarrow{\text{Data Transformations}}$ \term{Data Tables} -- clean, derive, restructure (the ``Data'' stage; covered in Section~2).
+  \item \term{Data Tables} $\xrightarrow{\text{Visual Mappings}}$ \term{Visual Structures} -- assign spatial substrate, marks and visual channels (the key step; ``Visual Form'').
+  \item \term{Visual Structures} $\xrightarrow{\text{View Transformations}}$ \term{Views} -- navigation, zoom, distortion, selection.
+  \item \term{Human Interaction (controls)} feeds back into \emph{every} transform, and the whole loop is driven by the user's \term{Task}.
+\end{itemize}
+
+\begin{pitfall}[Common pitfall]
+Do not collapse the pipeline. The three transforms are distinct: \emph{data transformation} ($\neq$ visual mapping) happens \emph{before} anything visual exists; \emph{visual mapping} is data~$\rightarrow$~marks/channels; \emph{view transformation} is on the already-rendered structure. Forgetting that interaction feeds back into all stages also loses points.
+\end{pitfall}
+
+\subsection{Munzner's What--Why--How Analysis Framework}
+
+The mandatory reading (Munzner, 2014) structures any visualization design/analysis around three \term{nested} questions:
+
+\begin{keybox}[The three nested questions]
+\begin{itemize}
+  \item \term{What?} -- the \term{data abstraction}: which dataset and attribute types are involved (Section~2).
+  \item \term{Why?} -- the \term{task abstraction}: what the user wants to accomplish (e.g.\ discover, present, compare, locate trends/outliers).
+  \item \term{How?} -- the \term{idiom}: \term{visual encoding} (marks + channels) and \term{interaction design} that solve the what/why.
+\end{itemize}
+\end{keybox}
+
+\emph{Nested} means the answers are dependent: the \emph{how} you choose must fit the \emph{what} and the \emph{why}. A core skill (heavily tested) is to translate a \emph{domain-specific} problem into this \emph{abstract} vocabulary so that solutions transfer across domains. Example: ``age, BMI, glucose, eGFR for some patients'' and ``vehicles, accidents, deaths, population per Austrian state'' are, abstractly, the \emph{same} thing -- a table of items with one categorical key and several quantitative attributes.
+
+\subsection{Human-in-the-Loop vs Pure Automation}
+
+\begin{keybox}[When to visualize, when to automate]
+\begin{itemize}
+  \item \term{Pure automatic methods} work \emph{only for clearly specified problems} (a well-defined question, a known model).
+  \item \term{Pure visualization} is \emph{not enough} for very large and complex data.
+  \item Use \term{visualization / a human in the loop} when the problem is \emph{ill-specified}, exploratory, or requires judgement, and when you need to leverage the human visual system to spot the unexpected.
+\end{itemize}
+\end{keybox}
+
+This is the rationale for \term{Visual Analytics}: a feedback loop coupling automated data analysis (data mining, model building) with interactive visualization, so that \term{visual data exploration} (Data $\rightarrow$ Visualization $\rightarrow$ Knowledge, with user interaction and parameter refinement) and automated analysis reinforce each other. Classic example: an \term{outlier} that a regression line would average over is spotted visually, inspected with external context, and removed by the analyst.
+
+\begin{exambox}[How this is asked]
+Typical exam tasks for this section: \emph{(1)} state and explain the Card definition word by word; \emph{(2)} name and order the three high-level goals and link them to interactivity; \emph{(3)} draw / label the InfoVis reference model and name the three transforms; \emph{(4)} give Munzner's three nested questions and explain why they are nested; \emph{(5)} argue when visualization beats pure automation, often via Anscombe's Quartet. Expect ``define X'' and ``draw the pipeline'' phrasing.
+\end{exambox}
+
+\subsection{Resource Limitations}
+
+A good design respects three limited resources (Munzner). Trade-offs between them drive most design decisions.
+
+\begin{center}
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Resource} & \textbf{Limit / consequence} \\
+\midrule
+\term{Computer}  & computation time and memory; large data $\rightarrow$ slow or infeasible idioms \\
+\term{Human}     & attention, working memory, perceptual/cognitive capacity \\
+\term{Display}   & finite pixels (screen real estate); the information-density vs clutter trade-off \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Visualization Disciplines and the Design Triangle}
+
+\begin{itemize}
+  \item \term{Information Visualization (InfoVis)} -- spatial layout is \emph{chosen} by the designer (abstract data).
+  \item \term{Scientific Visualization (SciVis)} -- spatial position is \emph{given} with the data (continuous fields, e.g.\ medical scans).
+  \item \term{Visual Analytics / Visual Data Science} -- visualization $+$ automated analysis in a human-in-the-loop.
+\end{itemize}
+
+The \term{design triangle} [Miksch \& Aigner] ties it together: good interactive (visual analytics) methods sit between \term{data}, \term{users} and \term{tasks}, and must be \term{expressive} (w.r.t.\ data), \term{effective} (w.r.t.\ users/perception) and \term{appropriate} (w.r.t.\ tasks).
+
+\begin{pitfall}[Minimalistic design -- chartjunk]
+Tufte: ``interior decoration of graphics generates a lot of ink that does not tell the viewer anything new \dots\ it is often \term{chartjunk}.'' Maximise the \term{data-ink ratio} $=\dfrac{\text{data-ink}}{\text{total ink}}$. (Caveat from Bateman et al.\ CHI~2010: embellished ``infographic'' charts had comparable interpretation accuracy and \emph{better long-term recall} -- so chartjunk is not always strictly worse, but for analysis tasks favour minimal designs.)
+\end{pitfall}

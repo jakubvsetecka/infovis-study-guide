@@ -1,0 +1,247 @@
+\section{Practice Questions with Model Answers}
+\label{sec:practice}
+
+Worked practice questions spanning all nine question types. Cover the question,
+attempt your own answer, then check the model answer.
+
+% =====================================================================
+\begin{qbox}[Practice Q1 -- Literacy: confusion matrix (T/F)]
+A 4-class action-recognition confusion matrix (rows = true class, columns =
+predicted) has rows boxing, handwaving, jogging, running. Row sums are 100.
+Diagonals: boxing 98, handwaving 95, jogging 60, running 80. Cell
+(boxing,\,handwaving) $=0$; cell (jogging,\,running) $=30$.
+Mark each True/False:
+(1)~Boxing is never confused with handwaving.
+(2)~Jogging is the hardest class to classify.
+(3)~Jogging is most often confused with running.
+(4)~Running is classified perfectly.
+
+\medskip\noindent\textbf{Model answer.}
+(1)~\term{True} -- cell is 0.
+(2)~\term{True} -- smallest diagonal (60/100) = lowest recall.
+(3)~\term{True} -- its largest off-diagonal cell (30) is the running column.
+(4)~\term{False} -- diagonal 80, so 20\% misclassified. Always trace the exact
+cell; remember rows are the true classes.
+\end{qbox}
+
+% =====================================================================
+\begin{qbox}[Practice Q2 -- Algorithms: counterfactual (T/F)]
+A loan model rejects an applicant. Mark which statements about \emph{counterfactual
+explanations} are correct:
+(1)~A good counterfactual changes as few features as possible.
+(2)~There is exactly one counterfactual per instance.
+(3)~Counterfactuals are model-agnostic and need no access to model internals.
+(4)~The counterfactual should be plausible / actionable (e.g.\ not ``reduce age
+by 10 years'').
+
+\medskip\noindent\textbf{Model answer.}
+Correct: \term{(1), (3), (4)}.
+(2) is \term{False} -- many counterfactuals can exist (Rashomon effect); good
+methods report close, sparse, plausible ones. (3) holds because counterfactuals
+only query input$\to$output behaviour.
+\end{qbox}
+
+% =====================================================================
+\begin{qbox}[Practice Q3 -- Strategy: 10M traffic-accident records]
+A table has 10 million European traffic-accident records: (ID, longitude,
+latitude, year). Design an interactive web visualization to explore the
+distribution \emph{spatially and temporally}. How would you preprocess?
+
+\medskip\noindent\textbf{Model answer (5-step template).}
+\begin{enumerate}[leftmargin=1.4em]
+  \item \term{Data type \& task.} Tall (10M rows) spatio-temporal point data;
+        task = explore spatial and temporal distribution and their interaction.
+  \item \term{Preprocessing / scalability.} The challenge is twofold:
+        \emph{perceptual scalability} (10M points overplot any map) and
+        \emph{interactive scalability} (raw queries are too slow). Solution:
+        \term{spatial binning} (hexbin grid or aggregate to NUTS regions) and
+        \term{temporal binning} (by year), with counts pre-aggregated into a
+        \term{data cube} over (space-bin $\times$ year) for $O(1)$ slicing.
+        Both spatial \emph{and} temporal binning are required.
+  \item \term{Visual encoding.} Two views. Spatial: \term{choropleth} (regions)
+        or \term{hexbin map}, marks = area cells, channel = colour by accident
+        count using a \term{sequential} colour map. Temporal: \term{line chart}
+        (or histogram), marks = line/bars, channel = position (x = year,
+        y = count).
+  \item \term{Interaction.} \term{Linked (coordinated) views}: \term{brush}
+        a year range on the temporal chart to update the map, and \term{brush}
+        regions on the map to filter the temporal chart (cross-filtering);
+        plus zoom/pan and \term{details-on-demand} on hover.
+  \item \term{Justify vs.\ alternatives.} Binned map beats raw scatter (no
+        overplotting); data cube beats live aggregation (low latency);
+        sequential beats rainbow (perceptually ordered). KDE on raw 10M points
+        would be too slow / ineffective.
+\end{enumerate}
+\textit{Deductions to avoid: not naming the scalability challenge; no linked
+views; only spatial or only temporal binning; missing marks/channels; rainbow
+colour map; no mention of aggregation/data cube.}
+\end{qbox}
+
+% =====================================================================
+\begin{qbox}[Practice Q4 -- Validation: user study for scatterplot class encodings]
+Design a user study to evaluate the effectiveness of visual encodings of
+classes/sets in \emph{static} scatterplots.
+
+\medskip\noindent\textbf{Model answer.}
+\term{Hypothesis (H1):} colour-coded classes yield faster and more accurate
+class-separation judgments than shape-coded classes; \term{H2:} effectiveness
+degrades as the number of classes grows.
+\term{IV:} class encoding (colour / shape / colour+shape) and \#classes
+(3 / 6 / 9).
+\term{DV:} task completion time, accuracy/error rate, confidence, preference.
+\term{Controlled:} number of points, degree of overlap, point size, display,
+task wording, training.
+\term{Confounds:} colour-vision deficiency (screen participants), learning/order
+effects (counterbalance with a Latin square), fatigue.
+\term{Design:} within-subjects, e.g.\ 24 participants; tasks = ``which class is
+denser here?'' / ``find the outlier of class~X''; analyze with repeated-measures
+ANOVA. Report effect sizes.
+\end{qbox}
+
+% =====================================================================
+\begin{qbox}[Practice Q5 -- Critique: rainbow choropleth]
+A regional-unemployment-rate map uses the rainbow (jet) colour scale. Critique
+it and suggest a fix.
+
+\medskip\noindent\textbf{Model answer.}
+Problems: (i)~\term{rainbow is not perceptually ordered} -- viewers cannot rank
+hues, so high vs.\ low is ambiguous; (ii)~\term{not perceptually uniform} --
+equal data steps produce unequal perceived steps (false boundaries at
+yellow/cyan); (iii)~\term{not colour-blind safe}; (iv)~mixes hue and lightness,
+causing \term{channel interference}; (v)~rate (a magnitude) should use an
+ordered channel. Fix: a \term{single-hue (or ColorBrewer) sequential} map
+ordered by lightness; consider a \term{diverging} map if comparing against a
+national-average reference. Also watch simultaneous contrast between adjacent
+regions and the hidden choropleth bias toward large-area regions
+(consider rate per capita / a cartogram).
+\end{qbox}
+
+% =====================================================================
+\begin{qbox}[Practice Q6 -- Alternatives: parallel coordinates vs.\ SPLOM]
+The same 8-dimensional dataset is shown as parallel coordinates (PCC) and as a
+scatterplot matrix (SPLOM). Compare them.
+
+\medskip\noindent\textbf{Model answer.}
+\begin{itemize}[leftmargin=1.4em]
+  \item \term{Dimension scalability:} PCC = one axis per dimension (handles many
+        dims in one view); SPLOM = $O(d^2)$ panels (64 here), shrinking fast.
+  \item \term{Task fit:} SPLOM shows \emph{all pairwise} correlations directly;
+        PCC shows \emph{multivariate profiles, clusters, outliers} and
+        correlation only between \emph{adjacent} axes.
+  \item \term{Clutter:} PCC suffers heavy line overplotting on tall data;
+        SPLOM suffers point overplotting per panel.
+  \item \term{Ordering:} PCC depends strongly on \term{axis order}
+        (non-adjacent relations hidden); SPLOM is order-insensitive.
+  \item \term{Interaction:} PCC benefits from brushing + axis reordering; SPLOM
+        from linked brushing across panels.
+\end{itemize}
+Recommendation: SPLOM for pairwise-correlation tasks at moderate $d$; PCC for
+profile/cluster/outlier exploration at higher $d$ (with reorderable axes).
+\end{qbox}
+
+% =====================================================================
+\begin{qbox}[Practice Q7 -- Transfer/sketch: array $\to$ histogram + boxplot]
+Given the array $\{4, 5, 5, 6, 6, 6, 7, 8, 20\}$, sketch a histogram and a
+boxplot.
+
+\medskip\noindent\textbf{Model answer.}
+Sorted $n=9$: median $=6$ (5th value); lower half $\{4,5,5,6\}\Rightarrow$
+Q1$=5$; upper half $\{7,8,20\}\Rightarrow$ Q3$=8$; IQR$=3$; upper fence
+$=8+1.5\cdot3=12.5\Rightarrow 20$ is an \term{outlier}; whisker max (non-outlier)
+$=8$.
+\sketchnote{Boxplot: box from 5 to 8, median line at 6, lower whisker to 4,
+upper whisker to 8, a separate dot at 20 marked as outlier. Histogram (bins of
+width 2): tall bar around 5--6, smaller bars at 4 and 7--8, an isolated low bar
+near 20 -- right-skewed.}
+\end{qbox}
+
+% =====================================================================
+\begin{qbox}[Practice Q8 -- Mapping: scatterplot point $\to$ PCC polyline]
+A scatterplot of (weight, mpg) highlights one outlier car: high weight, low mpg.
+Mark the same car in a parallel-coordinates plot whose axes are, left to right,
+mpg, weight, horsepower.
+
+\medskip\noindent\textbf{Model answer.}
+Recover its values: low on mpg, high on weight (horsepower unknown from the
+scatter, but heavy cars are typically high). The car's \term{polyline} is the
+one that is \term{low on the mpg axis and high on the weight axis} (and, for a
+heavy car, high on horsepower). Trace the single line crossing those positions
+and highlight it.
+\sketchnote{Three vertical axes; one bold polyline starting low on mpg, rising
+to the top of the weight axis, staying high on horsepower; other lines faded.}
+\end{qbox}
+
+% =====================================================================
+\begin{qbox}[Practice Q9 -- MCQ: t-SNE properties]
+Which statements about t-SNE are correct?
+(a)~It is a linear projection.
+(b)~Perplexity balances attention to local vs.\ global structure.
+(c)~Distances between well-separated clusters are quantitatively meaningful.
+(d)~Different random seeds can give different layouts.
+
+\medskip\noindent\textbf{Model answer.} Correct: \term{(b), (d)}.
+(a) is false (nonlinear); (c) is false (between-cluster distances and cluster
+sizes are \emph{not} reliable). t-SNE is stochastic, so set a seed for
+reproducibility.
+\end{qbox}
+
+% =====================================================================
+\begin{qbox}[Practice Q10 -- MCQ: PCA vs.\ UMAP]
+Pick the correct pairings.
+(a)~PCA axes are interpretable directions of maximum variance.
+(b)~UMAP is deterministic.
+(c)~UMAP's \texttt{n\_neighbors} trades local detail for global structure.
+(d)~PCA can capture nonlinear manifolds.
+
+\medskip\noindent\textbf{Model answer.} Correct: \term{(a), (c)}.
+(b) false -- UMAP is stochastic. (d) false -- PCA is linear; use t-SNE/UMAP/MDS
+or kernel PCA for nonlinear structure.
+\end{qbox}
+
+% =====================================================================
+\begin{qbox}[Practice Q11 -- MCQ: force-directed layout]
+Which hold for force-directed graph layout?
+(a)~It is deterministic regardless of initialization.
+(b)~It models edges as springs and nodes as mutually repelling charges.
+(c)~Naive computation is $O(n^2)$ per iteration; Barnes--Hut approximates it.
+(d)~It guarantees the global minimum-energy layout.
+
+\medskip\noindent\textbf{Model answer.} Correct: \term{(b), (c)}.
+(a) false -- the result depends on the random initial placement. (d) false --
+it can settle in a local minimum.
+\end{qbox}
+
+% =====================================================================
+\begin{qbox}[Practice Q12 -- List: overplotting fixes with no preprocessing]
+List simple solutions to overplotting that require \emph{no} data preprocessing.
+
+\medskip\noindent\textbf{Model answer.}
+\term{Transparency (alpha)}, \term{smaller marks}, \term{open glyphs},
+\term{jitter}, \term{on-the-fly subsampling}. (Hexbin, KDE, aggregation, and
+DR are effective but \emph{do} require preprocessing, so they do not count.)
+\end{qbox}
+
+% =====================================================================
+\begin{qbox}[Practice Q13 -- Algorithms: sketch 1D PCA]
+Sketch the 1D PCA projection of an elongated 2D cloud tilted at about
+$30^{\circ}$.
+
+\medskip\noindent\textbf{Model answer.}
+\sketchnote{Draw the tilted elliptical cloud. Draw PC1 as an arrow along its
+long axis (max variance). Project each point perpendicularly onto PC1; the feet
+of those perpendiculars are the 1D coordinates. PC2 (orthogonal, short axis) is
+discarded.}
+PCA is linear and deterministic; PC1 captures the most variance.
+\end{qbox}
+
+% =====================================================================
+\begin{qbox}[Practice Q14 -- List: model-agnostic interpretability methods]
+Name model-agnostic methods to interpret an ML model.
+
+\medskip\noindent\textbf{Model answer.}
+\term{PDP} (average marginal effect), \term{ICE} (per-instance curves),
+\term{permutation feature importance}, \term{LIME} (local surrogate),
+\term{SHAP} (Shapley attribution), \term{counterfactual explanations},
+\term{ALE plots}, and global \term{surrogate models}. All treat the model as a
+black box, querying only inputs$\to$outputs.
+\end{qbox}

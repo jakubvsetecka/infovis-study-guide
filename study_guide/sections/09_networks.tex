@@ -1,0 +1,320 @@
+\section{Network and Tree Visualization}
+
+This is a high-priority exam topic: graph-drawing algorithms appear under
+``Visualization Algorithms'', and node-link\,$\leftrightarrow$\,matrix and
+treemap\,$\leftrightarrow$\,node-link tree appear under ``Mapping data items'' /
+``Alternatives''. The aesthetic-criteria list and the force-directed / layered /
+morphing / foresighted layouts are recurring question targets.
+
+\subsection{Graph basics}
+
+\begin{keybox}[Definitions]
+A \term{graph} $G=(V,E)$ is an abstract structure for modelling
+\emph{relational} information: $V$ is a set of \term{nodes} (objects), $E$ a set
+of \term{edges} (relations connecting nodes).
+\begin{itemize}
+  \item \term{Directed} vs.\ \term{undirected}: edges may have a direction. In a
+  directed graph the \term{in-degree} of a node is the number of incoming edges,
+  the \term{out-degree} the number of outgoing edges. The \term{degree} is the
+  number of incident edges.
+  \item \term{Weighted}: edges (or nodes) can carry \term{values} (edge weights),
+  possibly of different types.
+  \item Graphs may contain \term{cycles}; special families: planar, bipartite,
+  hierarchical, clustered graphs, and \term{hypergraphs} (an edge connects more
+  than two nodes).
+  \item \term{Tree} = special case of a graph: \emph{no cycles}, one special
+  \term{root} node, every non-root node has exactly one parent. Variants: free,
+  binary, rooted, ordered trees.
+  \item \term{Network} = graph + attributes on nodes/edges. A
+  \term{multivariate network} attaches many attributes per element (primary data:
+  directly measured; secondary data: derived/computed).
+\end{itemize}
+\end{keybox}
+
+\paragraph{Data structures and the two visual representations.}
+Internally a graph is stored as an \term{adjacency matrix} ($|V|\times|V|$, entry
+$=1$ / weight if edge present) or an \term{adjacency list}. For \emph{display}
+there are two fundamental mappings of the same data:
+
+\begin{center}
+\begin{minipage}{0.42\linewidth}\centering
+\begin{tikzpicture}[every node/.style={font=\small}]
+  \node[circle,draw,fill=tuwblue!15] (a) at (0,1.5) {1};
+  \node[circle,draw,fill=tuwblue!15] (b) at (-0.9,0) {2};
+  \node[circle,draw,fill=tuwblue!15] (c) at (0.9,0) {3};
+  \draw (a)--(b); \draw (b)--(c);
+\end{tikzpicture}\\[2pt]
+{\small Node--link diagram}
+\end{minipage}\hfill
+\begin{minipage}{0.42\linewidth}\centering
+\begin{tabular}{c|ccc}
+  & 1 & 2 & 3 \\ \hline
+1 & 0 & 1 & 0 \\
+2 & 1 & 0 & 1 \\
+3 & 0 & 1 & 0 \\
+\end{tabular}\\[4pt]
+{\small Adjacency matrix}
+\end{minipage}
+\end{center}
+
+\subsection{Node-link vs.\ adjacency matrix (mapping \& alternatives)}
+
+The two are the classic \term{alternative representations} of the \emph{same}
+relational data, with complementary strengths.
+
+\begin{center}
+\begin{tabular}{p{0.30\linewidth} p{0.31\linewidth} p{0.31\linewidth}}
+\toprule
+ & \term{Node--link} & \term{Adjacency matrix} \\
+\midrule
+Edge $\to$ visual mark & line/curve between two node marks & filled cell
+$(i,j)$ (colour/size $\to$ weight) \\
+Path following / topology & \textbf{good} -- follow lines, see connectivity,
+clusters by spatial proximity & \textbf{hard} -- must hop row$\to$column
+mentally; multi-hop paths very tedious \\
+Density / scalability & degrades on \textbf{dense} graphs (hairball, many edge
+crossings, occlusion) & \textbf{good} on dense graphs: \emph{no edge crossings},
+no overlap, every edge visible \\
+Clusters / cliques & visible if layout separates them & a clique = solid block
+on the diagonal; easy to spot with good row/column ordering \\
+Space & compact for \emph{sparse} graphs & always $|V|^2$ cells \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{keybox}[One-line rule of thumb]
+\emph{Sparse} graph + need to \emph{follow paths / read topology} $\Rightarrow$
+\term{node--link}. \emph{Dense} graph + want to spot \emph{clusters/cliques} and
+avoid crossings $\Rightarrow$ \term{matrix}. Hybrid \term{NodeTrix} (Henry et
+al.\ 2007) draws dense communities as small matrices and the sparse links
+between them as node--link edges.
+\end{keybox}
+
+\subsection{Aesthetic criteria for graph drawing (the ``List'' topic)}
+
+A good layout should be \emph{easy to read, understand and remember}. Layout
+algorithms try to satisfy a set of \term{aesthetic criteria}; these are often
+\emph{contradictory} and their optimisation is mostly \emph{NP-hard}, so most
+graph-drawing algorithms are \term{heuristics}.
+
+\begin{keybox}[Aesthetic criteria -- memorise the list]
+\begin{itemize}[leftmargin=1.4em]
+  \item Minimise \term{edge crossings} $\downarrow$
+  \item Minimise \term{bends} of edges $\downarrow$ (max / uniform / total bends)
+  \item Maximise \term{symmetry} $\uparrow$
+  \item \term{Edge length} $\downarrow$: short, and \emph{uniform} edge lengths
+  \item Even \term{node distribution}; \term{avoid node overlap}
+  \item Minimise drawing \term{area} $\downarrow$
+  \item Maximise \term{angular resolution} (``resolution'' $\uparrow$): angles
+  between edges at a node should be large
+  \item Show \term{clusters} / community structure
+\end{itemize}
+\end{keybox}
+
+\begin{pitfall}[Criteria conflict]
+The criteria \emph{trade off}. Classic exam example: a $K_4$ drawn as a
+\emph{triangle with a centre node} has \emph{zero crossings} but no symmetry;
+drawn as a \emph{square with both diagonals} it is fully \emph{symmetric} but has
+one crossing. You cannot maximise everything at once -- say so explicitly.
+\end{pitfall}
+
+\subsection{Layout algorithm: Force-directed / spring embedder}
+
+\begin{algobox}[Force-directed (spring embedder, Eades 1984)]
+\textbf{Idea.} Model the graph as a \emph{physical system}: edges act as
+\term{springs} (attractive force pulling adjacent nodes together, $\sim$ spring
+toward a rest length), and \emph{all} pairs of nodes exert a \term{repulsive}
+force (like charges / ``gravitation between nodes''). Iterate: compute net force
+on each node, move it a little, repeat until the system reaches a
+\term{stable, low-energy configuration} (energy minimisation).\\[2pt]
+\textbf{Properties.} Produces \emph{symmetric, organic} layouts with
+\emph{uniform edge lengths} -- exactly the two criteria Eades targeted. Works
+well on small/medium sparse graphs; reveals clusters. Generalises to 3D.\\[2pt]
+\textbf{Hyperparameters.} Spring constant / ideal (rest) edge length, repulsion
+strength, step size or \term{temperature} (cooling schedule, as in
+Fruchterman--Reingold), number of \term{iterations}, initial (often random)
+placement.\\[2pt]
+\textbf{Complexity.} Naive: $O(n^2)$ repulsion per iteration (all node pairs)
+$\times$ iterations. \term{Barnes--Hut} approximation groups distant nodes into a
+quad/oct-tree and treats each group as one pseudo-node $\Rightarrow$
+$O(n\log n)$ per iteration.\\[2pt]
+\textbf{Pitfalls.} \emph{Non-deterministic} (depends on random start);
+gets stuck in \emph{local minima}; classic spring embedder has \emph{high
+runtime} and can \emph{break down on very large graphs}. Improvements:
+Kamada--Kawai 1989 (local minimal energies), Fruchterman--Reingold 1991, Davidson
+\& Harel 1996 (simulated annealing).
+\end{algobox}
+
+\subsection{Layout algorithm: Layered / Sugiyama (hierarchies, flow)}
+
+\begin{algobox}[Layered graph drawing (Sugiyama--Tagawa--Toda 1981)]
+\textbf{Idea.} For \emph{directed} graphs / DAGs, hierarchies, and flow: arrange
+nodes in horizontal \emph{layers} (rows) so all edges point downward. Classic
+pipeline:
+\begin{enumerate}[leftmargin=1.5em]
+  \item \term{Cycle removal} -- extract an acyclic subgraph that contains all
+  nodes (temporarily reverse a few edges).
+  \item \term{Layer assignment} -- give each node an integer layer number; nodes
+  arranged top-down in rows. (Long edges get \emph{dummy nodes} on intermediate
+  layers.)
+  \item \term{Crossing minimisation} -- choose the \emph{order} within each row to
+  reduce edge crossings, typically layer-by-layer (e.g.\ \term{barycenter}
+  heuristic: put a node at the average position of its neighbours in the adjacent
+  layer).
+  \item \term{Coordinate assignment} -- assign final $x$/$y$ to straighten edges
+  and balance spacing.
+\end{enumerate}
+\textbf{Properties.} Emphasises \emph{direction / hierarchy / flow}; good for
+DAGs, dependency and process diagrams. Variants: \emph{parallel layers}
+(top-down rows) and \emph{radial layers} (concentric rings). \\[2pt]
+\textbf{Hyperparameters.} Layer-assignment policy (longest-path, network-simplex),
+crossing-minimisation heuristic and \#sweeps, node/layer spacing. \\[2pt]
+\textbf{Complexity.} Even 2-layer crossing minimisation is \emph{NP-hard}
+$\Rightarrow$ heuristics (barycenter, median). \\[2pt]
+\textbf{Pitfalls.} Cycles must be handled first; dummy nodes inflate the graph;
+poor for undirected / non-hierarchical graphs.
+\end{algobox}
+
+\subsection{Dynamic graphs and the mental map}
+
+Networks increasingly \emph{change over time} (biochemical pathways gain new
+reactions, social contacts appear/disappear). Visualisations of such dynamic
+graphs must \term{preserve the ``Mental Map''} (Misue, Eades, Lai, Sugiyama
+1995): the user should \emph{recognise old structures again} across time steps,
+so nodes should not jump around between frames.
+
+\begin{algobox}[Graph morphing]
+\textbf{Idea.} Visualise the transition between two layouts with \emph{smooth
+animation}: if a node changes position, compute an \emph{interpolated animation
+path} between old and new position. Can be applied on top of \emph{any} 2D/3D
+layout algorithm (e.g.\ GraphAEL uses force-based layouts).\\
+\textbf{+} Looks good, eases tracking. \textbf{--} Nodes \emph{still change
+position}; newly added or deleted nodes may not be correctly identified. This is
+an \term{online} approach: lay out each step, then animate between consecutive
+steps.
+\end{algobox}
+
+\begin{algobox}[Foresighted layout (Diehl, G\"org, Kerren 2001)]
+\textbf{Idea.} If the \emph{whole sequence} of graphs is known (or can be
+pre-computed) -- an \term{offline} setting -- build a \term{supergraph} (union of
+all time steps) and compute \emph{one} layout from it. Position nodes at the
+start so that they \emph{do not change their positions later} across the whole
+sequence.\\
+\textbf{+} \emph{Best mental-map preservation}; \emph{independent} of the chosen
+layout algorithm. \textbf{--} The sequence is \emph{often unknown} in advance;
+partly poor aesthetics (e.g.\ gaps at the beginning where future-only nodes are
+reserved).
+\end{algobox}
+
+\begin{keybox}[Online vs.\ offline; animation vs.\ juxtaposition]
+\term{Online}: layout per step as data arrives (morphing animates between them).
+\term{Offline}: full sequence known $\Rightarrow$ foresighted layout for stable
+positions. Time can be shown by \term{animation} (one view, moving) or by
+\term{small multiples / timeline} (many static views side by side, e.g.\
+\emph{matrix cubes}: stack adjacency matrices into a space-time cube).
+\end{keybox}
+
+\subsection{Tree layouts}
+
+\begin{keybox}[Tree drawing families]
+\begin{itemize}
+  \item \term{Node--link trees}: \term{rectilinear} (classic top-down/left-right
+  hierarchy with root on top) or \term{radial} (root in centre, depth $\to$
+  radius).
+  \item \term{Indented / outline} layout: nested indentation (like a file
+  explorer); depth $\to$ horizontal indent.
+  \item \term{Space-filling treemap}: \emph{recursive subdivision} of a rectangle.
+  Hierarchy is encoded by \term{containment} (child rectangles nested inside the
+  parent); a \emph{leaf}'s value is mapped to its \term{area}. No wasted
+  whitespace. Algorithms: \term{slice-and-dice} (alternate cut direction per
+  level -- simple but produces thin slivers) vs.\ \term{squarified} (keep cells
+  close to square -- better aspect ratio, easier area comparison).
+\end{itemize}
+\end{keybox}
+
+\begin{exambox}[Mapping data items: treemap $\leftrightarrow$ node-link tree]
+\term{Treemap} and \term{rectilinear node-link tree} are two encodings of the
+\emph{same hierarchy}. Node--link shows \emph{structure/depth} explicitly but
+wastes space and scales poorly; treemap is \emph{space-filling} and great for
+comparing \emph{leaf values by area} but makes the \emph{topology/depth} hard to
+read. Containment (treemap) vs.\ connection (node--link) is the underlying
+encoding difference.
+\end{exambox}
+
+\subsection{Biological networks (Kerren)}
+
+Modern \term{systems biology} treats biological processes as integrated systems
+of many interacting components; high-throughput methods (since the human genome
+project) produce huge data, and \term{networks are the key concept} to structure
+and combine it.
+
+\begin{keybox}[Types of biological networks (a hierarchy)]
+\begin{itemize}
+  \item \term{Molecular graphs} -- atoms/bonds of a single molecule.
+  \item \term{Metabolic networks / pathways} -- nodes are substances, edges are
+  reactions, each single reaction catalysed by an \term{enzyme}; a \term{pathway}
+  is a sequence of reactions converting one substance into another (databases:
+  \emph{KEGG}; tools: PathViewer, BioPath, VANTED).
+  \item \term{Protein--protein interaction (PPI) networks} -- nodes are proteins,
+  edges are interactions (e.g.\ \emph{signal transduction}); fundamental for many
+  functions and diseases (tool: \emph{Cytoscape}).
+  \item \term{Gene regulatory networks} -- regulatory relations between genes.
+\end{itemize}
+Why it matters: diseases interpreted in a network context (infection = a foreign
+network operating in ours; genetic defect = incorrect connectivity);
+applications in drug design and metabolic engineering.
+\end{keybox}
+
+\begin{keybox}[Challenges \& integrative bioinformatics]
+\textbf{Challenges:} \emph{scale} (huge networks, scalability/navigation);
+\emph{integrating multiple heterogeneous data types} onto network elements
+(multivariate primary/secondary attributes); respecting \emph{standard pathway-map
+conventions} (e.g.\ KEGG layouts biologists expect).\\
+\textbf{Integrative bioinformatics} combines network topology with the attached
+multivariate data. State-of-the-art strategies (cf.\ the multivariate-network
+slides):
+\begin{itemize}
+  \item \term{Integrated approaches} -- replace nodes by embedded diagrams
+  (e.g.\ bar charts in pathway nodes).
+  \item \term{Multiple coordinated views} -- network view linked with parallel
+  coordinates, heatmaps, etc.\ (brushing-and-linking; e.g.\ Caleydo).
+  \item \term{Semantic substrates} -- node position fixed by attributes in
+  non-overlapping regions; edge slider controls clutter.
+  \item \term{Attribute-driven topology} / hybrid (JauntyNets) -- user balances
+  whether \emph{topology} or \emph{attributes} drive the force layout.
+\end{itemize}
+\end{keybox}
+
+\subsection{Exam boxes}
+
+\begin{exambox}[MCQ: node-link vs.\ adjacency matrix]
+\emph{``For a large, very dense network where the analyst wants to find tightly
+connected communities, which representation is preferable, and why?''} \\
+Answer: the \term{adjacency matrix}. On dense graphs node--link becomes a
+hairball with many crossings/occlusion, whereas a matrix has \emph{no edge
+crossings}, shows \emph{every} edge, and -- with good row/column ordering --
+makes cliques appear as solid diagonal blocks. Trade-off: \emph{path following}
+across multiple hops is much harder in a matrix, so for sparse graphs / topology
+tracing, prefer \term{node--link}.
+\end{exambox}
+
+\begin{exambox}[MCQ: force-directed vs.\ layered]
+\emph{Which layout for an undirected social network where symmetry and uniform
+edge length matter?} $\Rightarrow$ \term{force-directed}. \emph{Which for a
+directed DAG / dependency or process flow?} $\Rightarrow$ \term{layered /
+Sugiyama}. Distractor traps: force-directed is \emph{non-deterministic} and prone
+to \emph{local minima} (true); Sugiyama's crossing minimisation is
+\emph{NP-hard} hence heuristic (true); force-directed is naively $O(n^2)$ per
+iteration, reducible to $O(n\log n)$ via \term{Barnes--Hut} (true).
+\end{exambox}
+
+\begin{exambox}[MCQ: morphing vs.\ foresighted layout]
+Both aim to \term{preserve the mental map} of a \emph{dynamic} graph.
+\term{Morphing} = \emph{online}, animate (interpolate) between per-step layouts;
+nodes still move, can be applied to any layout, but added/removed nodes are hard
+to follow. \term{Foresighted layout} = \emph{offline}, needs the full sequence,
+computes a \emph{supergraph} so node positions \emph{stay stable} across all time
+steps; best mental-map preservation but sequence often unknown and aesthetics can
+suffer (gaps). Common wrong answer: claiming foresighted works online -- it does
+\emph{not}; it requires the sequence in advance.
+\end{exambox}

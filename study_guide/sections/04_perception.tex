@@ -1,0 +1,288 @@
+\section{Perception and Color}
+
+Visualization works because it offloads cognition onto the human \term{visual
+system}, a high-bandwidth, partly pre-cognitive channel. Knowing how the eye
+and early vision behave tells us \emph{which} visual channels are fast,
+accurate and orderable, and which ones (notably hue) are not. This section
+grounds the design rules used elsewhere (expressiveness, effectiveness, channel
+ranking) in perception, and then covers color, the single most over-used and
+most-often-misused channel in the exam's ``Visualization Critique'' questions.
+
+\begin{keybox}[Why perception matters for vis]
+A good encoding lets the visual system answer the task \emph{pre-attentively}
+(in a glance, $\sim$200\,ms) instead of forcing slow serial reading.
+Bad encodings (rainbow color, 3D bars, hue for ordered data) fight the visual
+system and force slow, error-prone interpretation.
+\end{keybox}
+
+\subsection{The Human Visual System}
+
+\subsubsection{Eye, retina, rods and cones}
+Light from the scene is projected by the cornea/lens onto the \term{retina} at
+the back of each eye. The retina is covered with photoreceptors:
+\begin{itemize}
+  \item \term{Cones} -- color-sensitive (three types, tuned to long / medium /
+    short wavelengths), concentrated in the centre of the retina; responsible
+    for detailed, color daytime vision.
+  \item \term{Rods} -- highly light-sensitive but \emph{not} color-sensitive;
+    dominate peripheral and low-light vision.
+\end{itemize}
+
+\subsubsection{Fovea and acuity}
+The \term{fovea} is the small central region of the retina where image detail
+and color rendition are best (densest cone packing). Crucially, the fovea
+covers a viewing angle of only about \textbf{$2^\circ$} -- roughly a thumbnail
+held at arm's length. Moving outward through the \term{parafovea} to the
+\term{periphery}, \term{visual acuity} (the ability to resolve detail)
+\emph{falls off dramatically} [Spence, Sec.~4.1].
+
+\subsubsection{Fixations and saccades}
+Because only a tiny region is seen in detail, the eye constantly jumps around
+the scene. Each \term{fixation} (gaze held on one point) lasts about
+\textbf{200\,ms}; fixations are connected by very fast ($\sim$20\,ms)
+\term{saccades}. Viewing a whole image involves $\sim$100 fixations.
+\term{Overt attention} is paid to a few fixated points; \term{covert
+attention} to parafoveal/peripheral items helps decide where to look next.
+
+\subsubsection{Visual cortex (it's complicated)}
+Retinal signals pass through the LGN to the primary visual cortex \term{V1}
+(the main entry point; neurons highly selective for gradients, i.e.\ ``edge
+detection''), then V2/V4 with increasingly complex response, up to the inferior
+temporal cortex (object recognition, memory). Exam-relevant takeaway:
+\emph{luminance contrast drives edge detection}, which is why luminance is a
+good channel for fine spatial detail and hue is not.
+
+\sketchnote{Retina disk with a small bright dot labelled \emph{fovea}
+($2^\circ$), a ring \emph{parafovea}, and an outer ring \emph{periphery}; an
+arrow ``acuity'' pointing outward and shrinking. Beside it: a zig-zag gaze path
+(fixations $\approx$200\,ms, saccades $\approx$20\,ms).}
+
+\subsection{Preattentive Processing and Popout}
+
+A \term{limited} set of visual channels is detected \emph{rapidly and in
+parallel}, within $\sim$200--250\,ms, before focused attention engages.
+
+\begin{keybox}[Operational definition (exam-quotable)]
+If finding a target takes a \textbf{fixed amount of time regardless of the
+number of distractors}, the channel is processed \term{preattentively}.
+The target then ``pops out''.
+\end{keybox}
+
+A single red dot among blue dots pops out instantly whether there are 12 or 50
+distractors. Channels that support popout include color (hue), orientation
+(tilt), size, curvature, motion, and others (Healey's catalogue).
+
+\begin{pitfall}[Conjunction search -- the key limitation]
+Popout works only when the target differs in \emph{one} unique visual property.
+If the target shares each of its properties with some distractors and is
+defined only by a \term{combination} of features (e.g.\ ``the red \emph{circle}''
+among red squares and blue circles), there is no unique channel to search for.
+This is a \term{conjunction search}: \textbf{not possible pre-attentively}, so
+a slow \emph{serial} search is required and search time grows with item count.
+\end{pitfall}
+
+\textbf{Important nuance:} a conjunction of \emph{spatial position} with one
+other channel (color or shape) \emph{can} still be searched preattentively --
+e.g.\ in a scatterplot the conjunction of space~$\times$~color, or
+space~$\times$~shape, pops out. The hard case is conjunctions of two
+non-spatial channels.
+
+\begin{exambox}[How this is asked]
+``Why is it slow to find X in this chart?'' $\Rightarrow$ identify whether the
+target has a unique preattentive feature or requires conjunction search.
+Design fix: encode the target's category with a \emph{single} popout channel
+(e.g.\ make the outliers a distinct hue) so they pop out preattentively.
+\end{exambox}
+
+\subsection{Gestalt Laws of Grouping}
+
+\term{Gestalt laws} describe how we perceive \term{patterns / groupings} in
+visual displays, and translate directly into design principles for information
+displays.
+
+\begin{longtable}{@{}p{2.6cm}p{7.2cm}p{4.4cm}@{}}
+\toprule
+\textbf{Law} & \textbf{We group items that\ldots} & \textbf{Vis example} \\
+\midrule
+\endhead
+Proximity     & are close together in space            & clusters in a scatterplot read as groups \\
+Similarity    & look alike (same hue/shape/size)        & same-color points = same category \\
+Connectedness & are joined by lines                     & node--link edges, slope graphs \\
+Continuity    & lie along a smooth continuous contour   & a line is followed through crossings \\
+Closure       & form a closed/implied contour           & we ``complete'' a shape \\
+Symmetry      & are symmetric about an axis             & mirrored layouts read as one object \\
+Common fate   & move together                           & animated points moving together group \\
+Common region & lie inside a shared enclosure           & a shaded hull / bounding box \\
+\bottomrule
+\end{longtable}
+
+\begin{keybox}[Which is strongest?]
+\term{Connectedness} (and shared enclosure / common region) can be a
+\emph{more powerful} grouping cue than \term{proximity}: items joined by a
+line or surrounded by a hull are grouped even when other cues (color or
+distance) would group them differently. The slides state explicitly:
+\emph{``connectedness can be a more powerful grouping principle than
+proximity.''}
+\end{keybox}
+
+\sketchnote{Two scatter clusters. (a) proximity alone $\to$ two groups by
+distance. (b) draw a connecting line / shaded blob that links one point from
+the left cluster to the right cluster $\to$ it now reads as belonging to the
+enclosed group, overriding proximity.}
+
+\subsection{Weber's Law and the Just Noticeable Difference}
+
+\subsubsection{JND}
+The \term{Just Noticeable Difference (JND)} is the amount a stimulus must be
+changed to be detectable by human observers \emph{at least half of the time}.
+It is determined \emph{empirically}.
+
+\subsubsection{Weber's law}
+The JND is \emph{not} an absolute amount: it is proportional to the background
+stimulus magnitude. To perceive a difference between a background intensity
+$I$ and the background plus stimulation $\Delta I$, the difference must be
+proportional to the background:
+\[
+  k = \frac{\Delta I}{I} \quad\Longleftrightarrow\quad \Delta I = k\,I,
+  \qquad k = \text{const (Weber fraction)}.
+\]
+\textbf{Implication:} we judge \emph{relative}, not absolute, differences.
+Adding 5 dots to a field of 10 is obvious; adding 5 to a field of 100 is not,
+even though the absolute change is identical.
+
+\begin{keybox}[Consequences for design]
+\begin{itemize}
+  \item Integrating Weber's law over stimulus intensity gives \term{Fechner's
+    law}: perceived intensity is \emph{logarithmic},
+    $p = k\ln(I/I_0)$, where $I_0$ is the absolute threshold.
+  \item More generally, \term{Stevens' power law} models perceived sensation
+    as $p = k\,I^{\,a}$ ($a$ a measured exponent per channel). Length
+    $a\!\approx\!1$ (perceived $\approx$ veridical); area $a\!\approx\!0.7$ and
+    brightness $a\!\approx\!0.5$ are \emph{compressed} (under-estimated), while
+    saturation and electric shock are exaggerated. This is the perceptual basis
+    for why \emph{position/length beats area/color} in the channel ranking.
+  \item Practical rule: length differences are most accurately judged when bars
+    share a \textbf{common baseline and are adjacent}; offset or stacked bars
+    make comparison much harder.
+\end{itemize}
+\end{keybox}
+
+\subsection{Color}
+
+\subsubsection{Color is three channels}
+Colloquial ``color'' is best understood as \textbf{three separate channels}:
+\term{luminance} (light--dark), \term{hue} (red, green, blue, \ldots), and
+\term{saturation} (vividness). The major colormap design choice is which of
+these to use for what.
+
+\begin{keybox}[Ordered vs.\ unordered channels (Munzner)]
+\begin{itemize}
+  \item \term{Luminance}: a \emph{magnitude} (ordered) channel -- people
+    reliably order grays, always placing gray between black and white.
+  \item \term{Saturation}: ordered, but \emph{less easily} (only $\sim$3--4
+    discriminable steps for small marks).
+  \item \term{Hue}: an \emph{identity} (categorical, \textbf{unordered})
+    channel. Asked to order red/blue/green/yellow patches, people disagree.
+    \textbf{Hue cannot be ordered} -- learned conventions (rainbow, traffic
+    lights) are higher-level, not perceptual.
+\end{itemize}
+\end{keybox}
+
+\subsubsection{Opponent color theory}
+The retina's signals are immediately processed into \textbf{three opponent
+color channels}: red--green, blue--yellow, and a black--white channel encoding
+\term{luminance}. The luminance channel carries \emph{high-resolution} edge
+information; the two chromatic channels are \emph{lower resolution}. This is
+why luminance (not hue) should carry fine spatial detail.
+
+Opponent theory also explains \term{color blindness} (more accurately
+\emph{color vision deficiency}), affecting $\sim$8--10\% of men in its common
+form: the \term{red--green} channel is reduced/absent while blue--yellow still
+works $\Rightarrow$ \textbf{avoid red--green encodings}.
+
+\subsubsection{Colormap types and when to use each}
+The colormap taxonomy mirrors the data-type taxonomy.
+
+\begin{longtable}{@{}p{2.9cm}p{2.4cm}p{8.7cm}@{}}
+\toprule
+\textbf{Colormap} & \textbf{Data} & \textbf{Use / rule} \\
+\midrule
+\endhead
+\term{Categorical} (qualitative) & categorical &
+  Distinct hues for unordered groups; \emph{segmented}. Hue = identity channel.
+  Limited to \textbf{$\sim$6--12 discriminable bins} (12 max). Requires a
+  \textbf{legend}. \\
+\term{Sequential} & ordered (ord./quant.) &
+  Progression from min to max along an ordered channel (luminance, possibly
+  with one hue), e.g.\ light$\to$dark pink. \\
+\term{Diverging} & ordered with meaningful midpoint &
+  Two sequential ramps meeting at a \textbf{neutral midpoint} (zero / mean),
+  e.g.\ blue--white--red ``warming stripes''. Use when a zero/reference point
+  is meaningful (gain vs.\ loss). \\
+\term{Bivariate} & two attributes &
+  Encodes two attributes at once. Easy to read when the 2nd attribute is
+  \emph{binary}; quickly unreadable when both have several levels. \\
+\bottomrule
+\end{longtable}
+
+Colormaps can be \term{continuous} (good for quantitative / spatial fields) or
+\term{segmented}/binned (good for categorical; emphasizes discrete bins).
+
+\begin{keybox}[Rules for categorical color]
+\begin{itemize}
+  \item Use \textbf{$\le$ 6--12} colors; more than 12 hues are very hard to
+    discriminate (Ware). Count the background and default object colors
+    (black/white/gray) in your budget.
+  \item Prefer \textbf{easily nameable} colors (only $\sim$8 are consistently
+    named): start with the opponent-axis colors red/green/blue/yellow, then
+    orange/brown/pink/purple/cyan.
+  \item Match saturation to mark size: \emph{small} marks (points, lines)
+    $\to$ highly saturated; \emph{large} areas $\to$ low saturation/pastel.
+  \item If categories exceed the color budget, aggregate into groups or an
+    ``other'' bin, or switch to an additional channel (shape, size).
+  \item Categorical color always needs a \textbf{legend}.
+\end{itemize}
+\end{keybox}
+
+\subsubsection{The rainbow / jet colormap problem}
+Using the rainbow (``jet'') colormap for \emph{ordered} data is a classic
+mistake. Munzner lists three serious perceptual problems:
+
+\begin{pitfall}[Three problems with the rainbow colormap]
+\begin{enumerate}
+  \item \textbf{Hue is used to indicate order}, but hue is an identity channel
+    with \emph{no implicit perceptual ordering} (expressiveness mismatch).
+  \item \textbf{Not perceptually uniform}: equal steps in data are \emph{not}
+    perceived as equal -- some ranges show several distinct colors, others
+    look uniform (a wide band that just ``looks yellow'').
+  \item \textbf{Fine detail is lost}: hue cannot convey fine-grained detail;
+    luminance would, because luminance contrast drives edge detection.
+\end{enumerate}
+Add a fourth, practical one: rainbow is \textbf{not color-blind safe}
+(red/green confusions).
+\end{pitfall}
+
+\subsubsection{Perceptually uniform maps (viridis)}
+The fixes: (i) design \term{monotonically increasing luminance} colormaps so
+that order is carried by the magnitude (luminance) channel while hue only marks
+semantic regions; (ii) use a \textbf{perceptually uniform} colormap such as
+\term{viridis} -- built in a perceptually uniform space (cf.\ CIE
+$L^*a^*b^*$) so equal data steps look equally different, with monotonic
+luminance, and it is color-blind friendly. (A perceptually linear rainbow is
+possible but loses brightness/dynamic range, so it is rarely used.)
+
+\begin{exambox}[Color critique checklist]
+For any color encoding, ask:
+(1) Is the data \emph{ordered}? If yes, do \emph{not} use hue alone -- use
+luminance / a sequential or diverging map.
+(2) Is there a meaningful midpoint? $\to$ diverging.
+(3) Categorical with $\le$12 groups? $\to$ distinct nameable hues + legend.
+(4) Is it color-blind safe (no red--green dependence; redundant encoding)?
+(5) Is it perceptually uniform (avoid rainbow/jet; prefer viridis)?
+\end{exambox}
+
+\begin{pitfall}[color $\neq$ color]
+``Color'' is not one thing. Saying ``encode this with color'' is too vague:
+state \emph{which} channel (luminance/hue/saturation) and check it matches the
+attribute type (ordered $\to$ luminance; categorical $\to$ hue).
+\end{pitfall}

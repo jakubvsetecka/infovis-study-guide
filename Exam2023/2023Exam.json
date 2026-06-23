@@ -1,0 +1,1392 @@
+{
+  "_format_version": "1.1",
+  "_description": "Standardized JSON format for MCQ quizzes",
+  "metadata": {
+    "title": "2023 Exam MCQ",
+    "version": "1.0",
+    "date": "2024-01-01",
+    "source": "2023Exam.md"
+  },
+  "questions": [
+    {
+      "id": 1,
+      "text": "Mark the correct statements about geospatial data",
+      "type": "multiple",
+      "images": [],
+      "options": [
+        {
+          "id": "a",
+          "text": "Surface phenomena can be specified by a series of longitude, latitude and height.",
+          "correct": true
+        },
+        {
+          "id": "b",
+          "text": "Point phenomena are termed one-dimensional",
+          "correct": false
+        },
+        {
+          "id": "c",
+          "text": "Surface phenomena are termed three-dimensional.",
+          "correct": false
+        },
+        {
+          "id": "d",
+          "text": "Examples of area phenomena are cities, and streets.",
+          "correct": false
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "text": "Which color scales are appropriate to communicate which information?",
+      "type": "multiple",
+      "images": [
+        {
+          "label": "Q2",
+          "path": "Resources/Q2_1.png"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "Map C is best suited to communicate the bettering or worsening of average income per county since last year",
+          "correct": true
+        },
+        {
+          "id": "b",
+          "text": "Map B is best suited to communicate population per square mile per state",
+          "correct": false
+        },
+        {
+          "id": "c",
+          "text": "Map A is best suited to communicate the bettering or worsening of average income per state since last year",
+          "correct": false
+        },
+        {
+          "id": "d",
+          "text": "Map A is best suited to communicate population per square mile per state",
+          "correct": true
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "text": "Map projections are concerned with mapping the positions on the globe (sphere) to positions on the screen (flat surface).",
+      "type": "multiple",
+      "images": [],
+      "options": [
+        {
+          "id": "a",
+          "text": "Azimuthal projections do not preserve the direction from a central point.",
+          "correct": false
+        },
+        {
+          "id": "b",
+          "text": "In cone projections the degrees of longitude and latitude are usually orthogonal to each other.",
+          "correct": true
+        },
+        {
+          "id": "c",
+          "text": "Conformal projections do not retain local angles on each point of a map correctly.",
+          "correct": false
+        },
+        {
+          "id": "d",
+          "text": "Conformal projection does preserve shapes.",
+          "correct": true
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "text": "Mark the correct statements regarding text visualisation.",
+      "type": "multiple",
+      "images": [
+        {
+          "label": "Q4",
+          "path": "Resources/Q4_1.png"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "ThemeRiver (stream graph) is a visualization of thematic changes in a document collection over time.",
+          "correct": true
+        },
+        {
+          "id": "b",
+          "text": "The semantic level of text representation deals with identifying and tagging each token's function inside the sentence.",
+          "correct": false
+        },
+        {
+          "id": "c",
+          "text": "Text visualization is useful to compare patterns in text documents.",
+          "correct": true
+        },
+        {
+          "id": "d",
+          "text": "Word clouds are visualizations of term frequencies as well as their context.",
+          "correct": false
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "text": "Mark the correct statements",
+      "type": "multiple",
+      "images": [
+        {
+          "label": "Q5",
+          "path": "Resources/Q5_1.png"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "Choropleth maps communicate the geographical distribution of the represented statistical value better than cartograms.",
+          "correct": "unknown"
+        },
+        {
+          "id": "b",
+          "text": "Cartograms are based on the assumption that the mapped attribute is uniformly distributed in the geographical region.",
+          "correct": "unknown"
+        },
+        {
+          "id": "c",
+          "text": "Cartograms distort the geography according to the displayed statistical value.",
+          "correct": "unknown"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "text": "Concerning the aesthetics for dynamic visualization of graphs, mark the true sentences.",
+      "type": "multiple",
+      "images": [],
+      "options": [
+        {
+          "id": "a",
+          "text": "Concerning scalability, it only should be addressed for vertices and edges.",
+          "correct": false
+        },
+        {
+          "id": "b",
+          "text": "\"Temporal aliases\" do not impact significantly the quality of the layout.",
+          "correct": false
+        },
+        {
+          "id": "c",
+          "text": "\"Reducing cognitive load\" means reducing the amount of information the user has to keep in mind during the visualization of the graph.",
+          "correct": true
+        },
+        {
+          "id": "d",
+          "text": "Is preferable to preserve the mental map in the design of a dynamic network visualization method.",
+          "correct": true
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "text": "A force-directed layout algorithm",
+      "type": "multiple",
+      "images": [],
+      "options": [
+        {
+          "id": "a",
+          "text": "models the graph after a physical system",
+          "correct": true
+        },
+        {
+          "id": "b",
+          "text": "is a method to reorder rows and columns of a matrix",
+          "correct": false
+        },
+        {
+          "id": "c",
+          "text": "is a graph-drawing method for node-link diagrams",
+          "correct": true
+        },
+        {
+          "id": "d",
+          "text": "is used to compute the colours of a heatmap",
+          "correct": false
+        },
+        {
+          "id": "e",
+          "text": "includes an energy maximization algorithm",
+          "correct": false
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "text": "When designing a node-link graph visualization, particular attention has to be put on how to visualize the edges. Mark the correct sentences.",
+      "type": "multiple",
+      "images": [],
+      "options": [
+        {
+          "id": "a",
+          "text": "Polyline edges with multiple bends per edge can be used, but the number of bends should be minimized.",
+          "correct": true
+        },
+        {
+          "id": "b",
+          "text": "Curved approaches, such as Lombardi drawings, are usually preferred by the users even if they do not provide an advantage in any observed task.",
+          "correct": false
+        },
+        {
+          "id": "c",
+          "text": "In the directed case, when arrows are used to indicate the direction, they should not overlap with other edges or arrow heads.",
+          "correct": true
+        },
+        {
+          "id": "d",
+          "text": "Straight line node-link representations allow bends to reduce the number of crossings in the layout.",
+          "correct": false
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "text": "A treemap",
+      "type": "multiple",
+      "images": [],
+      "options": [
+        {
+          "id": "a",
+          "text": "is a non-space-filling visualization method",
+          "correct": false
+        },
+        {
+          "id": "b",
+          "text": "is used to visualize hierarchies",
+          "correct": true
+        },
+        {
+          "id": "c",
+          "text": "can be squarified",
+          "correct": true
+        },
+        {
+          "id": "d",
+          "text": "can be nested",
+          "correct": true
+        },
+        {
+          "id": "e",
+          "text": "is used to visualize vegetation in a geographic area",
+          "correct": false
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "text": "Which of the following visual encodings for hierarchies satisfy the following description?\nFeatures:\n- Hierarchy visualized via parent-child relationship\n- Layout techniques include \"Layered\" and \"Radial\" approaches\n- No cycles\nPROs:\n- Intuitive\n- Well-known\n- Good at giving an overview of the data\nCONs\n- Large structures might not fit a single view\n- Aspect ratio",
+      "type": "multiple",
+      "images": [],
+      "options": [
+        {
+          "id": "a",
+          "text": "Treemap",
+          "correct": false
+        },
+        {
+          "id": "b",
+          "text": "Node-Link (trees)",
+          "correct": true
+        },
+        {
+          "id": "c",
+          "text": "Indentation",
+          "correct": false
+        },
+        {
+          "id": "d",
+          "text": "Sunbursts",
+          "correct": false
+        },
+        {
+          "id": "e",
+          "text": "Icicle trees",
+          "correct": false
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "text": "[!Q11](Resources/Q11_1.png)",
+      "type": "multiple",
+      "images": [],
+      "options": [
+        {
+          "id": "a",
+          "text": "shows different visual representations depending on the color-coding chosen by the user.",
+          "correct": false
+        },
+        {
+          "id": "b",
+          "text": "relies solely on geometric zooming.",
+          "correct": false
+        },
+        {
+          "id": "c",
+          "text": "shows different visual representations depending on the zoom level chosen by the user and the available space for the visualization.",
+          "correct": true
+        },
+        {
+          "id": "d",
+          "text": "allows users to choose between a large scope (i.e., zooming out and seeing an overview of the big picture) or a more detailed view (i.e., zooming in and seing all details about a limited range of the data).",
+          "correct": true
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "text": "How does the use of Focus+Context techniques impact usability?",
+      "type": "multiple",
+      "images": [],
+      "options": [
+        {
+          "id": "a",
+          "text": "overview+detail and fisheye interfaces are beneficial for specific tasks",
+          "correct": true
+        },
+        {
+          "id": "b",
+          "text": "overview+detail and zooming interfaces impact users' performance negatively",
+          "correct": false
+        },
+        {
+          "id": "c",
+          "text": "Focus+Context techniques are easy to follow and can be used without prior knowledge",
+          "correct": false
+        },
+        {
+          "id": "d",
+          "text": "the effectiveness of Focus+Context techniques depends on the users' tasks and goals",
+          "correct": true
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "text": "What levels of the Info-Vis Reference Model are influenced by dynamic querying (with real time feedback)?",
+      "type": "multiple",
+      "images": [],
+      "options": [
+        {
+          "id": "a",
+          "text": "Visual Mappings",
+          "correct": "unknown"
+        },
+        {
+          "id": "b",
+          "text": "Visual Structures",
+          "correct": "unknown"
+        },
+        {
+          "id": "c",
+          "text": "Data Transformations",
+          "correct": "unknown"
+        },
+        {
+          "id": "d",
+          "text": "Data Tables",
+          "correct": "unknown"
+        },
+        {
+          "id": "e",
+          "text": "Views",
+          "correct": "unknown"
+        },
+        {
+          "id": "f",
+          "text": "View Transformations",
+          "correct": "unknown"
+        },
+        {
+          "id": "g",
+          "text": "Raw Data",
+          "correct": "unknown"
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "text": "Interaction modeling is employed to ...",
+      "type": "multiple",
+      "images": [],
+      "options": [
+        {
+          "id": "a",
+          "text": "... validate effectiveness and user guidance of different interaction approaches.",
+          "correct": true
+        },
+        {
+          "id": "b",
+          "text": "... capture requirements the system can be developed and evaluated against.",
+          "correct": true
+        },
+        {
+          "id": "c",
+          "text": "... demonstrate interactions and tasks to users",
+          "correct": false
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "text": "Coordinated Multiple View systems ...",
+      "type": "multiple",
+      "images": [],
+      "options": [
+        {
+          "id": "a",
+          "text": "use two or more distinct views to support the investigation of a single conceptual entity",
+          "correct": true
+        },
+        {
+          "id": "b",
+          "text": "combine different visualization techniques and apply them on different data representations",
+          "correct": true
+        },
+        {
+          "id": "c",
+          "text": "use color-coding for trend detection",
+          "correct": false
+        },
+        {
+          "id": "d",
+          "text": "can not be supported by brushing & linking techniques",
+          "correct": false
+        },
+        {
+          "id": "e",
+          "text": "always support semantic zooming",
+          "correct": false
+        },
+        {
+          "id": "f",
+          "text": "are often supported by brushing & linking techniques",
+          "correct": true
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "text": "Tamara Munzner: The nested model of visualization design and validation captures",
+      "type": "multiple",
+      "images": [],
+      "options": [
+        {
+          "id": "a",
+          "text": "data/task abstraction",
+          "correct": true
+        },
+        {
+          "id": "b",
+          "text": "domain situation",
+          "correct": true
+        },
+        {
+          "id": "c",
+          "text": "patterns characteristics",
+          "correct": false
+        },
+        {
+          "id": "d",
+          "text": "search functionality",
+          "correct": false
+        },
+        {
+          "id": "e",
+          "text": "algorithm",
+          "correct": true
+        },
+        {
+          "id": "f",
+          "text": "visual encoding/interaction idiom",
+          "correct": true
+        },
+        {
+          "id": "g",
+          "text": "images properties",
+          "correct": false
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "text": "InfoVis Reference Model: User interaction can feed back into ...",
+      "type": "multiple",
+      "images": [],
+      "options": [
+        {
+          "id": "a",
+          "text": "data transformation",
+          "correct": true
+        },
+        {
+          "id": "b",
+          "text": "table structure",
+          "correct": false
+        },
+        {
+          "id": "c",
+          "text": "visual mapping",
+          "correct": true
+        },
+        {
+          "id": "d",
+          "text": "text generation",
+          "correct": false
+        },
+        {
+          "id": "e",
+          "text": "image manipulation",
+          "correct": false
+        },
+        {
+          "id": "f",
+          "text": "view transformation",
+          "correct": true
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "text": "The first action in the \"Knowledge Crystallization Loop\" is  ...",
+      "type": "multiple",
+      "images": [],
+      "options": [
+        {
+          "id": "a",
+          "text": "... archive huge amount of data",
+          "correct": false
+        },
+        {
+          "id": "b",
+          "text": "... forage for data",
+          "correct": true
+        },
+        {
+          "id": "c",
+          "text": "... visualize data",
+          "correct": false
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "text": "The visualization design triangle [Miksch & Aigner 2014] specifies ...",
+      "type": "multiple",
+      "images": [],
+      "options": [
+        {
+          "id": "a",
+          "text": "user",
+          "correct": true
+        },
+        {
+          "id": "b",
+          "text": "data",
+          "correct": true
+        },
+        {
+          "id": "c",
+          "text": "software",
+          "correct": false
+        },
+        {
+          "id": "d",
+          "text": "task",
+          "correct": true
+        },
+        {
+          "id": "e",
+          "text": "environment",
+          "correct": false
+        },
+        {
+          "id": "f",
+          "text": "hardware",
+          "correct": false
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "text": "Anscombe's Quartet illustrates",
+      "type": "multiple",
+      "images": [],
+      "options": [
+        {
+          "id": "a",
+          "text": "random variables, different graphs",
+          "correct": false
+        },
+        {
+          "id": "b",
+          "text": "high level goals, correct measures",
+          "correct": false
+        },
+        {
+          "id": "c",
+          "text": "same statistics, different graphs",
+          "correct": true
+        }
+      ]
+    },
+    {
+      "id": 21,
+      "text": "Chernoff Faces",
+      "type": "multiple",
+      "images": [],
+      "options": [
+        {
+          "id": "a",
+          "text": "are suited to communicate complex data effectively",
+          "correct": false
+        },
+        {
+          "id": "b",
+          "text": "their features are likely to be perceived equally strong",
+          "correct": false
+        },
+        {
+          "id": "c",
+          "text": "are suspected to convey emotions",
+          "correct": true
+        },
+        {
+          "id": "d",
+          "text": "encode multiple data values with different graphical features",
+          "correct": true
+        }
+      ]
+    },
+    {
+      "id": 22,
+      "text": "Glyph or icon based techniques\n(Figure: example of a glyph: The Time Annotation Glyph represents temporal constraints of a medical treatment plan -- ESS: earliest starting shift, LSS: latest starting shift, EFS: earliest finishing shift, LFS: latest finishing shift, MaxDu: maximum duration, MinDu: minimum duration)",
+      "type": "multiple",
+      "images": [
+        {
+          "label": "Q22",
+          "path": "Resources/Q22_1.png"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "are composed of graphical primitives",
+          "correct": true
+        },
+        {
+          "id": "b",
+          "text": "cannot represent multiple data values at once",
+          "correct": false
+        },
+        {
+          "id": "c",
+          "text": "do not represent one meaning as a whole but encode multiple data values",
+          "correct": true
+        }
+      ]
+    },
+    {
+      "id": 23,
+      "text": "Parallel Coordinates",
+      "type": "multiple",
+      "images": [
+        {
+          "label": "Q23",
+          "path": "Resources/Q23_1.png"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "are better suited to visualize complex relations between two dimensions than scatterplots",
+          "correct": false
+        },
+        {
+          "id": "b",
+          "text": "re-ordering of the axes can reveal relations between two data dimensions",
+          "correct": true
+        },
+        {
+          "id": "c",
+          "text": "are usually arranged in a matrix to enable the visualization of multiple dimensions",
+          "correct": false
+        },
+        {
+          "id": "d",
+          "text": "represent each data dimension on one of multiple parallel axes",
+          "correct": true
+        }
+      ]
+    },
+    {
+      "id": 24,
+      "text": "Pixel-Based Techniques",
+      "type": "multiple",
+      "images": [
+        {
+          "label": "Q24",
+          "path": "Resources/Q24_1.png"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "represent a data item by (at least) one pixel",
+          "correct": true
+        },
+        {
+          "id": "b",
+          "text": "are suited for low-dimensional data sets only",
+          "correct": false
+        },
+        {
+          "id": "c",
+          "text": "value ranges of attributes are mapped to a color map",
+          "correct": true
+        }
+      ]
+    },
+    {
+      "id": 25,
+      "text": "\"Semantic depth of field\" (SDOF)",
+      "type": "multiple",
+      "images": [
+        {
+          "label": "Q25",
+          "path": "Resources/Q25_1.png"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "is good at visually communicating lots of different quantitative values",
+          "correct": false
+        },
+        {
+          "id": "b",
+          "text": "can be used to visually represent an additional data dimension in scatterplots",
+          "correct": true
+        },
+        {
+          "id": "c",
+          "text": "blurs data items based on their relevance",
+          "correct": true
+        }
+      ]
+    },
+    {
+      "id": 26,
+      "text": "Visual perception is...",
+      "type": "multiple",
+      "images": [],
+      "options": [
+        {
+          "id": "a",
+          "text": "a sequential process from eye to brain (bottom-up).",
+          "correct": false
+        },
+        {
+          "id": "b",
+          "text": "a combination of bottom-up and top-down processes.",
+          "correct": true
+        },
+        {
+          "id": "c",
+          "text": "a sequential process from brain to eye (top-down).",
+          "correct": false
+        }
+      ]
+    },
+    {
+      "id": 27,
+      "text": "The examples shown in the image are:",
+      "type": "multiple",
+      "images": [
+        {
+          "label": "Q27",
+          "path": "Resources/Q27_1.png"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "pre-attentive attributes",
+          "correct": false
+        },
+        {
+          "id": "b",
+          "text": "visual variables",
+          "correct": false
+        },
+        {
+          "id": "c",
+          "text": "visualization techniques",
+          "correct": false
+        },
+        {
+          "id": "d",
+          "text": "Gestalt principles",
+          "correct": true
+        }
+      ]
+    },
+    {
+      "id": 28,
+      "text": "The examples shown in the image are:",
+      "type": "multiple",
+      "images": [
+        {
+          "label": "Q28",
+          "path": "Resources/Q28_1.png"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "pre-attentive attributes",
+          "correct": true
+        },
+        {
+          "id": "b",
+          "text": "visual variables",
+          "correct": false
+        },
+        {
+          "id": "c",
+          "text": "Gestalt principles",
+          "correct": false
+        },
+        {
+          "id": "d",
+          "text": "visualization techniques",
+          "correct": false
+        }
+      ]
+    },
+    {
+      "id": 29,
+      "text": "Along which scale are T-Shirt sizes measured?",
+      "type": "multiple",
+      "images": [],
+      "options": [
+        {
+          "id": "a",
+          "text": "ordinal",
+          "correct": true
+        },
+        {
+          "id": "b",
+          "text": "quantitative - interval",
+          "correct": false
+        },
+        {
+          "id": "c",
+          "text": "nominal",
+          "correct": false
+        },
+        {
+          "id": "d",
+          "text": "quantitative - ratio",
+          "correct": false
+        }
+      ]
+    },
+    {
+      "id": 30,
+      "text": "Which of the following statements are correct?",
+      "type": "multiple",
+      "images": [
+        {
+          "label": "Q30",
+          "path": "Resources/Q30_1.png"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "a is not expressive, b is expressive",
+          "correct": true
+        },
+        {
+          "id": "b",
+          "text": "a and b are both expressive",
+          "correct": false
+        },
+        {
+          "id": "c",
+          "text": "a is equally expressive than b, but b is more effective",
+          "correct": false
+        }
+      ]
+    },
+    {
+      "id": 31,
+      "text": "Which of the following statements about mapping time to space are correct?",
+      "type": "multiple",
+      "images": [],
+      "options": [
+        {
+          "id": "a",
+          "text": "mapping of time to visual features",
+          "correct": true
+        },
+        {
+          "id": "b",
+          "text": "well suited for following trends and movements",
+          "correct": false
+        },
+        {
+          "id": "c",
+          "text": "direct comparison of parameters between different points in time is possible",
+          "correct": true
+        },
+        {
+          "id": "d",
+          "text": "not well suited for analytic and explorative tasks",
+          "correct": false
+        }
+      ]
+    },
+    {
+      "id": 32,
+      "text": "Which of the following statements about the visual mapping of time are correct",
+      "type": "multiple",
+      "images": [],
+      "options": [
+        {
+          "id": "a",
+          "text": "animation (time to time) mapping supports to follow trends and movements",
+          "correct": true
+        },
+        {
+          "id": "b",
+          "text": "animation (time to time) mapping is the simplest mapping",
+          "correct": false
+        },
+        {
+          "id": "c",
+          "text": "static (time to space) mapping is well suited for explorative tasks",
+          "correct": true
+        },
+        {
+          "id": "d",
+          "text": "static (time to space) mapping support direct comparison",
+          "correct": true
+        },
+        {
+          "id": "e",
+          "text": "animation (time to time) mapping is well suited for explorative tasks",
+          "correct": false
+        }
+      ]
+    },
+    {
+      "id": 33,
+      "text": "For modelling time-oriented data, possible viewpoints are:",
+      "type": "multiple",
+      "images": [],
+      "options": [
+        {
+          "id": "a",
+          "text": "branching",
+          "correct": true
+        },
+        {
+          "id": "b",
+          "text": "cyclic",
+          "correct": false
+        },
+        {
+          "id": "c",
+          "text": "multiple perspectives",
+          "correct": true
+        },
+        {
+          "id": "d",
+          "text": "ordered",
+          "correct": true
+        },
+        {
+          "id": "e",
+          "text": "interval-based",
+          "correct": false
+        }
+      ]
+    },
+    {
+      "id": 34,
+      "text": "The shown techniques are well suited to represent:",
+      "type": "multiple",
+      "images": [
+        {
+          "label": "Q34",
+          "path": "Resources/Q34_1.png"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "univariate data",
+          "correct": true
+        },
+        {
+          "id": "b",
+          "text": "multivariate data",
+          "correct": false
+        },
+        {
+          "id": "c",
+          "text": "cyclic time",
+          "correct": false
+        },
+        {
+          "id": "d",
+          "text": "time instant",
+          "correct": true
+        },
+        {
+          "id": "e",
+          "text": "linear time",
+          "correct": true
+        }
+      ]
+    },
+    {
+      "id": 35,
+      "text": "The shown technique is well suited to represent:",
+      "type": "multiple",
+      "images": [
+        {
+          "label": "Q35",
+          "path": "Resources/Q35_1.png"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "time instant",
+          "correct": true
+        },
+        {
+          "id": "b",
+          "text": "cyclic time",
+          "correct": false
+        },
+        {
+          "id": "c",
+          "text": "multivariate data",
+          "correct": true
+        },
+        {
+          "id": "d",
+          "text": "spatial",
+          "correct": true
+        },
+        {
+          "id": "e",
+          "text": "univariate data",
+          "correct": false
+        }
+      ]
+    },
+    {
+      "id": 36,
+      "text": "For data aggregation and data summary representations, which statements are correct?",
+      "type": "multiple",
+      "images": [],
+      "options": [
+        {
+          "id": "a",
+          "text": "Scatterplots of 2 dimensional data allow to confirm expected patterns.",
+          "correct": true
+        },
+        {
+          "id": "b",
+          "text": "Summary statistics of 2 dimensional data (mean, variance, correlation) are always different for different datasets.",
+          "correct": false
+        },
+        {
+          "id": "c",
+          "text": "Box-plots as summary representation show enough detail to distinguish different raw data characteristics.",
+          "correct": false
+        },
+        {
+          "id": "d",
+          "text": "Violin-plots as summary representation show more details about the structure as box-plots.",
+          "correct": true
+        }
+      ]
+    },
+    {
+      "id": 37,
+      "text": "According to the design study methodology (Sedlmair et al. 2012), when does a visualization design study offer a good solution for a given problem?",
+      "type": "multiple",
+      "images": [
+        {
+          "label": "Q37",
+          "path": "Resources/Q37_1.png"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "Area \"X\": all the required information is in the head of the user",
+          "correct": false
+        },
+        {
+          "id": "b",
+          "text": "Area \"Y\": either some of the required information is in the head of the user, or the task is not defined in a very clear way, or both.",
+          "correct": true
+        },
+        {
+          "id": "c",
+          "text": "Area \"Z\": the required information is available to the computer and the task is defined in a clear way.",
+          "correct": false
+        }
+      ]
+    },
+    {
+      "id": 38,
+      "text": "Formative evaluation",
+      "type": "multiple",
+      "images": [],
+      "options": [
+        {
+          "id": "a",
+          "text": "is used for problem analysis.",
+          "correct": false
+        },
+        {
+          "id": "b",
+          "text": "describes assessment methods after the implementation phase.",
+          "correct": false
+        },
+        {
+          "id": "c",
+          "text": "describes assessment methods during analysis and design phases.",
+          "correct": true
+        }
+      ]
+    },
+    {
+      "id": 39,
+      "text": "The central questions of problem analysis are:",
+      "type": "multiple",
+      "images": [],
+      "options": [
+        {
+          "id": "a",
+          "text": "What kind of data are the users working with?",
+          "correct": true
+        },
+        {
+          "id": "b",
+          "text": "What will the development method for the implementation phase be?",
+          "correct": false
+        },
+        {
+          "id": "c",
+          "text": "What are the tasks of the users?",
+          "correct": true
+        },
+        {
+          "id": "d",
+          "text": "How many software developers and designers are needed?",
+          "correct": false
+        },
+        {
+          "id": "e",
+          "text": "Who are the users of the system?",
+          "correct": true
+        }
+      ]
+    },
+    {
+      "id": 40,
+      "text": "What are the main benefits of user-centered design/human-centered aspects?",
+      "type": "multiple",
+      "images": [],
+      "options": [
+        {
+          "id": "a",
+          "text": "systems get more complex and the discomfort is increased.",
+          "correct": false
+        },
+        {
+          "id": "b",
+          "text": "product quality, aesthetics, and impact are reduced.",
+          "correct": false
+        },
+        {
+          "id": "c",
+          "text": "productivity of users is usually improved.",
+          "correct": true
+        },
+        {
+          "id": "d",
+          "text": "training and support costs are reduced.",
+          "correct": true
+        }
+      ]
+    },
+    {
+      "id": 41,
+      "text": "Components of Visual  Analytics: Assign the correct terms to A, B, and C (in red letters)",
+      "type": "multiple",
+      "images": [
+        {
+          "label": "Q41",
+          "path": "Resources/Q41_1.png"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "Process Mining",
+          "correct": false
+        },
+        {
+          "id": "b",
+          "text": "Visualization",
+          "correct": true
+        },
+        {
+          "id": "c",
+          "text": "Human Perception",
+          "correct": true
+        },
+        {
+          "id": "d",
+          "text": "Evaluation",
+          "correct": false
+        },
+        {
+          "id": "e",
+          "text": "Workflow Management",
+          "correct": false
+        },
+        {
+          "id": "f",
+          "text": "Mining",
+          "correct": true
+        }
+      ]
+    },
+    {
+      "id": 42,
+      "text": "Selected goals of Visual Analytics are designing and creating methods to enable users to ...",
+      "type": "multiple",
+      "images": [],
+      "options": [
+        {
+          "id": "a",
+          "text": "detect the expected and discover the unexpected",
+          "correct": true
+        },
+        {
+          "id": "b",
+          "text": "render realistic images in an expressive way",
+          "correct": false
+        },
+        {
+          "id": "c",
+          "text": "synthesize information and derive insight from massive, dynamic, ambiguous, and often conflicting data",
+          "correct": true
+        }
+      ]
+    },
+    {
+      "id": 43,
+      "text": "Guidance is ...",
+      "type": "multiple",
+      "images": [],
+      "options": [
+        {
+          "id": "a",
+          "text": "a computer-assisted process that aims to harmonize heterogeneous information sources",
+          "correct": false
+        },
+        {
+          "id": "b",
+          "text": "a computer-assisted process that aims to ease data quality exploration",
+          "correct": false
+        },
+        {
+          "id": "c",
+          "text": "a computer-assisted process that aims to actively resolve a knowledge gap encountered by users during an interactive Visual Analytics session",
+          "correct": true
+        }
+      ]
+    },
+    {
+      "id": 44,
+      "text": "EVA interlinks ...",
+      "type": "multiple",
+      "images": [
+        {
+          "label": "Q44",
+          "path": "Resources/Q44_1.png"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "heatmaps, parallel coordinates, scatter plots, networks, maps, and time lines",
+          "correct": false
+        },
+        {
+          "id": "b",
+          "text": "maps, line chart, parallel coordinates, scatter plot, row charts, and networks",
+          "correct": false
+        },
+        {
+          "id": "c",
+          "text": "bar chart, line chart, parallel coordinates, scatter plot, row charts, and a table",
+          "correct": true
+        }
+      ]
+    },
+    {
+      "id": 45,
+      "text": "Visual Analytics – Process [Keim, et al. 2008]: Assign the correct terms to A and B (in red letters)",
+      "type": "multiple",
+      "images": [
+        {
+          "label": "Q45",
+          "path": "Resources/Q45_1.png"
+        }
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "Information Retrieval",
+          "correct": false
+        },
+        {
+          "id": "b",
+          "text": "Model",
+          "correct": true
+        },
+        {
+          "id": "c",
+          "text": "Visualization",
+          "correct": true
+        },
+        {
+          "id": "d",
+          "text": "Machine Learning",
+          "correct": false
+        }
+      ]
+    }
+  ]
+}

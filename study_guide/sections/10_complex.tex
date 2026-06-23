@@ -1,0 +1,328 @@
+\section{Complex Data: Sets, Curves, and Ensembles}
+
+Classic multidimensional data has records with numerical and categorical
+attributes. \term{Complex data} adds richer attribute kinds: \term{sets},
+\term{curves} (function graphs / time series), and \term{surfaces}. This
+section covers three such cases that recur in the exam: set-typed data
+(how to visualise it, with UpSet as the modern go-to answer), families of
+function graphs (Konyha et al.), and simulation ensembles (Matkovic et al.).
+All three are united by one idea: an attribute is no longer a single scalar
+but a structured object, and the same visual-analysis toolkit
+(\term{coordinated multiple views} + \term{brushing and linking}) is used to
+explore them.
+
+% ======================================================================
+\subsection{Set-Typed Data}
+
+\begin{keybox}[Definition]
+\term{Set-typed data}: a collection of \term{elements}, each of which has a
+membership in one or more of several \emph{possibly overlapping} \term{sets}.
+Equivalently, each element carries a \term{set-typed attribute} whose value is
+a subset of the universe of sets (a \term{set family} / set system over the
+elements). Sets may relate by \term{containment, exclusion, and intersection}.
+\end{keybox}
+
+\textbf{Example (movies).} Universe of sets $=$ genres
+$\{\text{Romance},\text{Drama},\text{Comedy},\dots\}$. Each movie is an element;
+its set-typed attribute is its genre set, e.g.
+\textit{Cinema Paradiso} $=\{$Romance, Drama, Comedy$\}$, \textit{Touch}
+$=\{$Romance$\}$. Other real-world cases: club memberships, product features,
+employee skill sets, search-engine result overlaps, patient symptoms.
+
+\textbf{Key notions} (Sets-STAR, Alsallakh et al.).
+\begin{itemize}
+\item \term{Set membership degree} of an element $=$ number of sets it
+  belongs to (its \term{degree}).
+\item \term{Exclusive membership}: an element belongs to exactly one set / one
+  specific intersection.
+\item \term{Intersection / overlap}: the set of elements shared by a group of
+  sets. With $n$ sets there are up to $2^n$ possible membership combinations,
+  which is why naive approaches do not scale.
+\item Data representations: cardinalities only, multi-valued attribute
+  (adjacency-list style), membership lists (edge-list style), or Boolean
+  attributes (adjacency-matrix style).
+\end{itemize}
+
+\textbf{Typical tasks} (what a technique must support): find elements of a set,
+find sets of an element, filter by membership degree; find the number of sets;
+analyse inclusion / exclusion / intersection relations; identify the sets in a
+given intersection and the largest / smallest intersections; compare set and
+intersection cardinalities and similarities.
+
+\subsubsection{Techniques (Sets-STAR categories)}
+
+\begin{algobox}[Euler / Venn diagrams]
+\textbf{Idea:} sets $=$ labelled closed curves (circles, ellipses, polygons);
+set relations $=$ curve overlaps. A \term{Venn} diagram shows \emph{all} $2^n$
+possible overlaps; an \term{Euler} diagram shows only the overlaps that
+actually occur (it can be \term{well-matched}: regions reflect the true
+relations).\\
+\textbf{Reads:} membership pops out preattentively via enclosure.\\
+\textbf{Trade-offs:} \emph{does not scale beyond $\sim$3 sets}; for $\ge 4$
+sets, well-matched + well-formed (simple, smooth, area-proportional) curves are
+often impossible, and \emph{some intersections become undrawable}. Area-judgement
+bias hurts area-proportional variants.
+\end{algobox}
+
+\begin{algobox}[Over-plotting / point-based (overlays)]
+\textbf{Idea:} elements live in an existing layout (scatterplot, map, graph)
+and set membership is overlaid with \term{colour/glyphs} (coloured dots,
+pie-glyphs, hatching) or with \term{region} overlays (\term{Bubble Sets},
+texture splatting) or \term{line} overlays (\term{LineSets}, \term{Kelp
+Diagrams}).\\
+\textbf{Use when:} elements have a meaningful spatial reference and set
+membership is secondary. Region overlays handle $\sim$4--20 sets.\\
+\textbf{Trade-offs:} limited number of sets/elements; layout artifacts
+(spurious overlaps, crossings); overlays cannot move the elements.
+\end{algobox}
+
+\begin{algobox}[Matrix-based]
+\textbf{Idea:} a \term{set-membership matrix} -- rows $=$ elements, columns $=$
+sets (cells mark membership); or sets $\times$ sets cells holding a similarity /
+overlap measure (heatmap). Reordering rows/columns reveals clusters of similar
+membership. Examples: ConSet, PixelLayers, frequency grids.\\
+\textbf{Trade-offs:} fairly scalable in both elements and sets, clutter-free
+(no edge crossings), but limited in which set \emph{relations} they express,
+and patterns are \emph{sensitive to ordering}.
+\end{algobox}
+
+\begin{algobox}[Node-link / graph-based]
+\textbf{Idea:} model element--set membership as a \term{bipartite graph} (edges
+$=$ memberships). Examples: Jigsaw lists, anchored maps, PivotPaths; Radial
+Sets / Circos for set--set links.\\
+\textbf{Trade-offs:} elements are visible as individual objects and clusters of
+similar membership show up, but \emph{limited scalability due to edge
+crossings}; element--set diagrams show no set relations directly.
+\end{algobox}
+
+\begin{algobox}[Aggregation-based]
+\textbf{Idea:} when elements are many, follow ``overview first'': aggregate
+elements into a single visual element encoding a \emph{frequency}. Bar charts of
+set/intersection sizes, \term{Set'o'gram} (Freiler et al.), Mosaic / Double-Decker
+plots, Parallel Sets, \term{Radial Sets} (Alsallakh et al.).\\
+\textbf{Trade-offs:} \emph{highly scalable in number of elements}; some show how
+attributes correlate with membership; but usually do not show single elements
+as objects and are limited in set relations.
+\end{algobox}
+
+\begin{keybox}[UpSet -- the modern go-to technique]
+Lex, Gehlenborg, Strobelt, Vuillemot \& Pfister, \emph{UpSet: Visualization of
+Intersecting Sets}, IEEE TVCG 2014. \textbf{This is the standard answer to
+``how do you visualise set-typed data with many sets?''}
+\end{keybox}
+
+UpSet replaces the overlapping regions of an Euler/Venn diagram with a
+\term{matrix of intersections} plus \term{bar charts}:
+\begin{itemize}
+\item \textbf{Set-size bars} -- one bar per set giving each set's cardinality.
+\item \textbf{Intersection matrix} -- columns are the (non-empty) intersections;
+  each column is a vertical strip of dots over the set rows. A \term{filled
+  dot} $=$ ``in this set'', an \term{empty dot} $=$ ``not in this set''; dots in
+  the same column are joined by a line. A column with one filled dot $=$
+  ``only in that set''; all dots filled $=$ ``in all sets''.
+\item \textbf{Intersection-size bars} -- a bar chart giving the cardinality of
+  each intersection, usually \emph{sorted} (e.g. by size) so the dominant
+  combinations are obvious.
+\end{itemize}
+Because intersections are laid out as a sortable list rather than packed into
+the plane, UpSet \emph{scales to many sets and many elements} and makes the
+hard set tasks (which sets are in an intersection? which intersection is
+largest?) directly readable. Related slide techniques: OnSet (binary
+set matrices with set operations), Radial Sets, Set'o'gram.
+
+\begin{pitfall}[Common deductions]
+Do not draw a Venn diagram for $\ge 4$ sets and claim it ``works'' -- some
+intersections are undrawable and area judgements are biased. Do not show set
+sizes as a \term{pie chart}: set categories are not mutually exclusive and do
+not sum to a whole. For ``many sets'' always reach for \textbf{UpSet} (or
+aggregation/matrix methods), not Euler/Venn.
+\end{pitfall}
+
+\sketchnote{An UpSet plot has three coupled parts. \emph{Top-left:} a small bar
+chart of total set sizes (sets $A,B,C$). \emph{Bottom-left:} the set rows
+$A,B,C$ as labels. \emph{Centre/bottom:} a dot matrix -- one column per
+intersection, each column a vertical run of filled (member) / empty (non-member)
+dots, filled dots in a column joined by a line. \emph{Top:} a horizontal bar
+above each column whose length is that intersection's cardinality, columns
+sorted by size. Reading a column's dots tells you exactly which
+sets define the intersection; the bar tells you how big it is.}
+
+\subsubsection{Comparison of set-visualisation categories}
+
+\begin{center}
+\begin{tabular}{@{}p{2.6cm}p{1.9cm}p{2.1cm}p{2.4cm}p{3.0cm}@{}}
+\toprule
+\textbf{Category} & \textbf{Scales in \#sets} & \textbf{Scales in \#elements}
+  & \textbf{Shows intersections?} & \textbf{Order matters?}\\
+\midrule
+Euler / Venn & $\sim$3 (poor) & tens & yes, but some undrawable for $\ge 4$
+  & layout-driven\\
+Overlays (point/region/line) & 4--20 & tens--hundreds & partially (regions
+  show overlap) & element positions fixed by base view\\
+Node-link (bipartite) & tens & hundreds & set--set only (Circos/Radial); not in
+  element--set & sensitive (crossings)\\
+Matrix-based & up to $\sim$100 & up to $\sim$100s & limited relations
+  & \textbf{yes} (reordering reveals patterns)\\
+Aggregation (Set'o'gram, Radial Sets, Double-Decker) & tens--$\sim$50 & large
+  (hundreds+) & limited / on demand & yes\\
+\textbf{UpSet} & \textbf{many} & \textbf{many} & \textbf{yes, explicitly +
+  sizes} & \textbf{sortable} (by size/degree)\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% ======================================================================
+\subsection{Families of Curves / Function Graphs}
+
+\begin{keybox}[Definition]
+A \term{function graph} $f(\mathbf{x},t)$ is a dependent variable plotted over
+an independent variable (e.g. time): one 2D curve per data record. A
+\term{family of function graphs} is the set of all such curves for one
+dependent variable across all records -- many curves drawn in the same view.
+Source: Konyha, Matkovic, Gra\v{c}anin, Jelovi\'c \& Hauser, \emph{Interactive
+Visual Analysis of Families of Function Graphs}, IEEE TVCG 2006.
+\end{keybox}
+
+\textbf{Data model.} Records have $m$ \term{independent variables}
+$\mathbf{x}=[x_1,\dots,x_m]$ and $n$ \term{dependent variables}. Dependents are
+either \term{regular} (a single scalar per record) or \term{function-graph}
+variables (a value for each time $t$, i.e. a curve). A curve can be treated
+either as an \term{atomic item} or as an \term{attribute / dimension} of a
+record (cf. the slides' table with a \texttt{Pressure(t)} / \texttt{Velocity(t)}
+column). Examples: traffic-sensor occupancy/volume over a day (the Minneapolis
+data set: $\sim$94{,}752 graphs, 144 values each), animal paths, ergonomics,
+fuel-injection rate curves.
+
+\textbf{Core problem: over-plotting.} Thousands of curves
+(e.g. 45{,}000) overlap into a dense band, so individual curves and
+regions of maxima/minima are hidden.
+
+\begin{algobox}[Interactive visual analysis of curve families]
+\textbf{Setup:} the \term{curve view} (a family of function graphs) embedded in
+\term{multiple coordinated linked views} alongside histograms, scatterplots,
+parallel coordinates, and a map of the independent variables. Brushing in any
+view highlights the same items (\term{focus}) in all others; context is shown
+desaturated (\term{focus+context}).\\
+\textbf{Density rendering:} draw curves semi-transparently so pixels through
+which more graphs pass are rendered with higher intensity -- a \term{banded /
+density representation} that reveals the shape of a dense family.\\
+\textbf{Brushing in function space:}
+\begin{itemize}
+\item \term{Line brush} -- a line segment in the curve view selects all curves
+  that \emph{cross} it. Intuitive, easy to define, would be far more complex as
+  an SQL query.
+\item \term{Rectangular / polyline brush} -- selects curves passing through a
+  region (or, with edge constraints, curves with a local max/min inside it).
+\end{itemize}
+\textbf{Brushing in derived attribute / parameter spaces:} aggregate each curve
+into scalar \term{curve features} (max, min, slope, value-at-$x$, mean) and
+brush those in scatterplots/histograms; link back to the curves and to the
+independent variables.\\
+\textbf{Composite brushing:} combine brushes with logical \term{AND, OR, SUB}
+to iteratively drill down or broaden the focus.
+\end{algobox}
+
+\textbf{Analysis procedures.} \term{Black-box reconstruction}: understand how
+dependent curves change as independent variables vary
+(overview $\to$ zoom/filter $\to$ details). \term{Inverse analysis}: brush a
+desired curve shape, then find which independent-variable combinations produce
+it. \term{Multidimensional relations}: brush in one curve family and study the
+linked curves of another. A \term{colour gradient} along a brush links brushed
+items across views.
+
+% ======================================================================
+\subsection{Simulation Ensembles}
+
+\begin{keybox}[Definition]
+A \term{simulation ensemble} is a set of many \term{simulation runs}
+(ensemble \term{members}), each produced by the same model with different
+\term{control parameters / inputs}. Formally a member is a pair
+$(\mathbf{x}^i,\mathbf{y}^i)$ where $\mathbf{x}\in\mathbb{R}^n$ are control
+parameters and $\mathbf{y}=S(\mathbf{x})$ the outputs; the ensemble is
+$E=\{(\mathbf{x}^i,\mathbf{y}^i)\}$. Members are \term{multi-dimensional and
+often time-dependent} (scalars, curves, surfaces, fields). Source: Matkovic,
+Gra\v{c}anin \& Hauser, \emph{Visual Analytics for Simulation Ensembles}, WSC 2018.
+\end{keybox}
+
+\textbf{Why ensembles.} Two questions drive simulation: (1) what is the output
+for a given parametrisation (easy -- run it), and (2) which parametrisation
+gives a desired output (hard -- inverting the model). Realistic models cannot be
+inverted analytically, so we simulate \emph{many} parametrisations and explore
+the ensemble. Sampling of the parameter space uses full-factorial or
+low-discrepancy (Sobol) designs (e.g. the common-rail Diesel injector:
+$5\times5\times5\times5\times7 = 4375$ runs).
+
+\textbf{Goals / tasks.} \term{Parameter sensitivity} -- relate outputs to
+control parameters and find which parameters matter; \term{model
+reconstruction} -- find parameters for a desired output; \term{comparison} of
+outputs from different parameter regions; identifying \term{representative} and
+\term{outlier} members.
+
+\begin{algobox}[Visual analytics for ensembles]
+\textbf{Coordinated multiple views (CMV):} link \emph{parameter space} (left,
+scatterplots/histograms/parallel coordinates of control parameters), the
+\emph{curve/time views} (centre, e.g. needle-lift curves), and other
+\emph{derived-output} views (right). A consistent left-to-right
+parameter$\to$output layout helps build a mental model.\\
+\textbf{Brushing \& linking across members:} brush a region of parameter space
+or a desired output range; corresponding members highlight everywhere. Use the
+curve \term{line brush} (cross-the-line selection) on the time-dependent
+outputs.\\
+\textbf{Aggregation:} reduce complex (non-scalar) outputs to \term{derived
+scalar features} (min/max of a curve, etc.); support \term{on-the-fly}
+aggregation during analysis so the session need not be restarted.\\
+\textbf{Interactive ensemble steering:} start with a coarse sampling, then
+\emph{initiate new simulation runs} from within the analysis where more detail
+is needed (the ensemble grows as you explore). Three loops: inner analysis
+loop (linking/brushing in CMV), ensemble-refinement loop (new parametrisations
+/ rows), model-refinement loop (new model parameters / columns). \term{Hybrid
+steering} adds an automatic regression-model optimisation to guide the
+interactive search.\\
+\textbf{Reproducibility:} structure the brushing space (snap-to-grid,
+percentile grids), overlay statistics, and quantify findings so qualitative
+insights (``the curves rise steeply'') become reproducible numbers.
+\end{algobox}
+
+\sketchnote{Ensemble CMV: left column $=$ parameter-space scatterplots/histograms
+($dT_v, dT_p, P_{low},\dots$) with a brushed region; centre $=$ a curve view of
+all members' output curves, brushed members in orange, context in grey; right
+$=$ scatterplots of derived scalar outputs; a data table below lists the brushed
+runs. Brushing any view re-highlights the same members everywhere.}
+
+% ======================================================================
+\subsection{Exam Angle}
+
+\begin{exambox}[Set-typed data: strategy / list questions]
+\textbf{``What is set-typed data and how would you visualise it?''} (1) Define:
+elements with membership in multiple, possibly overlapping sets (set-typed
+attribute). (2) List techniques by category: Euler/Venn, overlays
+(point/region/line), matrix-based, node-link, aggregation. (3) State the
+key trade-off: Euler/Venn fails beyond $\sim$3 sets (undrawable
+intersections, area bias). (4) \textbf{Recommend UpSet} for many sets:
+intersection matrix + sorted intersection-size bars + set-size bars; scales,
+shows intersections explicitly. Mention the pie-chart pitfall and that pattern
+visibility in matrices depends on ordering.
+\end{exambox}
+
+\begin{exambox}[Reading an UpSet plot -- visualisation literacy]
+You may be shown an UpSet plot and asked to read it. Steps: (a) the left bars
+give each \emph{set's} total size; (b) pick a column in the matrix -- the
+\emph{filled} dots name the sets the elements belong to, \emph{empty} dots the
+sets they do not; (c) the bar above that column gives the \emph{intersection's
+size}. So ``only $B$'' $=$ one filled dot on $B$; ``$A\cap B$ but not $C$'' $=$
+filled $A,B$, empty $C$; ``$A\cap B\cap C$'' $=$ all filled. The tallest
+intersection bar is the dominant combination. Equivalent question for curves:
+``a line brush selects which curves?'' -- all curves that \emph{cross the
+line}.
+\end{exambox}
+
+\begin{exambox}[Curves \& ensembles]
+Expect short-answer questions: define a \term{family of function graphs}
+(many curves of one dependent variable; problem $=$ over-plotting; remedies $=$
+density/banded rendering, line/composite brushing, brushing on derived curve
+features in linked views). Define a \term{simulation ensemble} (many runs with
+varied parameters; members multi-dimensional/time-dependent; goals $=$
+parameter sensitivity, model reconstruction, representative/outlier members;
+technique $=$ CMV linking parameter space $\leftrightarrow$ spatial/curve views,
+aggregation, brushing across members, plus interactive ensemble steering).
+\end{exambox}

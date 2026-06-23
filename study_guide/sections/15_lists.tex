@@ -1,0 +1,135 @@
+\section{List-Question Quick Reference}
+\label{sec:lists}
+
+Memorizable lists for the ``enumerate'' question type. Each item has a brief
+gloss; in the exam, give the list and a one-line gloss per item.
+
+% ---------------------------------------------------------------------
+\subsection{Raw-data issues in data tables}
+\begin{itemize}[leftmargin=1.4em]
+  \item \term{Missing values} -- empty cells / NA; need imputation or removal.
+  \item \term{Errors / outliers} -- typos, sensor faults, impossible values.
+  \item \term{Duplicates} -- repeated records inflate counts.
+  \item \term{Inconsistent units / formats} -- km vs.\ miles, date formats.
+  \item \term{Inconsistent encoding} -- ``M''/``Male''/``1'' for same category.
+  \item \term{Wrong data types} -- numbers stored as text, categorical as int.
+  \item \term{Mixed granularity} -- rows at different aggregation levels.
+  \item \term{Non-tidy structure} -- values in column names, multiple variables
+        per column.
+  \item \term{Skew / heavy tails / scale differences} -- may need log or
+        normalization.
+  \item \term{Imbalanced classes} -- distorts colour/area perception.
+\end{itemize}
+
+% ---------------------------------------------------------------------
+\subsection{Factors affecting scalability}
+\begin{itemize}[leftmargin=1.4em]
+  \item \term{Number of data items} (rows) -- overplotting, slow rendering.
+  \item \term{Number of dimensions / attributes} -- curse of dimensionality,
+        too many axes/panels.
+  \item \term{Number of categories} -- exhausts distinguishable colours/shapes.
+  \item \term{Display resolution / screen pixels} -- pixel budget limits marks.
+  \item \term{Human perception} -- limited channels, pre-attentive capacity
+        (\term{perceptual scalability}).
+  \item \term{Rendering / computation budget} -- frame rate, memory.
+  \item \term{Interaction latency} -- query/response time
+        (\term{interactive scalability}).
+\end{itemize}
+
+% ---------------------------------------------------------------------
+\subsection{Sources of latency}
+\begin{itemize}[leftmargin=1.4em]
+  \item \term{Data transfer / network} -- moving data to the client.
+  \item \term{Querying / aggregation} -- on-the-fly computation over big data.
+  \item \term{Rendering} -- drawing many marks each frame.
+  \item \term{Layout computation} -- e.g.\ force-directed iterations, DR.
+  \item \term{Disk / IO} -- loading from storage.
+  \item \term{Interaction round-trip} -- client$\leftrightarrow$server latency
+        on brush/filter.
+\end{itemize}
+
+% ---------------------------------------------------------------------
+\subsection{Aesthetic criteria for graph drawing}
+\begin{itemize}[leftmargin=1.4em]
+  \item \term{Minimize edge crossings.}
+  \item \term{Uniform edge length} / minimize total edge length.
+  \item \term{Even / symmetric node distribution}; display symmetries.
+  \item \term{Angular resolution} -- large angles between edges at a node.
+  \item \term{Minimize edge bends}; few orthogonal bends.
+  \item \term{Avoid node/edge overlap.}
+  \item \term{Cluster separation} -- communities visually grouped.
+  \item \term{Consistent flow direction} (for directed/layered graphs).
+  \item \term{Preserve the mental map} across changes (dynamic graphs).
+\end{itemize}
+
+% ---------------------------------------------------------------------
+\subsection{Overplotting fixes that need no preprocessing}
+\begin{itemize}[leftmargin=1.4em]
+  \item \term{Transparency (alpha blending)} -- density shows through.
+  \item \term{Smaller marks / thinner lines.}
+  \item \term{Open glyphs} (outlines instead of filled).
+  \item \term{Jitter} -- small random offset to separate coincident points.
+  \item \term{Subsampling on the fly} (draw a random subset).
+\end{itemize}
+\begin{keybox}[Contrast]
+Binning/hexbin, KDE, aggregation, and dimensionality reduction \emph{do} need
+preprocessing -- do not list them as ``no-preprocessing'' fixes.
+\end{keybox}
+
+% ---------------------------------------------------------------------
+\subsection{Model-agnostic AI interpretability methods}
+\begin{itemize}[leftmargin=1.4em]
+  \item \term{Partial dependence plots (PDP)} -- average marginal effect of a
+        feature.
+  \item \term{Individual conditional expectation (ICE)} -- per-instance PDP
+        curves.
+  \item \term{Permutation feature importance} -- accuracy drop when a feature
+        is shuffled.
+  \item \term{LIME} -- local surrogate from input perturbations.
+  \item \term{SHAP} -- Shapley-value attribution of the prediction.
+  \item \term{Counterfactual explanations} -- minimal change to flip outcome.
+  \item \term{Local surrogate / global surrogate models.}
+  \item \term{Accumulated local effects (ALE)} -- like PDP but robust to
+        correlated features.
+\end{itemize}
+
+% ---------------------------------------------------------------------
+\subsection{Techniques to visualize set-typed data}
+\begin{itemize}[leftmargin=1.4em]
+  \item \term{Venn / Euler diagrams} -- overlapping regions; poor beyond 3--4
+        sets.
+  \item \term{UpSet plots} -- matrix of intersections with bar charts; scales
+        to many sets.
+  \item \term{Set membership matrix} -- rows = elements, columns = sets.
+  \item \term{Linear / radial set diagrams} (LineSets, Kelp diagrams, BubbleSets)
+        -- overlays on a spatial layout.
+  \item \term{Aggregate bar charts} of set / intersection sizes.
+  \item \term{Parallel sets} -- flows between categorical set memberships.
+\end{itemize}
+
+% ---------------------------------------------------------------------
+\subsection{Methods for validation of visual encoding and/or interaction design}
+\begin{itemize}[leftmargin=1.4em]
+  \item \term{Controlled experiment / user study} -- measure time \& accuracy.
+  \item \term{Qualitative usability study} / think-aloud.
+  \item \term{Expert review / heuristic evaluation.}
+  \item \term{Case studies} with domain experts in the field.
+  \item \term{Computational / algorithmic benchmarks} -- e.g.\ quality metrics
+        (stress, class consistency, scagnostics).
+  \item \term{Crowdsourced experiments} (e.g.\ MTurk) for many participants.
+  \item \term{Analytical evaluation} against perceptual theory
+        (expressiveness/effectiveness).
+  \item \term{Log analysis} of real usage; A/B tests.
+\end{itemize}
+
+% ---------------------------------------------------------------------
+\subsection{Typical dependent variables in user studies}
+\begin{itemize}[leftmargin=1.4em]
+  \item \term{Task completion time} (speed).
+  \item \term{Accuracy / error rate} (correctness).
+  \item \term{Confidence} ratings.
+  \item \term{Subjective preference / satisfaction.}
+  \item \term{Cognitive load} (e.g.\ NASA-TLX).
+  \item \term{Insights found} / recall / memorability.
+  \item \term{Eye-tracking measures} (fixations, scan path).
+\end{itemize}

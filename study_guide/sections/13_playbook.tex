@@ -1,0 +1,284 @@
+\section{Exam Question-Type Playbook}
+\label{sec:playbook}
+
+This section gives, for each of the nine exam question types foreshadowed by
+the professor, (a) what it asks, (b) a step-by-step answer strategy, (c) the
+rubric / point deductions to avoid, and (d) a short worked mini-example.
+The detailed theory lives in the earlier sections; here we drill the
+\emph{format of the answer}.
+
+% =====================================================================
+\subsection{Type 1 -- Visualization Literacy (read a chart)}
+
+\textbf{What it asks.} Given a concrete visualization (boxplot, bar/stacked/
+grouped bar, histogram, pie, line chart, scatterplot, parallel coordinates,
+star/radar, SPLOM, heatmap, confusion matrix, choropleth, node-link, adjacency
+matrix, treemap, mosaic, UpSet, arc diagram, 3D scatter), report observations
+in free form or judge true/false statements.
+
+\begin{exambox}[Answer strategy]
+\begin{enumerate}[leftmargin=1.4em]
+  \item \term{Identify the chart} and what is mapped to each channel
+        (x, y, colour, size, area, position).
+  \item \term{Read the encoding back to data}: a tall bar = large value,
+        dark heatmap cell = large value, wide mosaic tile = large marginal.
+  \item For \term{distributions} (box/histogram): state median, spread/IQR,
+        skew, outliers, multimodality.
+  \item For \term{relations} (scatter/SPLOM/PCC): state correlation sign,
+        clusters, outliers, trends.
+  \item For \term{confusion matrices}: diagonal = correct; off-diagonal cell
+        $(i,j)$ = class $i$ predicted as $j$. ``Hardest to classify'' = row
+        with smallest diagonal / most off-diagonal mass.
+  \item Answer each T/F by tracing the exact cell / mark, not intuition.
+\end{enumerate}
+\end{exambox}
+
+\begin{pitfall}
+Confusing rows vs.\ columns in a confusion matrix (true class is usually the
+row). Reading area as length (pie/treemap/mosaic encode area, which is
+perceptually weak). Asserting correlation from a single outlier. Forgetting
+that a log axis compresses large values.
+\end{pitfall}
+
+\textit{Mini-example.} Confusion matrix: cell (boxing, handwaving)$=0$
+$\Rightarrow$ ``boxing is never confused with handwaving'' is \term{True}.
+The class with the smallest diagonal entry relative to its row sum is
+``jogging'' $\Rightarrow$ ``jogging is hardest to classify'' is \term{True}.
+
+% =====================================================================
+\subsection{Type 2 -- Visualization Algorithms (describe / sketch / MCQ)}
+
+\textbf{What it asks.} Describe, sketch, or answer multiple-choice on the
+properties and hyperparameters of a named algorithm: recursive subdivision
+(mosaic, treemap), just-noticeable-difference, scagnostics, class consistency,
+PCA, MDS, t-SNE, UMAP, hexbin, KDE, data cubes, parallel aggregation, feature
+vectors, local perturbations, partial dependence, counterfactuals,
+force-directed / layered / morphing / foresighted graph layout.
+
+\begin{exambox}[Answer strategy]
+\begin{enumerate}[leftmargin=1.4em]
+  \item State the \term{core idea} in one sentence (input $\to$ output).
+  \item Name the \term{key hyperparameters} and the effect of each.
+  \item State \term{properties}: linear vs.\ nonlinear, deterministic vs.\
+        stochastic, preserves global vs.\ local structure, complexity.
+  \item If asked to sketch, draw axes, a few labelled points, and the
+        result (e.g.\ the projection line for PCA, the binned grid for hexbin).
+\end{enumerate}
+\end{exambox}
+
+\begin{pitfall}
+Claiming t-SNE/UMAP distances or cluster \emph{sizes} are meaningful (they are
+not). Saying PCA is nonlinear. Forgetting t-SNE/UMAP are stochastic
+(need a seed) and perplexity / $n\_neighbors$ controls local-vs-global balance.
+See the Algorithm Cheat-Sheet (Section~\ref{sec:algocheat}) for the full table.
+\end{pitfall}
+
+\textit{Mini-example.} ``Sketch the 1D PCA projection of a 2D point cloud.''
+$\Rightarrow$ draw the cloud, the first principal axis along the direction of
+maximum variance, and the points projected (dropped perpendicularly) onto it.
+
+% =====================================================================
+\subsection{Type 3 -- Visualization Strategy (data + task $\to$ design)}
+
+\textbf{What it asks.} Given a dataset and an analysis task, propose and justify
+data processing + visual design + interaction design, and defend it against
+alternatives. Data may be multivariate, unstructured, multidimensional, tall,
+a large graph, set-typed, a dynamic graph, or an ML model.
+
+\begin{exambox}[Reusable 5-step strategy template]
+\begin{enumerate}[leftmargin=1.4em]
+  \item \term{Identify data type \& task.} Name cardinality (tall? wide?),
+        attribute types, and the analytic goal (overview, compare, find
+        outliers, track over time).
+  \item \term{Preprocessing.} Name the \emph{scalability challenge} explicitly
+        (perceptual: overplotting; interactive: latency). Pick the matching
+        tool: spatial/temporal \term{binning} + \term{aggregation} for
+        perceptual scalability; a \term{data cube} / pre-aggregation for
+        interactive scalability; \term{sampling} or \term{dimensionality
+        reduction} where appropriate.
+  \item \term{Visual encoding.} Name the \emph{marks} and \emph{channels} and
+        the \emph{colour map} (sequential for ordered magnitude, diverging for
+        signed, categorical for nominal).
+  \item \term{Interaction.} Name techniques: \term{linked (coordinated) views},
+        \term{brushing}, \term{filtering}, \term{details-on-demand},
+        zoom/pan, level-of-detail.
+  \item \term{Justify vs.\ alternatives.} Say why the chosen encoding beats a
+        plausible competitor (e.g.\ binned map vs.\ raw points; choropleth vs.\
+        hexbin; line chart vs.\ heatmap).
+\end{enumerate}
+\end{exambox}
+
+\begin{pitfall}
+Deductions: not identifying the scalability challenge; proposing no linked
+views; ineffective processing (e.g.\ raw KDE on 10M points); doing only spatial
+\emph{or} temporal binning when both are needed; not naming the visual encoding
+(marks/channels); not mentioning binning/aggregation; not naming the
+interaction design; non-optimal colour mapping (e.g.\ rainbow for magnitude).
+\end{pitfall}
+
+\textit{Mini-example.} 10M-row table of EU traffic accidents (ID, lon, lat,
+year): spatial + temporal binning (perceptual scalability) backed by a data
+cube (interactive scalability); two linked views, a hexbin/choropleth map
+(sequential colour, regions brushable) and a temporal line chart/histogram
+(year ranges brushable). Worked in full in Section~\ref{sec:practice}.
+
+% =====================================================================
+\subsection{Type 4 -- Design \& Validation Strategy (user study)}
+
+\textbf{What it asks.} Given a research topic, design a validation / user study:
+state hypotheses and identify independent, dependent, controlled, and
+confounding variables.
+
+\begin{exambox}[Answer strategy]
+\begin{enumerate}[leftmargin=1.4em]
+  \item \term{Hypothesis} (directional, falsifiable): ``Encoding A yields
+        faster/more accurate task performance than encoding B.''
+  \item \term{Independent variable (IV)}: what you manipulate (the encoding /
+        technique), with its levels.
+  \item \term{Dependent variables (DV)}: what you measure -- task completion
+        \emph{time}, \emph{accuracy / error rate}, subjective preference,
+        cognitive load, confidence.
+  \item \term{Controlled variables}: held constant (dataset size, screen,
+        task type, training).
+  \item \term{Confounds}: learning/order effects (counterbalance, e.g.\ Latin
+        square), fatigue, individual differences (within-subjects design).
+  \item State \term{design}: within- vs.\ between-subjects, \#participants,
+        analysis (ANOVA / t-test).
+\end{enumerate}
+\end{exambox}
+
+\begin{pitfall}
+Mixing up IV and DV. Forgetting to control dataset/task so the encoding is the
+only thing varying. No mention of order/learning effects or counterbalancing.
+Vague, non-measurable DVs.
+\end{pitfall}
+
+\textit{Mini-example.} ``Are class-by-colour or class-by-shape scatterplots more
+effective?'' IV = encoding (colour vs.\ shape vs.\ both); DV = class-membership
+judgment time \& accuracy; control point count/overlap; counterbalance order.
+
+% =====================================================================
+\subsection{Type 5 -- Critique \& Suggestions}
+
+\textbf{What it asks.} Discuss strengths/problems of a given visualization and
+suggest better encodings, using the design vocabulary.
+
+\begin{exambox}[Critique checklist]
+\begin{enumerate}[leftmargin=1.4em]
+  \item \term{Data-ink ratio} / chartjunk: is ink doing data work?
+  \item \term{Expressiveness}: does it show all and only the data
+        (no spurious order on nominal data)?
+  \item \term{Effectiveness} (Stevens' power law, channel ranking):
+        position $>$ length $>$ angle/area $>$ colour. Is the most important
+        attribute on the strongest channel?
+  \item \term{Hidden transformations}: implicit aggregation, normalization,
+        log axes, truncated baselines.
+  \item \term{Lie factor} / 3D distortion / non-zero baseline.
+  \item \term{Colour}: sequential vs.\ diverging vs.\ categorical;
+        perceptual uniformity; rainbow problems.
+  \item \term{Channel interference} / ordering.
+  \item \term{Suggest} a concrete alternative encoding.
+\end{enumerate}
+\end{exambox}
+
+\begin{pitfall}
+Listing principles without applying them to \emph{this} chart. Forgetting to
+propose a concrete fix. Calling all 3D bad without naming the actual problem
+(occlusion, perspective distortion, foreshortening).
+\end{pitfall}
+
+\textit{Mini-example.} A rainbow choropleth of unemployment: rainbow is not
+perceptually ordered nor uniform $\Rightarrow$ replace with a single-hue
+sequential map; mention simultaneous-contrast and colour-blind safety.
+
+% =====================================================================
+\subsection{Type 6 -- Alternatives (compare two views)}
+
+\textbf{What it asks.} Given two visualizations of the same data, discuss
+pros/cons (classic: parallel coordinates vs.\ SPLOM).
+
+\begin{exambox}[Answer strategy]
+Make a 2-column pro/con table on shared axes: \term{scalability} (\#dims,
+\#points), \term{task fit} (pairwise correlation vs.\ multivariate profiles /
+clusters), \term{clutter / overplotting}, \term{axis ordering effects},
+\term{interaction} needs. Conclude with ``use X when task is\ldots, Y when\ldots''.
+\end{exambox}
+
+\begin{pitfall}
+Only listing features of each without comparing them on the same criteria, or
+not tying the recommendation to a \emph{task}.
+\end{pitfall}
+
+\textit{Mini-example.} SPLOM shows all pairwise correlations but costs
+$O(d^2)$ panels; PCC scales to more dimensions in one view and shows
+multivariate profiles/clusters but suffers ordering effects and line clutter.
+
+% =====================================================================
+\subsection{Type 7 -- Transfer / Sketch}
+
+\textbf{What it asks.} Transfer one representation to another and sketch it
+(e.g.\ a number array $\to$ histogram + boxplot).
+
+\begin{exambox}[Answer strategy]
+Extract the summary statistics the target needs, then draw axes and the marks.
+For a boxplot: sort, find min, Q1, median, Q3, max, fence outliers at
+$1.5\,\mathrm{IQR}$. For a histogram: choose bins, count, draw bars.
+Always \term{label the axes and key values}.
+\end{exambox}
+
+\begin{pitfall}
+Unlabelled axes; wrong quartile placement; ignoring outliers; bins that hide
+the distribution shape.
+\end{pitfall}
+
+\textit{Mini-example.} Array $\{1,2,2,3,9\}$: median $=2$, Q1$=2$, Q3$=3$,
+$9$ is an outlier ($> Q3+1.5\,\mathrm{IQR}$); histogram is right-skewed.
+
+% =====================================================================
+\subsection{Type 8 -- Mapping Data Items Between Views}
+
+\textbf{What it asks.} A data item highlighted in one view; mark the same item
+in a paired view. Pairs: scatterplot$\leftrightarrow$PCC;
+PCC$\leftrightarrow$star plot; heatmap$\leftrightarrow$grouped/stacked bars;
+node-link$\leftrightarrow$adjacency matrix; treemap$\leftrightarrow$rectilinear
+node-link tree.
+
+\begin{exambox}[Answer strategy]
+Recover the item's \emph{coordinates / attribute values} from the source view,
+then find the mark with those same values in the target. A scatter point
+$(x,y)$ becomes the PCC polyline passing through $x$ on axis~1 and $y$ on
+axis~2; a heatmap cell becomes one bar in the corresponding bar group; a
+node becomes the matching row+column of the adjacency matrix; a treemap
+rectangle becomes the corresponding leaf in the node-link tree.
+\end{exambox}
+
+\begin{pitfall}
+Reading the wrong axis in PCC; confusing a node's row/column in the adjacency
+matrix; matching by colour alone when colour is reused.
+\end{pitfall}
+
+\textit{Mini-example.} Outlier point top-right of a scatter $\to$ the PCC
+polyline that is high on both corresponding axes.
+
+% =====================================================================
+\subsection{Type 9 -- List / Enumerate}
+
+\textbf{What it asks.} Enumerate concepts: raw-data issues; scalability factors;
+latency sources; graph-drawing aesthetics; no-preprocessing overplotting fixes;
+model-agnostic interpretability methods; set-typed visualization techniques;
+validation methods; typical user-study dependent variables.
+
+\begin{exambox}[Answer strategy]
+Give a \emph{bulleted} list with a one-line gloss per item; aim for breadth
+(many items) over depth. The complete memorizable lists are in
+Section~\ref{sec:lists}.
+\end{exambox}
+
+\begin{pitfall}
+Writing prose instead of a list; giving too few items; padding with synonyms of
+the same concept.
+\end{pitfall}
+
+\textit{Mini-example.} Overplotting fixes needing no preprocessing:
+transparency (alpha), smaller marks, jitter, open glyphs --- vs.\ binning/DR
+which \emph{do} require preprocessing.

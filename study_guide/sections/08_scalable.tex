@@ -1,0 +1,305 @@
+\section{Scalable Information Visualization \& Big Data}
+
+\term{Big data} (Heer \& Kandel) has three dimensions: data can be \term{tall}
+(billions/trillions of rows / items), \term{wide} (hundreds/thousands of
+attributes / variables), and \term{diverse} (many sources, varied types). A
+pragmatic visualization definition: \emph{big data = when our traditional
+visual encodings break}. When each data record is mapped to one mark, naive
+encodings (scatterplots, parallel coordinates) become unreadable already at
+$10\,000$--$100\,000$ items.
+
+\begin{keybox}[The exam-critical distinction: two kinds of scalability]
+There are \textbf{two} separate scalability challenges. Naming both correctly
+is the most common exam point.
+\begin{itemize}
+  \item \term{Perceptual scalability} --- can the user \emph{read} it?
+        The display has fewer pixels than data points; too many marks cause
+        \term{overplotting}, occlusion, clutter, low readability. Limited by
+        \emph{human perception} (precision of the eye/mind) and \emph{display
+        resolution}, not by the database. \emph{Goal: show a larger amount of
+        data in a readable way} [Richer et al. 2022].
+  \item \term{Interactive / computational scalability} --- is it \emph{fast}
+        enough? Too much data to query/process at interactive rates:
+        inefficient database queries, inefficient data processing,
+        rendering-performance limits, interaction latency.
+\end{itemize}
+\textbf{Rule of thumb (latency):} the \term{100\,ms} interactive response-time
+limit. Beyond it, exploration stalls. A Google study found that adding just
+\term{200\,ms} latency to search measurably reduced the number of searches ---
+and the effect persisted for weeks (Heer \& Kandel).
+\end{keybox}
+
+\subsection{Factors Affecting (Visual) Scalability}
+
+\begin{keybox}[List: factors affecting scalability (Erick \& Karr 2012)]
+\begin{tabular}{@{}ll@{}}
+\toprule
+Factor & Affects \\
+\midrule
+\term{Human perception} (precision of eye \& mind) & perceptual \\
+\term{Monitor resolution} (physical size, \#pixels) & perceptual \\
+\term{Visual metaphors} (choice of idiom \& channels) & perceptual \\
+\term{Interactivity} (panning, zooming, brushing) & both \\
+\term{Data structures \& algorithms} (graph layout, data cubes) & interactive \\
+\term{Computational infrastructure} (CPU, GPU, network) & interactive \\
+\bottomrule
+\end{tabular}
+
+\smallskip
+The first three sit on the perceptual side; interactivity bridges; the last two
+are the interactive/computational side. Also relevant: \#rows, \#dimensions,
+memory.
+\end{keybox}
+
+\begin{keybox}[List: sources of latency (Heer \& Kandel)]
+The interaction round-trip has three latency stages, each with its own fix:
+\begin{enumerate}
+  \item \term{Data query} --- searching too much data
+        (e.g.\ \texttt{month=1} in 4\,M rows). \emph{Fix:} pre-computed
+        aggregates / data cubes; plus data transfer (network) and disk I/O.
+  \item \term{Data processing} --- aggregation/computation too slow.
+        \emph{Fix:} parallelization (map-reduce style), prefetching.
+  \item \term{Visualization / rendering} --- drawing too slow for
+        interaction/animation (e.g.\ SVG/D3 does not scale with \#items).
+        \emph{Fix:} bitmap/GPU rendering (WebGL, WebGPU) instead of SVG.
+\end{enumerate}
+\end{keybox}
+
+\subsection{Overplotting: Simple Solutions vs.\ Preprocessing}
+
+Each data record $\to$ one visual item. With big data this gives
+\term{occlusion}, \term{clutter}, poor \term{readability}, and a
+\term{waste of resources}.
+
+\begin{keybox}[Simple solutions that need NO data preprocessing]
+These touch only the \emph{rendering}, not the data:
+\begin{itemize}
+  \item \term{Alpha blending} (opacity/transparency) --- overlapping marks
+        darken, revealing density. (Cannot show outliers + global patterns at
+        once.)
+  \item \term{Smaller marks} / reduced point size.
+  \item \term{Jittering} --- small random offsets to separate coincident marks.
+  \item \term{Draw order} (z-order) of marks.
+  \item \term{Open vs filled} marks (outline-only marks occlude less).
+\end{itemize}
+\textbf{Contrast --- solutions that DO need preprocessing:} binning /
+aggregation, sampling, kernel density estimation. The slides' ``3 simple
+solutions'' are \term{alpha blending}, \term{filtering}, \term{random
+sampling}; the warning: \emph{these cannot show global patterns and outliers at
+the same time.}
+\end{keybox}
+
+\begin{pitfall}[Do not mix up the two solution classes]
+Alpha blending, jittering, smaller/open marks, draw-order = \emph{no
+preprocessing}. Binning, aggregation, density estimation, sampling =
+\emph{preprocessing}. If asked for ``simple solutions to overplotting that need
+no preprocessing'', listing binning loses the point.
+\end{pitfall}
+
+\subsection{Aggregation \& Density: Scalable Encodings}
+
+Core idea: \emph{visualize \textbf{models} or \textbf{aggregates} of attributes
+instead of individual data points} --- individual items are combined. The
+perceptual scalability of a display should be limited by the chosen
+\emph{resolution of the data}, not by the number of records (Heer \& Kandel).
+
+\begin{algobox}[Binning / 2D histograms]
+\textbf{Idea:} split the data range into regular \term{intervals (bins)};
+encode the \term{frequency} (count per bin). Quantitative/ordinal $\to$ regular
+intervals; nominal/categorical $\to$ one bin per category.\\
+\textbf{Scalable because} we control the \emph{number of bins} independently of
+\#records; same visual encoding as a bar chart (length/position).\\
+\textbf{Hyperparameter:} bin size / number of bins.\\
+\textbf{Pitfall:} sensitive to bin size --- can cause \term{aliasing} effects
+(e.g.\ 9 vs 10 bins, $10\times10$ vs $30\times30$ bins look very different).
+\end{algobox}
+
+\begin{algobox}[Hexagonal binning (hexbin)]
+2D binning where bins are \term{hexagons} instead of squares.\\
+\textbf{Why hexagons:}
+\begin{itemize}
+  \item \term{Nearest-neighbour symmetry} --- all 6 neighbours are at the
+        \emph{same distance} (a square grid mixes edge- and corner-neighbours,
+        introducing visual bias).
+  \item Hexagons are the \emph{maximum-side regular polygon that tessellates}
+        the plane $\to$ most ``circular'', efficient density approximation.
+\end{itemize}
+Frequency encoded by \emph{colour or size}. \textbf{Hyperparameter:} bin size /
+number of bins. Used in hexbin scatterplots, hexbin SPLOMs (Carr et al.\ 1987),
+and geographic hexbin maps (e.g.\ Walmart / farmers' markets in the U.S.).
+\end{algobox}
+
+\begin{algobox}[Kernel Density Estimation (KDE)]
+\textbf{Non-parametric} estimate of the probability density function of a
+random variable by weighting distances of observations $x_1,\dots,x_n$ from a
+query point $x$:
+\[
+  \widehat{f}_h(x) \;=\; \frac{1}{n}\sum_{i=1}^{n} K_h\!\left(x - x_i\right).
+\]
+\textbf{Hyperparameters:}
+\begin{itemize}
+  \item \term{Bandwidth} $h$ (kernel width): the larger $h$, the
+        \emph{smoother} the curve.
+        \emph{Too small} $\to$ \term{under-smoothing} (noisy, spiky);
+        \emph{too large} $\to$ \term{over-smoothing} (a single blob; range and
+        mode become misleading).
+  \item \term{Kernel} $K$: non-negative, integrates to 1, mean 0 ---
+        usually a \emph{Gaussian} (a rectangular/box kernel also works).
+\end{itemize}
+\textbf{Used in:} violin plots (density + embedded box plot, good for
+\term{multimodal} distributions), density scatterplots (2D KDE), geographic
+heatmaps. Munzner's \emph{continuous scatterplots} use the same idea: a derived
+\emph{overplot-density} value coloured per pixel instead of discrete dots.
+\end{algobox}
+
+\begin{algobox}[Sampling (random / stratified)]
+Show a \emph{representative subset} with a bounded number of points instead of
+all records.\\
+\textbf{Random sampling:} simple, uniform; risks dropping rare outliers.\\
+\textbf{Stratified sampling:} sample within groups/strata so each is
+represented --- better coverage of minority categories.\\
+\textbf{Trade-off:} fewer marks $\to$ less overplotting and faster rendering,
+but \emph{outliers and fine structure can be lost}. Can be combined with
+aggregation (aggregate views of well-chosen samples approximate the full data).
+\end{algobox}
+
+\subsection{Data Cubes / Multi-Dimensional Tables (OLAP)}
+
+For \emph{interactive} scalability, the killer technique is to
+\term{pre-aggregate whatever possible} so that interactive queries hit small
+precomputed tables, not the raw rows.
+
+\begin{algobox}[Data cubes / multi-dimensional tables]
+\textbf{From flat to cube:} a flat table (1 key $\to$ list, 2 keys $\to$
+matrix/contingency table) generalizes to an $n$-dimensional \term{data cube}.
+Each \emph{cell stores a precomputed aggregate} (\textbf{sum}, mean, count,
+min/max).\\
+\textbf{OLAP operations:}
+\begin{itemize}
+  \item \term{Roll-up} (projection): aggregate away a dimension
+        (e.g.\ project onto $(\text{Time},\text{Products},*)$).
+  \item \term{Drill-down}: the inverse --- go to a finer level of detail.
+  \item \term{Slice}: fix one dimension to a single value (e.g.\ Texas).
+  \item \term{Dice}: select a sub-range on several dimensions.
+\end{itemize}
+\textbf{Why it enables interactive scalability:} brushing/linking, dynamic
+queries, panning/zooming become lookups + small re-aggregations over the cube
+$\to$ within the 100\,ms budget.\\
+\textbf{Cost (key pitfall):} size of the cube $=\prod_i b_i$ (product of bin
+counts per dimension) --- \term{exponential in the number of dimensions}. So
+pre-compute \emph{wisely} (only frequent / low-order projections; supports
+simple, not arbitrary compound and/or queries).
+\end{algobox}
+
+\begin{keybox}[imMens / Nanocubes idea]
+\term{imMens} [Liu, Jiang \& Heer 2013] and \term{Nanocubes} [Lins et al.\
+2013]: precompute \term{binned aggregates} (multivariate data tiles) so that
+\term{real-time brushing \& linking} over hundreds of millions of records stays
+interactive (e.g.\ Brightkite $\sim$4\,M check-ins: brush ``January'' in a month
+histogram $\to$ map + day + hour views update instantly). Brushing/linking =
+filter + new aggregation; panning/zooming = change of bin resolution / \#samples.
+\end{keybox}
+
+\subsection{Reducing Processing \& Rendering Latency}
+
+\begin{keybox}[Techniques (Heer \& Kandel; slides)]
+\begin{itemize}
+  \item \term{Parallel aggregation} / data-parallel processing (map-reduce
+        style, GPU/clusters). Requirements: data must be \term{separable} (can
+        be split and re-composed, e.g.\ local histograms merged into a global
+        one) and \term{streamable} (processed independently). Tools: Dask,
+        RAPIDS, PySpark.
+  \item \term{Prefetching} \& \term{predictive caching} --- fetch data tiles
+        the user is likely to request next (e.g.\ adjacent zoom levels).
+  \item \term{Progressive / online aggregation \& sampling} --- show an
+        approximate result immediately and refine it, so the user is never
+        blocked waiting for the exact answer.
+  \item \term{GPU / bitmap rendering} (WebGL, WebGPU) instead of SVG (D3),
+        which does not scale with \#items.
+\end{itemize}
+\end{keybox}
+
+\subsection{Reduce Strategy (Munzner ch.\ 13)}
+
+\begin{keybox}[Filter vs Aggregate vs Embed]
+\term{Reduce} is one of Munzner's strategies for managing complexity. It applies
+to both \emph{items} and \emph{attributes} (= ``elements'').
+\begin{itemize}
+  \item \term{Filter} --- simply \emph{eliminate} elements (item filtering /
+        attribute filtering), often via \term{dynamic queries}
+        (tightly-coupled encoding $+$ interaction; e.g.\ FilmFinder, scented
+        widgets). \emph{Risk:} ``out of sight, out of mind'' --- users forget
+        filtered-out data.
+  \item \term{Aggregate} --- replace a group of elements by a single
+        \emph{derived} element that stands in for them (count, sum, mean,
+        min/max). Cognitively safer (conveys info about the whole group) but
+        \emph{cannot convey everything omitted}; the challenge is summarizing
+        without hiding signal (cf.\ Anscombe's quartet). Examples: histograms,
+        continuous scatterplots, box plots.
+  \item \term{Embed} --- show focus and context together in one view
+        (focus+context), so detail and overview coexist without removing data.
+\end{itemize}
+\end{keybox}
+
+\subsection{Interactive Exploration: Shneiderman's Mantra}
+
+\term{Overview first, zoom and filter, details on demand} [Shneiderman 1996]
+maps directly onto scalable techniques:
+\begin{itemize}
+  \item \term{Overview} via aggregate visualizations (binned/hexbin maps,
+        heatmaps, choropleths).
+  \item \term{Zoom} via \term{hierarchical aggregation} / \term{semantic
+        zooming} (drill-down): objects change shape/detail and new objects
+        appear --- not just resizing. Aggregate visualizations are very well
+        suited to this.
+  \item \term{Filter} via \term{brushing \& linking} / dynamic queries.
+  \item \term{Details on demand}: tooltips that report \emph{summary statistics
+        of the aggregate / bin} (e.g.\ a hexbin tooltip: \#users, \#posts,
+        \#locations in that bin).
+\end{itemize}
+
+\begin{exambox}[Worked connection: 10M traffic accidents]
+\textbf{Task:} explore $\sim$10\,M traffic-accident records (location, time,
+severity) interactively. Both scalability challenges appear --- name and solve
+each:
+\begin{description}
+  \item[Perceptual scalability] 10\,M point marks on a map $\to$ total
+        overplotting. \emph{Solution:} \term{aggregate}. Bin
+        \emph{spatially} (regions/states, or a hexbin grid) and
+        \emph{temporally} (by year). Encode counts by colour $\to$
+        \term{choropleth} or \term{hexbin density map} (space) and a
+        \term{line chart} of accidents per year or a \term{histogram} per
+        region (time).
+  \item[Interactive scalability] Re-querying 10\,M rows on every brush exceeds
+        100\,ms. \emph{Solution:} build a \term{data cube} over
+        $(\text{region}\times\text{year}\times\text{severity})$ with
+        precomputed counts; brushing/linking then becomes cube lookups +
+        small re-aggregations. Cost $\prod_i b_i$ stays small because only a
+        few coarse dimensions are binned.
+  \item[Linked views] A \term{choropleth/hexbin map} linked to a
+        \term{line chart / histogram}: brush a year on the line chart $\to$ map
+        re-aggregates; brush a region $\to$ time chart updates. Add
+        details-on-demand tooltips reporting per-bin summary stats. If still
+        slow: parallel aggregation + prefetching + progressive refinement.
+\end{description}
+\textbf{One-liner answer:} \emph{bin spatially \& temporally for perceptual
+scalability; data cube for interactive scalability; linked
+choropleth/hexbin map $+$ line chart.}
+\end{exambox}
+
+\begin{exambox}[How this is asked]
+\begin{itemize}
+  \item ``Name and distinguish the two scalability challenges'' $\to$
+        perceptual vs interactive/computational (see top keybox).
+  \item ``List factors affecting scalability'' / ``list sources of latency''
+        $\to$ the two list-keyboxes above; map each to perceptual/interactive.
+  \item ``Give simple overplotting solutions needing no preprocessing'' $\to$
+        alpha, smaller/open marks, jitter, draw-order (NOT binning/sampling).
+  \item ``Why hexagons?'' $\to$ uniform neighbour distance + best regular
+        tessellation.
+  \item ``KDE bandwidth too large/small?'' $\to$ over-/under-smoothing.
+  \item ``Why are data cubes expensive?'' $\to$ size $\prod_i b_i$, exponential
+        in \#dimensions.
+  \item ``Munzner reduce'' $\to$ filter vs aggregate vs embed.
+\end{itemize}
+\end{exambox}

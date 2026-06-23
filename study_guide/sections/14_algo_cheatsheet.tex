@@ -1,0 +1,172 @@
+\section{Algorithm Cheat-Sheet}
+\label{sec:algocheat}
+
+A compact one-row-per-algorithm reference for the ``describe / sketch / MCQ''
+question type. Detailed treatments are in Sections~7--11; this is the revision
+sheet. Sketch boxes follow for the algorithms where a drawing matters.
+
+\renewcommand{\arraystretch}{1.25}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{2.5cm}
+                     >{\raggedright\arraybackslash}p{4.3cm}
+                     >{\raggedright\arraybackslash}p{3.6cm}
+                     >{\raggedright\arraybackslash}p{4.6cm}@{}}
+\toprule
+\textbf{Algorithm} & \textbf{Core idea} & \textbf{Key hyperparameters} &
+\textbf{Key properties / pitfalls}\\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Algorithm} & \textbf{Core idea} & \textbf{Key hyperparameters} &
+\textbf{Key properties / pitfalls}\\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+
+Recursive subdivision (mosaic) & Split a rectangle by category proportions,
+alternating axes per variable & Variable order; spacing & Tile area = joint
+frequency; order changes layout; reads marginals/conditionals\\
+
+Recursive subdivision (treemap) & Recursively nest rectangles sized by a
+hierarchy's leaf values & Tiling (slice-and-dice, squarified); layout order &
+Area = value; squarified gives good aspect ratios; deep hierarchies hard to
+read; area is a weak channel\\
+
+Just-noticeable-difference (JND) & Smallest stimulus change a viewer can
+detect & (Weber fraction $k$) & Weber's law: $\Delta I / I = k$; motivates
+perceptually uniform colour/size scales\\
+
+Scagnostics & Graph-theoretic measures summarizing a scatterplot's shape &
+(Binning grid; measure set) & Outlying, skewed, clumpy, sparse, striated,
+convex, skinny, stringy, monotonic; used to rank SPLOM panels\\
+
+Class consistency & Quality metric: do class labels agree with spatial
+structure of a projection? & Distance/centroid criterion & Higher = classes
+form separable clusters; used to evaluate/rank DR layouts\\
+
+PCA & Linear projection onto orthogonal directions of max variance &
+\#components $k$ & Linear, deterministic; preserves global variance; axes
+interpretable; misses nonlinear structure\\
+
+MDS & Embed so low-D distances match high-D (dis)similarities & metric vs.\
+non-metric; \#dims; stress & Preserves pairwise distances; classical MDS
+$\approx$ PCA; can be slow; stress measures distortion\\
+
+t-SNE & Match neighbour probability distributions (high-D vs.\ low-D),
+minimize KL & \term{perplexity}; learning rate; iterations; seed &
+Nonlinear, stochastic; preserves local clusters; \emph{cluster sizes \&
+between-cluster distances not meaningful}\\
+
+UMAP & Build a fuzzy $k$-NN graph, optimize a low-D layout of it &
+\term{$n\_neighbors$}; \term{min\_dist}; \#dims; seed & Nonlinear,
+stochastic; faster than t-SNE; better global structure; sizes/distances still
+unreliable\\
+
+Hexagon binning & Aggregate points into hexagonal bins, encode count by
+colour & bin size / \#bins & Fixes overplotting (perceptual scalability);
+hexagons tile uniformly, less axis bias than squares\\
+
+Kernel density estimation & Sum smooth kernels over points to estimate a
+density & \term{bandwidth}; kernel shape & Bandwidth too small = spiky, too
+large = oversmoothed; $O(n)$ per eval -- costly on tall data\\
+
+Multi-dim tables / data cubes & Pre-aggregate measures over dimension
+combinations for fast queries & dimensions; hierarchies; measures &
+Interactive scalability: slice/dice/roll-up/drill-down in $O(1)$; storage
+grows with dimensions\\
+
+Parallel aggregation & Distribute aggregation over partitions, combine
+partial results & \#partitions & Scales aggregation to tall data; basis of
+data-cube construction; needs associative aggregates\\
+
+Feature vectors (neuron activations) & Represent an input by a layer's
+activation vector & layer choice; (DR for display) & Used to inspect what a
+network ``sees''; high-D, usually projected with t-SNE/UMAP\\
+
+Local perturbations (LIME) & Perturb one input, fit a simple local surrogate &
+\#samples; kernel width; surrogate & Model-agnostic, \emph{local} explanation;
+unstable to sampling; not globally faithful\\
+
+Partial dependence (PDP) & Average model output while sweeping one feature
+over its range & feature(s); grid resolution & Global, model-agnostic; assumes
+feature independence; can hide interactions (ICE curves fix this)\\
+
+Counterfactual explanation & Smallest input change that flips the prediction &
+distance metric; target class; sparsity & ``Change X to get outcome Y'';
+should be close, sparse, actionable, plausible; many valid counterfactuals\\
+
+Force-directed layout & Springs on edges + repulsion on nodes, minimize energy
+& spring constant; repulsion; iterations; temperature & Good for small/medium
+graphs; stochastic; $O(n^2)$ per step (Barnes--Hut speeds it); can get stuck
+in local minima\\
+
+Layered (Sugiyama) layout & Assign nodes to layers, order to cut crossings,
+assign coordinates & layer assignment; crossing-reduction passes & For
+DAGs/hierarchies; minimizes edge crossings; long edges via dummy nodes\\
+
+Graph morphing & Smoothly interpolate between two layouts of a graph &
+interpolation; duration & Preserves the \term{mental map} during transitions;
+animate node positions\\
+
+Foresighted layout & Lay out a dynamic graph anticipating future states for
+stability & time window; stability weight & Trades layout quality vs.\
+stability across time steps; keeps the mental map over a sequence\\
+
+\end{longtable}
+\renewcommand{\arraystretch}{1.0}
+
+% ---------------------------------------------------------------------
+\begin{algobox}[PCA -- 1D projection sketch]
+Centre the data, find the direction of maximum variance (first eigenvector of
+the covariance matrix), and project points onto it.
+\sketchnote{Draw an elongated 2D point cloud. Draw an arrow through its long
+axis (PC1). Drop a perpendicular from each point onto that line; the feet of
+the perpendiculars are the 1D coordinates. PC2 is orthogonal and discarded.}
+\end{algobox}
+
+\begin{algobox}[Recursive subdivision -- mosaic / treemap sketch]
+Both split a rectangle proportionally and recurse.
+\sketchnote{Mosaic: split the full width by variable~A's proportions, then
+split each resulting column's height by variable~B's conditional proportions;
+tile area = joint frequency. Treemap: split the rectangle by the top-level
+children's summed values, then recurse inside each child; leaf area = value.}
+\end{algobox}
+
+\begin{algobox}[Hexagon binning sketch]
+\sketchnote{Overlay a hexagonal grid on the scatterplot, count points per
+hexagon, and fill each hexagon with a sequential colour by count. Replaces a
+dense black blob with a readable density field.}
+\end{algobox}
+
+\begin{algobox}[KDE -- bandwidth sketch]
+\sketchnote{Place a small bump (kernel) on each data point on the x-axis and
+sum them into a smooth curve. Show three curves: tiny bandwidth (spiky,
+overfit), good bandwidth (smooth bimodal), huge bandwidth (one flat hump,
+oversmoothed).}
+\end{algobox}
+
+\begin{algobox}[Force-directed layout sketch]
+\sketchnote{Nodes as charged particles repel each other; edges act as springs
+pulling connected nodes together. Iterate until the energy settles. Draw a
+small graph with well-separated nodes and short, roughly equal-length edges,
+clusters visibly grouped.}
+\end{algobox}
+
+\begin{algobox}[Layered (Sugiyama) layout sketch]
+\sketchnote{Draw horizontal layers (rows). Place each node in a layer by its
+topological rank; route all edges downward; reorder nodes within layers to
+minimize crossings; insert dummy nodes for edges spanning multiple layers.}
+\end{algobox}
+
+\begin{algobox}[Counterfactual explanation sketch]
+\sketchnote{Plot the decision boundary in feature space with the query point on
+the ``rejected'' side. The counterfactual is the nearest point across the
+boundary; draw the short arrow from query to that point -- the minimal,
+sparse change that flips the outcome.}
+\end{algobox}
+
+\begin{algobox}[Partial dependence sketch]
+\sketchnote{x-axis = one feature's value, y-axis = average model prediction.
+For each grid value of the feature, set it for all rows, predict, and average.
+Plot the resulting curve; its slope shows the feature's marginal effect.}
+\end{algobox}

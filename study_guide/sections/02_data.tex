@@ -1,0 +1,189 @@
+\section{Data Abstraction}
+
+This section answers Munzner's \term{What?} question: the abstract description of the
+data, independent of any domain. The take-away from the lecture is to
+\term{describe data in abstract form, not in domain-specific form}; from an
+abstract perspective two unrelated domain datasets can be \emph{equivalent}.
+
+\begin{keybox}[The big picture -- one paragraph]
+The four basic \term{dataset types} are \term{tables}, \term{networks/trees},
+\term{fields}, and \term{geometry}; other groupings of items are
+\term{clusters}, \term{sets}, and \term{lists}. They are built from five
+\term{data types}: \term{items}, \term{attributes}, \term{links},
+\term{positions}, \term{grids}. An attribute's type is \term{categorical} or
+\term{ordered}, with ordered split into \term{ordinal} and \term{quantitative};
+the ordering direction can be \term{sequential}, \term{diverging}, or
+\term{cyclic}. Any dataset can be \term{static} (a file, available all at once)
+or \term{dynamic} (a stream).
+\end{keybox}
+
+\subsection{Semantics vs Type}
+
+Two crosscutting properties must be known about every value:
+\begin{itemize}
+  \item \term{Semantics} -- the real-world \emph{meaning} (is this number an age, a postal code, a position?).
+  \item \term{Type} -- the structural / mathematical interpretation (item, link, attribute; table, tree, field; what arithmetic is allowed).
+\end{itemize}
+They are independent: knowing the type does not tell you the semantics. Munzner's
+example: the row \texttt{Basil, 7, S, Pear} is meaningless until you are told the
+semantics (a person: name, age, shirt size, favourite fruit). Information that
+must be supplied alongside the data is \term{metadata}.
+
+\subsection{The Five Data Types}
+
+\begin{center}
+\begin{tabular}{@{}lp{8.6cm}@{}}
+\toprule
+\textbf{Data type} & \textbf{Meaning} \\
+\midrule
+\term{Item}     & an individual, discrete entity (a row in a table, a node in a network) \\
+\term{Attribute}& a property that can be measured, observed or logged (a column); synonyms: \emph{variable}, \emph{dimension} \\
+\term{Link}     & a relationship between items, typically within a network; synonym: \emph{edge} \\
+\term{Position} & spatial data: a location in 2D or 3D space (e.g.\ a lat--long pair) \\
+\term{Grid}     & the strategy for sampling a continuous field (geometric + topological structure of cells) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{The Four Dataset Types (+ Clusters/Sets/Lists)}
+
+\begin{center}
+\begin{tabular}{@{}l l p{6.2cm}@{}}
+\toprule
+\textbf{Dataset type} & \textbf{Built from} & \textbf{Notes} \\
+\midrule
+\term{Tables}          & items, attributes & flat or multidimensional; cells hold values \\
+\term{Networks/Trees}  & items (nodes), links, attributes & \term{tree} = network with hierarchy, no cycles \\
+\term{Fields}          & grids, positions, attributes & \emph{continuous}; cells sampled from a continuous domain \\
+\term{Geometry}        & items, positions & shape with explicit spatial position; need not have attributes \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{itemize}
+  \item \term{Tables} -- rows = items, columns = attributes; each \term{cell} = (item, attribute) pair holding a \term{value}.
+  \item \term{Networks} -- items are \term{nodes} (\emph{vertices}), connected by \term{links} (\emph{edges}); both nodes and links may carry attributes. A \term{tree} is the hierarchical special case (each node has one parent, no cycles).
+  \item \term{Fields} -- each \term{cell} contains a measurement from a \term{continuous} domain (infinitely many possible values), requiring \term{sampling} and \term{interpolation}. Tables/networks are \term{discrete} by contrast. A \term{spatial field} samples at spatial positions (e.g.\ a medical scan). By \emph{number of values per cell}: \term{scalar} (1), \term{vector} (2--3, direction+magnitude), \term{tensor} (many). \emph{SciVis} deals with spatial fields (position \emph{given}); \emph{InfoVis} with nonspatial/abstract data (position \emph{chosen}).
+  \item \term{Geometry} -- pure shape (points, lines/curves, surfaces, volumes); the odd one out because it need not have attributes.
+\end{itemize}
+
+Other groupings of items (not basic dataset types):
+\begin{itemize}
+  \item \term{Set} -- an \emph{unordered} group of items.
+  \item \term{List} -- a group with a \emph{specified ordering} (synonym in CS: \emph{array}).
+  \item \term{Cluster} -- a grouping by \emph{attribute similarity} (items in a cluster are more similar to each other than to items in other clusters).
+\end{itemize}
+More complex structures: a \term{path} (ordered set of segments through a network) and a \term{compound network} (a network plus an associated tree over its nodes). Real datasets are often hybrid combinations.
+
+\subsection{Grid Types (for fields)}
+\term{Uniform} (regular intervals; no need to store geometry/topology) $\rightarrow$
+\term{rectilinear} (nonuniform spacing) $\rightarrow$ \term{structured} (curvilinear
+shapes, store geometry) $\rightarrow$ \term{unstructured} (store both geometry and
+topology explicitly).
+
+\subsection{Attribute Types}
+
+\begin{center}
+\begin{tikzpicture}[
+  every node/.style={font=\small, align=center},
+  level distance=10mm, sibling distance=24mm,
+  edge from parent/.style={draw,-{Stealth[length=1.8mm]}}]
+  \node {Attribute}
+    child {node {Categorical\\(nominal)}}
+    child {node {Ordered}
+      child {node {Ordinal}}
+      child {node {Quantitative}}
+    };
+\end{tikzpicture}
+\end{center}
+
+\begin{itemize}
+  \item \term{Categorical} (\emph{nominal}) -- \emph{no} implicit ordering; can only tell \emph{same} (apples) vs \emph{different} (apples vs oranges). E.g.\ fruit, genres, file types, city names. Any ordering (alphabetical) is external, not inherent.
+  \item \term{Ordered} -- has an implicit ordering. Two sub-types:
+  \begin{itemize}
+    \item \term{Ordinal} -- well-defined ordering / ranking, but \emph{no full arithmetic}. E.g.\ shirt size: \emph{large $-$ medium} is meaningless, but medium falls between small and large.
+    \item \term{Quantitative} -- measurement of magnitude supporting \emph{arithmetic comparison} (e.g.\ $68\text{ in}-42\text{ in}=26\text{ in}$). E.g.\ height, weight, temperature, counts. (Interval vs ratio is usually collapsed.)
+  \end{itemize}
+\end{itemize}
+
+\subsubsection{Ordering Direction (for ordered attributes)}
+\begin{itemize}
+  \item \term{Sequential} -- homogeneous range from a minimum to a maximum (e.g.\ mountain height from sea level to peak).
+  \item \term{Diverging} -- two sequences meeting at a common \emph{zero/neutral} point (e.g.\ elevation above/below sea level).
+  \item \term{Cyclic} -- values wrap around to the start (typically time: hour of day, day of week, month of year).
+\end{itemize}
+
+\sketchnote{Sequential = a single arrow $\rightarrow$; diverging = a double-headed arrow with a block in the middle $\leftarrow\!\blacksquare\!\rightarrow$; cyclic = a circular arrow $\circlearrowright$.}
+
+\begin{pitfall}[Easy point loss]
+``Ordinal'' and ``sequential/diverging/cyclic'' answer \emph{different} questions.
+Categorical/ordinal/quantitative is the \term{attribute type}; sequential/diverging/cyclic is the \term{ordering direction} and applies \emph{only} to ordered attributes. Do not list ``diverging'' as an attribute type, and do not call a categorical attribute ``sequential''.
+\end{pitfall}
+
+\subsection{Keys vs Values; Flat vs Multidimensional Tables}
+
+\begin{itemize}
+  \item A \term{key} (\emph{independent} attribute) is an index used to look up \term{value} (\emph{dependent}) attributes.
+  \item \term{Flat table} -- exactly \emph{one} key; each item is one row. The key may be \emph{explicit} (an ID column) or \emph{implicit} (the row number). Quantitative attributes are usually unsuitable as keys (duplicates not prevented).
+  \item \term{Multidimensional table} -- \emph{multiple} keys are needed to index a cell; the \emph{combination} of all keys must be unique even if a single key has duplicates (e.g.\ gene $\times$ time $\rightarrow$ activity level).
+\end{itemize}
+For \term{fields} the same idea uses different words: spatial position is a
+quantitative \term{key} (independent variable) and the measurement is the
+\term{value} (dependent variable). Determining which attributes are keys vs
+values is often the \emph{outcome} of analysis, not its starting point (recast a
+flat table into a meaningful multidimensional one).
+
+\subsection{Temporal and Time-Varying Semantics}
+A \term{temporal} attribute relates to time and has rich, multi-scale hierarchical
+structure (and possible periodicity). It can be a \emph{key} or a \emph{value}. A
+dataset is \term{time-varying} when time is one of the \emph{keys}. A
+\term{time-series} is the common special case: an ordered sequence of time--value
+pairs (a table keyed by time).
+
+\subsection{Dataset Availability: Static vs Dynamic/Streaming}
+Crosscutting all dataset types:
+\begin{itemize}
+  \item \term{Static} (\emph{offline}) -- the whole dataset is available at once, as a file. The default assumption.
+  \item \term{Dynamic} (\emph{online} / \term{stream}) -- data trickles in over the session: items added/deleted, or values changed. Adds complexity to nearly every stage of the vis process.
+\end{itemize}
+
+\subsection{Raw Data Issues in Data Tables (exam ``List'' topic)}
+
+When raw data is transformed into clean data tables (first transform of the
+reference model), the following \term{raw data issues} must be handled. The
+lecture's named list:
+
+\begin{keybox}[Raw data issues -- memorise this list]
+\begin{enumerate}[label=\arabic*.]
+  \item \term{Errors / outliers} -- erroneous or extreme values (e.g.\ an impossible age).
+  \item \term{Variable formats} -- the same attribute encoded inconsistently (e.g.\ dates as \texttt{16/8} vs \texttt{Fall} vs \texttt{24/7}; differing units).
+  \item \term{Missing data} -- empty cells; handle by \emph{dropping} items/attributes or by \emph{imputation} (quantitative: mean/median/mode, regression; categorical: a dedicated ``NA'' category, logistic regression).
+  \item \term{Variable / mixed types} -- a column mixing numbers and text, or wrong type assignment.
+  \item \term{Table structure} -- wrong shape; e.g.\ a wide adjacency matrix vs a tidy edge/adjacency-list representation (the same data, two structures).
+\end{enumerate}
+\end{keybox}
+
+Other commonly cited issues to mention for full marks: \term{inconsistent units},
+\term{duplicates} (repeated items/rows), \term{inconsistent units/scales}, and
+generally \term{noisy, incomplete, heterogeneous, unstructured} data (the
+``visualization challenges'' list). Beyond cleaning, data transformation also
+produces \term{derived values} (e.g.\ \emph{trade balance} $=$ \emph{exports} $-$
+\emph{imports}; a \emph{log transform} to linearise price-vs-carat).
+
+\begin{keybox}[Tidy data]
+A clean target structure (Wickham): \emph{each variable is a column, each
+observation is a row, each cell a single value}. This is exactly a well-formed
+flat data table and resolves most ``table structure'' and ``mixed type'' issues.
+\end{keybox}
+
+\begin{exambox}[How this is asked]
+Frequent question types: \emph{(1)} ``\textbf{List} the raw data issues in data
+tables'' -- give the five named items plus duplicates/inconsistent units;
+\emph{(2)} given a domain dataset, state its \term{dataset type} and classify each
+\term{attribute} as categorical / ordinal / quantitative and its ordering
+direction; \emph{(3)} identify the \term{key(s)} and decide flat vs
+multidimensional; \emph{(4)} explain \term{static vs dynamic} availability;
+\emph{(5)} distinguish \emph{type} from \emph{semantics}. A classic trap: the
+Austrian-states table -- ``state'' is the categorical key, the other four columns
+(vehicles, accidents, deaths, population) are quantitative values.
+\end{exambox}

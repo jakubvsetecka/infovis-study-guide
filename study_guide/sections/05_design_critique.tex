@@ -1,0 +1,302 @@
+\section{Design Principles and Visualization Critique}
+
+This section is the toolkit for the exam's recurring \emph{``What is wrong with
+this visualization? Suggest an improvement''} questions. It collects
+Tufte-style integrity rules and Munzner's encoding rules, then gives a reusable
+\term{critique checklist} and two fully worked critiques (a rainbow choropleth
+and area-encoded circles). The golden rule underneath everything:
+\term{function before form} -- start from the task (\emph{what} data,
+\emph{why} task), then choose the encoding; never start from a pretty picture.
+
+\begin{keybox}[Two governing principles (Munzner)]
+\begin{itemize}
+  \item \term{Expressiveness}: the visual structure should encode
+    \emph{all and only} the information in the data. Ordered data must look
+    ordered; unordered data must \emph{not} look ordered.
+  \item \term{Effectiveness}: the most important attributes should get the most
+    effective channels (faster to read, more distinctions, fewer errors).
+    Spatial channels (position) are most effective.
+\end{itemize}
+\end{keybox}
+
+\subsection{Data--Ink Ratio and Chartjunk (Tufte)}
+
+\term{Data--ink} is the ink that encodes actual data. Tufte's
+\term{data--ink ratio} is
+\[
+  \text{data--ink ratio} = \frac{\text{ink used to show data}}
+                                 {\text{total ink used}}.
+\]
+\term{Chartjunk} is non-data ink that adds no information: heavy gridlines,
+3D shading, decorative backgrounds, redundant frames, moir\'e patterns.
+
+\begin{keybox}[Rules]
+\textbf{Maximize the data--ink ratio} (within reason) and \textbf{erase
+chartjunk}: remove or mute gridlines, drop 3D effects and shadows, avoid
+decorative clipart. Every drop of ink should earn its place by conveying data.
+\end{keybox}
+
+\subsection{The Lie Factor (graphical integrity)}
+
+Tufte's \term{lie factor} measures whether the visual effect matches the data:
+\[
+  \text{lie factor} = \frac{\text{size of effect shown in the graphic}}
+                           {\text{size of effect in the data}}.
+\]
+``Size of effect'' $=$ (later value $-$ earlier value) $/$ earlier value, the
+relative change. A lie factor of \textbf{1} is honest; $>1$ exaggerates,
+$<1$ understates. Tufte considers $0.95$--$1.05$ acceptable.
+
+\begin{exambox}[Worked computation]
+A quantity grows from 18 to 27 in the data (effect $= (27-18)/18 = 0.50$, i.e.\
+$+50\%$). The graphic draws bars whose \emph{heights} go from 1\,cm to 4\,cm
+(shown effect $= (4-1)/1 = 3.0$, i.e.\ $+300\%$). Then
+\[
+  \text{lie factor} = \frac{3.0}{0.5} = 6.0,
+\]
+so the graphic exaggerates the change six-fold (a classic truncated-axis or
+area-scaling lie).
+\end{exambox}
+
+\begin{pitfall}[Common lie-factor sources]
+Truncated / non-zero baselines on bar charts; encoding a 1D value as 2D
+\emph{area} (or 3D volume); inconsistent axis scaling. Always check the
+baseline starts at zero for bars.
+\end{pitfall}
+
+\subsection{Over-Counting via Area (1D value as 2D size)}
+
+When a single quantity is mapped to a circle, designers often scale the
+\emph{radius} (or diameter) by the value. But the perceived magnitude is the
+\term{area}, which then grows with the \emph{square} of the value:
+double the value $\Rightarrow$ radius~$\times2$ $\Rightarrow$
+area~$\times4$. The graphic over-states the difference fourfold.
+
+\begin{exambox}[The ``men of talent'' circle example]
+Tufte's classic case: circles sized to show a quantity were scaled by diameter,
+so a value twice as large was drawn with $4\times$ the area -- a huge,
+misleading exaggeration. \textbf{Rule:} if you must use circles, scale by
+\emph{area} (value $\propto$ area, so radius $\propto \sqrt{\text{value}}$).
+Even then, \emph{area is perceptually under-estimated} (Stevens exponent
+$\approx 0.7$), so length/position bars are a better encoding for magnitude.
+\end{exambox}
+
+\begin{keybox}[Area perception cuts both ways]
+\begin{itemize}
+  \item \textbf{Mis-encoding} (radius scaling) over-states differences
+    ($\times$value$^2$).
+  \item \textbf{Perception} of correctly area-scaled marks \emph{under-states}
+    differences (compression, exponent $<1$).
+\end{itemize}
+So area is doubly problematic: prefer length on a common scale for quantities.
+\end{keybox}
+
+\subsection{Ordering of Bars, Axes and Categories}
+
+For \emph{unordered categorical} keys, the layout order is a free design
+choice -- use it to carry information.
+
+\begin{keybox}[Order by value, not by alphabet]
+Sort bars / rows / categories by their \textbf{data value} (e.g.\ descending),
+not alphabetically or by arbitrary ID. A value-sorted bar chart makes rank,
+extremes and the distribution shape readable at a glance; an alphabetical order
+hides them. For ordinal keys, keep the intrinsic order.
+\end{keybox}
+
+\subsection{Expressiveness Violations}
+
+\begin{pitfall}[The most common beginner mistake]
+\textbf{Showing ordered data with an unordered (identity) channel}, or
+\textbf{implying an order that does not exist}.
+\begin{itemize}
+  \item Quantitative value on \emph{hue} (rainbow colormap) -- hue is an
+    identity channel; it implies categories, not order.
+  \item Categorical attribute on \emph{position on a continuous axis} -- implies
+    an ordering the data does not have.
+\end{itemize}
+Fix: ordered attribute $\to$ magnitude channel (position, length, luminance);
+categorical attribute $\to$ identity channel (hue, shape, spatial region).
+\end{pitfall}
+
+\subsection{Effectiveness, Stevens' Power Law and the Channel Ranking}
+
+Effectiveness is grounded in perception (Stevens' power law: perceived
+sensation $p = k\,I^{a}$; see the Perception section). Channels are split into
+\term{magnitude channels} (for ordered attributes) and \term{identity
+channels} (for categorical attributes), each ranked by accuracy.
+
+\begin{longtable}{@{}p{6.7cm}p{6.7cm}@{}}
+\toprule
+\textbf{Magnitude (ordered), best$\to$worst} & \textbf{Identity (categorical), best$\to$worst} \\
+\midrule
+Position on common scale     & Spatial region \\
+Position on unaligned scale  & Color hue \\
+Length (1D size)             & Motion \\
+Tilt / angle                 & Shape \\
+Area (2D size)               & \\
+Depth (3D position)          & \\
+Color luminance, saturation  & \\
+Curvature                    & \\
+Volume (3D size)             & \\
+\bottomrule
+\end{longtable}
+
+\begin{keybox}[Takeaways]
+\textbf{Spatial (position) channels are the most effective} for both ordered
+and categorical data. Put the most important attribute on position. Area, color
+and especially volume are weak for magnitude.
+\end{keybox}
+
+\subsection{Channel Interference (separable vs.\ integral)}
+
+When two attributes are encoded on two channels, the channels should be
+\term{separable} -- selectively attendable -- so each can be read independently.
+\term{Integral} channel pairs fuse perceptually and cannot be separated.
+
+\begin{longtable}{@{}p{6.5cm}p{6.9cm}@{}}
+\toprule
+\textbf{Separable (good)} & \textbf{Integral (bad for 2 attributes)} \\
+\midrule
+Position + hue (fully separable) & Red + green (major interference) \\
+                                 & Width + height (size dimensions fuse) \\
+                                 & Size + hue (some interference) \\
+\bottomrule
+\end{longtable}
+
+\begin{pitfall}[Channel interference]
+Encoding two \emph{separate} attributes in an integral pair (e.g.\
+red--green, or x-size~+~y-size) fails -- viewers see one fused blob, not two
+attributes. Choose channels with as little interference as possible.
+\end{pitfall}
+
+\subsection{Eyes Beat Memory: Juxtaposition vs.\ Animation}
+
+\begin{keybox}[Eyes beat memory]
+Comparison is far more accurate when both items are visible \emph{at the same
+time} (\term{juxtaposition} -- side-by-side small multiples) than when the
+viewer must hold one in memory while looking at the other. \textbf{Animation
+forces comparison through memory} and is therefore weak for precise comparison;
+prefer side-by-side static views. (Redundant encoding -- using $>1$ channel for
+the \emph{same} attribute -- is the opposite, and is fine: it aids robustness,
+e.g.\ color $+$ symbol for color-blind safety.)
+\end{keybox}
+
+\subsection{Problems with 3D}
+
+\begin{pitfall}[Unjustified 3D]
+Adding a third spatial dimension to data that is not inherently 3D causes:
+\begin{itemize}
+  \item \textbf{Perspective distortion} -- equal data values map to unequal
+    screen sizes depending on depth, so comparison is biased.
+  \item \textbf{Occlusion} -- nearer marks hide farther ones; data is lost.
+  \item \textbf{Shadows / shading} and reduced \textbf{text legibility}.
+\end{itemize}
+Slide rule: \emph{``No unjustified 3D!''} A 3D bar chart is almost always worse
+than its 2D version.
+\end{pitfall}
+
+\begin{keybox}[When 3D \emph{is} justified]
+Use 3D only for \term{inherently spatial} data where the third dimension
+\emph{is} part of the data -- e.g.\ 3D medical/volume data, molecular
+structures, terrain, fluid-flow fields. There the benefit of matching the data's
+spatial nature outweighs the distortion/occlusion costs (and interaction such
+as rotation mitigates them).
+\end{keybox}
+
+\subsection{Function Before Form}
+
+\begin{keybox}[Process: What / Why / How]
+Design follows the loop \term{What} (data abstraction) $\to$ \term{Why} (task
+abstraction) $\to$ \term{How} (visual encoding + interaction). Decide the task
+\emph{first}; the most expressive and effective encoding follows from it. A
+chart that looks impressive but does not support the task fails.
+\end{keybox}
+
+\subsection{The Critique Checklist (use on any chart)}
+
+\begin{exambox}[Step-by-step critique]
+\begin{enumerate}
+  \item \textbf{What \& Why}: what is the data type of each attribute
+    (categorical / ordered / quantitative) and what is the task
+    (identify / compare / summarize, trend / outlier / correlation)?
+  \item \textbf{Expressiveness}: does each channel match its attribute type?
+    (ordered$\to$magnitude, categorical$\to$identity). Any false ordering?
+  \item \textbf{Effectiveness}: is the most important attribute on the most
+    effective channel (position/length), not on a weak one (area/hue)?
+  \item \textbf{Integrity}: zero baseline? lie factor $\approx 1$? 1D value not
+    encoded as 2D area? axes consistent?
+  \item \textbf{Color}: ordered data not on hue (no rainbow); diverging needs a
+    midpoint; categorical $\le$12 nameable hues + legend; color-blind safe (no
+    red--green); perceptually uniform (viridis)?
+  \item \textbf{Channels}: separable, not integral? not too many channels at
+    once?
+  \item \textbf{Ordering}: bars/categories sorted by value, not alphabet?
+  \item \textbf{Chartjunk \& 3D}: remove non-data ink; no unjustified 3D.
+  \item \textbf{Comparison}: juxtaposed (eyes), not animated (memory)?
+  \item \textbf{Then suggest a concrete fix} for each issue.
+\end{enumerate}
+\end{exambox}
+
+\subsection{Worked Critique 1: Rainbow Choropleth (Texas map)}
+
+\textit{Scenario:} a US state/county choropleth coloring a continuous
+quantitative attribute (e.g.\ a per-county ratio) with the \term{rainbow / jet}
+colormap.
+
+\begin{keybox}[Critique]
+\begin{itemize}
+  \item \textbf{Expressiveness violation}: the value is \emph{ordered} but it is
+    encoded with \emph{hue}, an unordered identity channel -- the legend order
+    (pink, blue, green, yellow, orange\ldots) carries no perceptual order, so
+    readers cannot tell which county is higher without constant legend
+    lookups.
+  \item \textbf{Not perceptually uniform}: equal value steps look unequal;
+    some adjacent bins look identical while others jump.
+  \item \textbf{Fine detail lost}: hue cannot resolve fine differences;
+    luminance contrast (needed for edges) is missing.
+  \item \textbf{Not color-blind safe}: red/green bins are confusable for
+    $\sim$8--10\% of men.
+\end{itemize}
+\end{keybox}
+
+\begin{keybox}[Fix]
+Replace with a \textbf{sequential} colormap that uses \emph{luminance} (light
+$\to$ dark, single or few hues), or a \textbf{perceptually uniform} map
+(\term{viridis}); if there is a meaningful midpoint, use a \textbf{diverging}
+map with a neutral centre. Use a \textbf{color-blind-safe} palette
+(ColorBrewer), and keep the legend ordered by value.
+\end{keybox}
+
+\subsection{Worked Critique 2: Area-Encoded Circles}
+
+\textit{Scenario:} two (or more) quantities shown as circles, with the
+\emph{radius/diameter} proportional to the value (``men of talent'' style).
+
+\begin{keybox}[Critique]
+\begin{itemize}
+  \item \textbf{Over-counting via area}: radius $\propto$ value makes
+    \emph{area} $\propto$ value$^2$, so the bigger circle looks far larger than
+    the data warrants (lie factor $>1$).
+  \item Even with correct area scaling, \textbf{area is under-estimated}
+    perceptually (Stevens exponent $\approx 0.7$): differences are hard to
+    judge accurately.
+  \item Comparing \emph{areas} of separated circles is a weak perceptual task
+    (low on the channel ranking).
+\end{itemize}
+\end{keybox}
+
+\begin{keybox}[Fix]
+Encode the magnitude with \textbf{length / position on a common scale} -- a
+\textbf{bar chart with a zero baseline}, bars adjacent and sorted by value.
+This puts the value on the most effective channel, removes the squaring error,
+and lets readers compare precisely. If circle sizing is unavoidable (e.g.\ a
+bubble map), scale by \emph{area} (radius $\propto\sqrt{\text{value}}$) and add
+direct value labels.
+\end{keybox}
+
+\begin{exambox}[Phrasing your answer]
+A full-credit critique names the \emph{principle} (e.g.\ ``expressiveness
+violation: ordered data on hue''), explains the \emph{perceptual reason}, and
+gives a \emph{concrete fix} (``use a sequential luminance/viridis map''). Bullet
+each issue; do not just say ``it looks bad''.
+\end{exambox}

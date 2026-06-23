@@ -1,0 +1,399 @@
+\section{High-Dimensional Data Visualization}
+
+High-dimensional data has \term{many attributes} (columns / dimensions / features /
+variables) per item. A working definition from the lecture: data are
+\term{high-dimensional} when our traditional visual encodings for tabular data
+\emph{break} (Yang et al., 2003) -- typically already from dozens of dimensions
+on. Structured data has named, interpretable attributes (e.g.\ demographic
+indicators, gene expression); unstructured data (text, images, audio) is turned
+\emph{into} a high-dimensional feature matrix via bag-of-words /
+document-term matrices, flattened pixels (MNIST $\to$ $784$-dim vector),
+word embeddings (word2vec) or learned latent codes (autoencoders, CNNs).
+Abstractly everything is a flat $n \times m$ table $X$ ($n$ items $\times$ $m$
+attributes), only $m$ is very large and the attributes may not be interpretable.
+
+\begin{keybox}[Two fundamental strategies]
+\begin{itemize}
+\item \term{Feature selection}: pick a \emph{subset} of the existing dimensions,
+      \emph{without} transforming them. Axes stay interpretable. Dimensions (or
+      dimension pairs) are ranked by a \term{quality metric} / ``cognostic''
+      (computed diagnostic), then shown with 1D/2D/nD techniques.
+\item \term{Feature extraction} (= dimensionality reduction): \emph{transform}
+      existing features into a new, lower-dimensional space (project onto new
+      axes). The new axes are usually \emph{not} interpretable, and extraction
+      \emph{loses information}.
+\item \term{Hybrid}: select fewer meaningful dimensions first (needs domain
+      knowledge), then apply dimensionality reduction on them.
+\end{itemize}
+\end{keybox}
+
+% =====================================================================
+\subsection{Curse of Dimensionality (Giraud)}
+
+As the dimension $p$ grows, high-dimensional spaces become \term{vast} and data
+points get \term{isolated in their immensity}. Three intertwined effects:
+
+\begin{itemize}
+\item \term{Distance concentration}: the notion of ``nearest neighbor'' vanishes.
+      For $n$ points sampled uniformly in $[0,1]^p$, as $p$ increases the
+      \emph{minimal} distance between two points increases and \emph{all}
+      pairwise distances become almost equal -- every point is roughly equally
+      far from every other. The mean square distance grows linearly with $p$,
+      $\mathbb{E}\!\left[\lVert X^{(i)}-X^{(j)}\rVert^2\right]=p/6$, while the
+      \emph{relative} spread (scaled deviation) shrinks like $p^{-1/2}$. Any
+      method based on \term{local averaging} (e.g.\ $k$-Nearest-Neighbors,
+      kernel smoothing) therefore fails.
+\item \term{Sparsity}: to keep observations within distance $1$ of any query
+      point, the required number of samples $n$ grows \emph{more than
+      exponentially} with $p$. The lower bound is
+      $n \gtrsim \left(\tfrac{p}{2\pi e}\right)^{p/2}\!\sqrt{p\pi}$; e.g.\ for
+      $p=100$ already $n \approx 4\cdot10^{39}$, for $p=200$ more than the
+      estimated number of particles in the observable universe. Real data is
+      hopelessly sparse in high-$p$ space.
+\item \term{Vanishing volume}: the volume $V_p(r)$ of a $p$-ball goes to zero
+      more than exponentially fast in $p$; for $p\approx20$ the unit ball is
+      already almost $0$. Geometric intuitions from 2D/3D are misleading.
+\item \term{Cumulating fluctuations}: accumulation of many small fluctuations
+      across directions produces a large global fluctuation; rare events
+      accumulate and may no longer be rare; computations/optimizations become
+      intensive.
+\end{itemize}
+
+\begin{pitfall}[``More features is always better'']
+The ``blessing'' of measuring thousands of variables is offset by the curse:
+\emph{separating signal from noise is in general almost impossible} in
+high-dimensional data. More dimensions $\neq$ more usable information.
+\end{pitfall}
+
+% =====================================================================
+\subsection{Feature Selection vs.\ Feature Extraction (Ghojogh)}
+
+Both reduce dimensionality: a mapping $\mathbf{x}\in\mathbb{R}^d \mapsto
+\mathbf{y}\in\mathbb{R}^p$ with $p\le d$.
+
+\begin{itemize}
+\item \term{Feature selection}: $p\le d$ and the selected set
+      $\{\mathbf{y}^j\}\subseteq\{\mathbf{x}^j\}$ is an \emph{inclusive subset} of
+      the original features. Selection criterion improves/maintains accuracy or
+      simplifies the model. There are $2^d$ possible subsets, so heuristics are
+      used. Two evaluation philosophies:
+      \begin{itemize}
+      \item \term{Filter methods}: rank/score features \emph{independently} of any
+            learning model, then threshold. Based on \term{relevance} (predictive
+            power w.r.t.\ target) and \term{redundancy}. Measures: correlation
+            criteria (Pearson), mutual information / information gain,
+            $\chi^2$ statistics, Markov blanket, consistency-based filter, FCBF
+            (symmetrical uncertainty), Interact, mRMR (max relevance, min
+            redundancy). Fast, model-agnostic.
+      \item \term{Wrapper methods}: \emph{integrate the model} into the subset
+            search -- train and test the classifier on each candidate subset and
+            use its performance as fitness. Search is NP-hard, so heuristic:
+            sequential forward/backward selection (SFS/SBS, also floating
+            SFFS/SFBS) or metaheuristics (genetic algorithms, particle swarm).
+            More accurate but expensive; risk of overfitting to the model.
+      \item \term{Embedded methods}: selection happens \emph{during} model
+            training (e.g.\ LASSO / regularization, tree importances). Between
+            filter and wrapper in cost.
+      \end{itemize}
+\item \term{Feature extraction}: the new set $\{\mathbf{y}^j\}$ is \emph{not} a
+      subset but a \emph{different space} (projection to new axes); often
+      $p\ll d$. Relies on the \term{manifold hypothesis}: data lie on a
+      lower-dimensional sub-manifold. Split into \emph{linear} (PCA) vs
+      \emph{non-linear} (kernel PCA, MDS, t-SNE, UMAP, ISOMAP) and
+      \emph{unsupervised} (uses only variation, e.g.\ PCA) vs \emph{supervised}
+      (uses labels, e.g.\ LDA).
+\end{itemize}
+
+% =====================================================================
+\subsection{Visual Methods for Multivariate Tabular Data}
+
+These work for a handful to a few dozen dimensions, then break down.
+
+\begin{algobox}[Parallel Coordinates]
+\textbf{Core idea:} each dimension is a \emph{vertical axis}, placed side by side;
+each item is a \emph{polyline} crossing all axes at its values.\\
+\textbf{Key properties:} reading correlation between \emph{adjacent} axes ---
+\term{positive correlation} $\Rightarrow$ roughly \emph{parallel} line segments;
+\term{negative correlation} $\Rightarrow$ \emph{crossing} (X-shaped) segments.
+Good for spotting clusters and trends across many attributes.\\
+\textbf{Hyperparameters / choices:} \emph{axis ordering} (only adjacent pairs are
+directly comparable, so order matters a lot), axis scaling, opacity.\\
+\textbf{Scalability:} suffers heavily from \term{overplotting} with many items;
+$\sim$dozens of axes at most.\\
+\textbf{When to use:} moderate \#dimensions, want to compare per-item profiles
+and adjacent-pair correlations.\\
+\textbf{Pitfalls:} non-adjacent correlations are invisible; a poor axis order
+hides structure; clutter with large $n$.
+\end{algobox}
+
+\begin{algobox}[Star / Radar Plots (Glyphs)]
+\textbf{Core idea:} a per-item \term{glyph}: axes radiate from a center, the
+value on each axis is a spoke length, endpoints connected into a star polygon.\\
+\textbf{Key properties:} compact shape signature per item; good for comparing a
+\emph{few} items across a \emph{few} attributes; can be tiled as small multiples.\\
+\textbf{Hyperparameters:} axis order (shape depends strongly on it), normalization.\\
+\textbf{Scalability:} few items, few dimensions; does not scale to many of either.\\
+\textbf{When to use:} profile comparison of individual records/categories.\\
+\textbf{Pitfalls:} area is misleading (not a meaningful quantity); shape depends
+on dimension order; hard to read with many overlapping glyphs.
+\end{algobox}
+
+\begin{algobox}[Scatterplot Matrix (SPLOM)]
+\textbf{Core idea:} a grid of all pairwise 2D scatterplots ($m$ dimensions $\to$
+$m\times m$ matrix, $\binom{m}{2}$ distinct pairs); diagonal often shows the 1D
+distribution.\\
+\textbf{Key properties:} every pairwise dependency/correlation is visible; color
+by class label to inspect separability.\\
+\textbf{Scalability:} number of cells grows as $O(m^2)$ -- breaks down around
+$\sim$dozens of dimensions; overplotting per cell with large $n$.\\
+\textbf{When to use:} explore all pairwise relations; basis for ranking cells via
+\term{scagnostics} / \term{class consistency}.\\
+\textbf{Pitfalls:} quadratic blow-up; only \emph{pairwise} (no higher-order)
+structure; too small cells become unreadable.
+\end{algobox}
+
+\begin{keybox}[Other tabular techniques]
+\begin{itemize}
+\item \term{Table lens / heatmaps}: the $n\times m$ table itself shown as a color
+      matrix (cell value $\to$ color). Scales to many items and dimensions; rows
+      and columns can be reordered (seriation) to reveal block structure. Used
+      e.g.\ for gene expression and demographic indicators.
+\item \term{Glyphs} (general): map data attributes to visual channels of a small
+      mark (position, color, shape, size, tilt). Star/radar plots are one family.
+\item \term{Star Coordinates} (Kandogan): items as points; each dimension is a
+      unit vector from the origin, the point is $\sum_i u_i (d_{ji}-\min_i)$.
+      Interactive: scaling an axis $=$ feature emphasis, rotating $=$ change
+      correlation, switching off $=$ feature selection. \emph{Strongly depends on
+      dimension order.}
+\end{itemize}
+\end{keybox}
+
+% =====================================================================
+\subsection{Ranking Views: Scagnostics \& Class Consistency}
+
+These are \term{quality metrics} for feature \emph{selection}: rank scatterplots
+(dimension pairs) so the analyst sees the most ``interesting'' ones first.
+
+\begin{algobox}[Scagnostics (Wilkinson et al., 2005)]
+\textbf{Core idea:} \emph{scatterplot diagnostics} -- a set of measures computed
+\emph{per scatterplot} to characterize its shape, used to \term{rank} the cells
+of a SPLOM.\\
+\textbf{The nine measures:}
+\begin{itemize}
+\item \term{Outlying} -- presence of outliers; via minimum spanning tree (MST):
+      $c_{\text{outlying}}=\text{length}(T_{\text{outliers}})/\text{length}(T)$,
+      outliers $=$ degree-1 vertices with edge weight $>1.5\,\text{IQR}$.
+\item \term{Skewed} -- skewness of the edge-length distribution.
+\item \term{Clumpy} -- points form tight clumps/clusters.
+\item \term{Sparse} -- points spread thinly / low density.
+\item \term{Striated} -- parallel strips/bands of points.
+\item \term{Convex} -- how convex the cloud is:
+      $c_{\text{convex}}=\text{area}(A)/\text{area}(H)$, $A$ $=$ alpha hull,
+      $H$ $=$ convex hull.
+\item \term{Skinny} -- elongated, thin shape.
+\item \term{Stringy} -- thin, string-like (path-like structure in the MST).
+\item \term{Monotonic} -- monotone trend (rank correlation).
+\end{itemize}
+\textbf{When to use:} too many dimension pairs to inspect by hand; surface plots
+with outliers / clusters / trends automatically.\\
+\textbf{Pitfalls:} purely shape-based (ignores labels); a measure can be fooled
+by sampling/binning; not all ``interesting'' plots score high.
+\end{algobox}
+
+\begin{algobox}[Class Consistency (Sips et al., 2009)]
+\textbf{Core idea:} for \emph{labeled} data, rank projections by how well classes
+are \emph{visually separated}.\\
+\textbf{How:} \term{distance-consistency} (DSC) -- the \emph{ratio of data points
+whose closest class centroid is their own class's centroid}. High DSC $=$ classes
+map to visually separable regions; low DSC $=$ classes overlap. (Slide example:
+DSC$=90$ vs DSC$=49$ scatterplots.)\\
+\textbf{When to use:} pick the dimension pair / projection that best separates
+known classes (e.g.\ for visual inspection of classification).\\
+\textbf{Pitfalls:} needs labels; centroid-based, so non-convex / multi-modal
+classes can be misjudged.
+\end{algobox}
+
+\noindent Related: \term{rank-by-feature} (Seo \& Shneiderman) ranks by 1D
+criteria (normality, uniformity/entropy, \#outliers, \#unique values) or 2D
+criteria (correlation coefficient, regression error, density);
+\term{parallel coordinates in Hough space} (Tatu et al.) -- good dimension pairs
+have fewer, well-defined clusters in Hough space.
+
+% =====================================================================
+\subsection{Dimensionality Reduction Fact-Sheets}
+
+\begin{algobox}[PCA -- Principal Component Analysis]
+\textbf{Core idea:} \term{linear} projection that \term{maximizes variance} along
+each new axis, equivalently \term{minimizes the reconstruction (reprojection)
+error} (squared distance between original and projected points).\\
+\textbf{How:} operate on \emph{normalized} data (centered to mean, scaled to unit
+variance). Principal components $=$ \term{eigenvectors of the covariance matrix}
+$S$ (solving $S\mathbf{u}=\lambda\mathbf{u}$). The \emph{first} PC is the
+eigenvector with the \emph{largest eigenvalue} (direction of max variance); PCs
+are \term{mutually orthogonal} and form a new coordinate system.\\
+\textbf{Properties:} \term{deterministic}; global, linear; preserves large
+pairwise distances; ``score plot'' $=$ projection onto first 2 PCs (proximity
+indicates similarity); \term{cannot capture non-linear structure} (fails on the
+swiss roll). Often only a small fraction of variance is kept (MNIST PCA $<20\%$).\\
+\textbf{Hyperparameters:} number of components $k$ to keep (scree plot,
+cumulative explained-variance threshold).\\
+\textbf{Complexity:} eigendecomposition of $d\times d$ covariance
+($O(d^3)$, or SVD); fast and scalable.\\
+\textbf{When to use:} linear correlation structure, need reproducibility,
+interpretable variance, preprocessing before t-SNE/UMAP.\\
+\textbf{Pitfalls:} only linear; sensitive to scaling (\emph{must} standardize);
+2D projection can be a poor approximation if variance is spread over many PCs.
+\end{algobox}
+
+\begin{exambox}[Sketching a 1D PCA projection]
+A classic exam task: given a 2D point cloud elongated along a diagonal, draw the
+\term{first principal component} (the long axis of the cloud, through the mean,
+direction of maximum variance) and the second PC orthogonal to it. To get the
+\term{1D projection}, drop a \emph{perpendicular} from each point onto PC1 and
+read off its position along that line.
+\sketchnote{Ellipse-shaped cloud; arrow PC1 along the long axis through the
+centroid; short orthogonal arrow PC2; for each point a thin line dropped at a
+right angle onto PC1; the feet of those perpendiculars are the 1D PCA scores.}
+
+\begin{center}
+\begin{tikzpicture}[scale=1.0,>={Stealth[round]}]
+  % point cloud along a diagonal
+  \foreach \p in {(-1.6,-1.3),(-1.1,-0.7),(-0.8,-1.0),(-0.4,-0.1),(-0.2,-0.5),
+                  (0.1,0.3),(0.3,-0.1),(0.6,0.7),(0.9,0.4),(1.3,1.1),(1.6,0.9),
+                  (0.0,0.0),(-0.6,-0.4),(1.0,0.9)}{
+    \fill[tuwblue!55] \p circle (1.6pt);}
+  % PC1 (long axis)
+  \draw[->,thick,red] (0,0) -- (1.7,1.35) node[right]{\footnotesize PC1};
+  \draw[red] (0,0) -- (-1.7,-1.35);
+  % PC2 orthogonal
+  \draw[->,thick,keygreen] (0,0) -- (-0.55,0.7) node[above left]{\footnotesize PC2};
+  % one example perpendicular projection
+  \draw[dotted,tuwdark] (0.6,0.7) -- (0.79,0.46);
+  \fill[red] (0.79,0.46) circle (1.3pt);
+  \node[tuwdark,font=\scriptsize] at (2.4,0.1) {project $\perp$ onto PC1};
+\end{tikzpicture}
+\end{center}
+\end{exambox}
+
+\begin{algobox}[MDS -- Multidimensional Scaling]
+\textbf{Core idea:} find a low-dimensional embedding that \term{best preserves the
+pairwise distances} $\delta_{i,j}$ of the high-dimensional data.\\
+\textbf{Cost (stress):}
+$\displaystyle \min_{\mathbf{x}_1,\dots,\mathbf{x}_n}\sum_{i<j}\bigl(\lVert
+\mathbf{x}_i-\mathbf{x}_j\rVert-\delta_{i,j}\bigr)^2$.\\
+\textbf{Variants:} \term{classical / metric} MDS preserves actual distance values
+(classical MDS on Euclidean distances $\approx$ PCA); \term{non-metric} MDS
+preserves only the \emph{rank order} of distances. Distances can be any metric
+(e.g.\ cosine similarity for documents). \term{ISOMAP} $=$ MDS on \term{geodesic}
+(manifold) distances instead of Euclidean -- a non-linear variant that unrolls
+manifolds like the swiss roll.\\
+\textbf{Properties:} preserves global distance structure; like PCA tends to keep
+\emph{dissimilar} points far apart.\\
+\textbf{Hyperparameters:} target dimension, metric, metric vs non-metric.\\
+\textbf{Complexity:} works on the $n\times n$ distance matrix $\Rightarrow$
+$O(n^2)$ memory/time, heavier for large $n$.\\
+\textbf{When to use:} you have a meaningful (dis)similarity matrix and care about
+preserving overall distances.\\
+\textbf{Pitfalls:} struggles to keep \emph{very similar} points close (crowding);
+$O(n^2)$ does not scale to huge $n$.
+\end{algobox}
+
+\begin{algobox}[t-SNE -- t-Distributed Stochastic Neighbor Embedding]
+\textbf{Core idea:} preserve \term{local neighborhoods}, not distances. Model
+high-dimensional similarities as conditional probabilities (Gaussian),
+$p_{j|i}\propto\exp(-\lVert x_i-x_j\rVert^2/2\sigma_i^2)$, and low-dimensional
+similarities with a heavy-tailed \term{Student-t} distribution $q_{j|i}$;
+minimize the \term{Kullback--Leibler divergence}
+$C=\sum_i \mathrm{KL}(P_i\Vert Q_i)$ by gradient descent.\\
+\textbf{Key properties:} the Student-t tail solves the \term{crowding problem}
+(room to spread out medium distances). Keeps similar points close;
+\term{stochastic / non-deterministic} (different runs differ).\\
+\textbf{Hyperparameters:} \term{perplexity} (effective \#neighbors defining the
+Gaussian variance; balances local vs global, $\approx 5$--$50$), learning rate
+($\epsilon$), iterations; can use Barnes--Hut approximation.\\
+\textbf{Complexity:} heavier than PCA/UMAP; iterative optimization
+($O(n^2)$ naive, $O(n\log n)$ with Barnes--Hut).\\
+\textbf{When to use:} reveal local cluster structure (e.g.\ MNIST digit clusters).\\
+\textbf{Pitfalls (heavily examined):} \emph{cluster sizes are NOT meaningful};
+\emph{inter-cluster distances are NOT meaningful}; results depend on perplexity
+and random seed; can show clusters in random data at low perplexity; preserves
+no global geometry.
+\end{algobox}
+
+\begin{algobox}[UMAP -- Uniform Manifold Approximation and Projection]
+\textbf{Core idea:} \term{manifold / graph-based}. Build a weighted
+$k$-nearest-neighbor graph (a fuzzy topological / simplicial representation of the
+manifold), then optimize a low-dimensional layout with the closest equivalent
+fuzzy topological structure.\\
+\textbf{Key properties:} like t-SNE preserves \term{local} neighborhoods but
+tends to preserve \term{more global structure}; \term{faster} and scales better;
+still \term{stochastic}.\\
+\textbf{Hyperparameters:} \term{n\_neighbors} (size of local neighborhood from
+which the manifold is learned -- larger $=$ more global view), \term{min\_dist}
+(how tightly points may pack in the embedding -- smaller $=$ tighter clumps).\\
+\textbf{Complexity:} approximate kNN $\Rightarrow$ scales to large $n$, faster
+than t-SNE.\\
+\textbf{When to use:} large datasets needing local \emph{and} some global
+structure (single-cell, embeddings).\\
+\textbf{Pitfalls:} absolute distances/densities still not fully reliable;
+hyperparameter-dependent shapes; non-deterministic.
+\end{algobox}
+
+\begin{keybox}[Distortions \& the structure--interpretability trade-off]
+Any DR projects feature space $\mathcal{D}$ to visual space $\mathcal{M}$ and
+introduces \term{distortions}: \term{missing neighbors} (close in feature space
+but far in the plot) and \term{false neighbors} (far in feature space but close
+in the plot). Trade-off (Liu et al., 2017): \term{manifold learning} (t-SNE,
+UMAP) captures the most intrinsic structure but has \emph{non-interpretable}
+axes; \term{axis-aligned projection} (feature selection) has fully interpretable
+axes but least structure; \term{linear projection} (PCA) sits in between.
+Take-away: \emph{feature extraction leads to information loss}.
+\end{keybox}
+
+\subsubsection{Comparison Table: PCA vs MDS vs t-SNE vs UMAP}
+
+\begin{center}
+\begin{tabular}{@{}p{1.6cm}p{1.2cm}p{1.4cm}p{3.0cm}p{3.2cm}p{2.0cm}@{}}
+\toprule
+\textbf{Method} & \textbf{Linear?} & \textbf{Determ.?} & \textbf{Preserves}
+& \textbf{Main hyperparameters} & \textbf{Scalability}\\
+\midrule
+\term{PCA}   & yes & yes & global variance / large distances; linear subspace
+             & \#components $k$ & high ($O(d^3)$)\\
+\term{MDS}   & no\textsuperscript{*} & yes (classical) & global pairwise distances
+             (stress) & target dim; metric; (non)metric & low ($O(n^2)$)\\
+\term{t-SNE} & no & \textbf{no} & local neighborhoods (cluster sizes \&
+             inter-cluster dist.\ \emph{not} meaningful)
+             & \textbf{perplexity}, learning rate $\epsilon$, iterations & medium\\
+\term{UMAP}  & no & \textbf{no} & local $+$ more global structure (kNN graph /
+             manifold) & \textbf{n\_neighbors}, \textbf{min\_dist} & high (fast)\\
+\bottomrule
+\end{tabular}
+\end{center}
+{\footnotesize\textsuperscript{*}Classical/metric MDS on Euclidean distances is
+linear and coincides with PCA; non-metric MDS and ISOMAP are non-linear.}
+
+\begin{exambox}[MCQ-style: properties \& hyperparameters]
+\begin{itemize}
+\item \emph{Which method is deterministic (same result every run)?} $\to$ PCA
+      (and classical MDS). t-SNE and UMAP are \term{stochastic}.
+\item \emph{Whose cluster sizes and inter-cluster distances are meaningless?}
+      $\to$ \term{t-SNE} (and largely t-SNE-style layouts).
+\item \emph{``Perplexity'' is a hyperparameter of \dots} $\to$ \term{t-SNE}
+      (number of neighbors defining the Gaussian variance, balances local/global).
+\item \emph{``n\_neighbors'' and ``min\_dist'' belong to \dots} $\to$ \term{UMAP}.
+\item \emph{Which is the only linear method?} $\to$ \term{PCA} (and classical MDS).
+\item \emph{PCA finds the directions of \dots} $\to$ \term{maximum variance} $=$
+      eigenvectors of the covariance matrix; first PC $=$ largest eigenvalue.
+\item \emph{Which best preserves global pairwise distances?} $\to$ MDS / PCA;
+      \emph{which best preserves local neighborhoods?} $\to$ t-SNE / UMAP.
+\end{itemize}
+\end{exambox}
+
+\begin{pitfall}[Over-interpreting a 2D projection]
+Do not read meaning into t-SNE/UMAP \emph{distances}, cluster \emph{sizes}, or
+empty gaps; do not call a t-SNE result reproducible; do not forget to
+\emph{standardize} before PCA; remember that a low total explained variance means
+the 2D PCA scatterplot is a weak summary. State that projection axes are
+\emph{not interpretable} for feature-extraction methods.
+\end{pitfall}

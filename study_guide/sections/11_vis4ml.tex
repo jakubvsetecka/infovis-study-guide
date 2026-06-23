@@ -1,0 +1,259 @@
+\section{Visualization for Machine Learning (VIS4ML) \& Explainable AI}
+
+\term{VIS4ML} = \emph{visualization to support machine-learning problems}. It is
+the dual of \term{ML4VIS} (machine learning used to build or steer
+visualizations, e.g.\ clustering and KDE used to summarize a scatterplot).
+\textbf{Mnemonic:} \emph{VIS4ML} -- the visualization is the tool, the ML model
+is the \emph{what} (the data); \emph{ML4VIS} -- ML is the tool inside the
+visualization pipeline.
+
+\begin{keybox}[VIS4ML in one sentence]
+Use interactive visualization across the whole ML pipeline -- to understand the
+\term{data}, to \term{build/debug} models, to \term{evaluate} them, and to
+\term{interpret} them and build \term{trust} -- because models (and their
+training data) are high-dimensional black boxes.
+\end{keybox}
+
+\subsection{Why VIS4ML: visualization in the ML pipeline}
+
+After Sacha et al.\ (VIS4ML Ontology, 2019) the \term{what} is always
+\emph{models}; visualization supports the phases of the (visual) data-science
+process:
+
+\begin{itemize}
+  \item \term{Train} -- training-data inspection; training-progress inspection
+    (watch the learning over epochs); interactive labeling.
+  \item \term{Evaluate} -- model-quality analysis; \term{explainability};
+    \term{interpretability}.
+  \item \term{Use} -- what-if analysis.
+\end{itemize}
+
+Model evaluation answers three questions (a common exam framing):
+\begin{enumerate}[label=(\arabic*)]
+  \item \term{IF} the model learned correctly (e.g.\ confusion matrix).
+  \item \term{WHAT} the model learned (e.g.\ projecting learned features).
+  \item \term{WHY} the model did \emph{not} learn correctly (e.g.\
+    similarity-preserving scatterplots of neuron activations).
+\end{enumerate}
+
+\begin{keybox}[VIS4ML vs.\ ML4VIS]
+\term{VIS4ML}: visualization helps the ML practitioner (debug/understand the
+model). \quad \term{ML4VIS}: ML helps the visualization (e.g.\
+projection, clustering, KDE-thresholding to find clusters in screen space).
+\end{keybox}
+
+\subsection{Confusion matrix -- ``IF the model learned correctly''}
+
+A \term{confusion matrix} cross-tabulates ground truth against predictions for a
+classifier. Convention used in the course:
+\textbf{rows = true (actual) label, columns = predicted (estimated) label};
+each cell holds the frequency (count) of items.
+
+\begin{itemize}
+  \item \term{Diagonal} cells = correct predictions (true class = predicted class).
+  \item \term{Off-diagonal} cells = errors; cell $(i,j)$ tells you how often
+    true class $i$ was predicted as $j$, i.e.\ \emph{which classes get confused}.
+  \item \term{Normalization}: dividing each row by its row sum turns counts into
+    per-class recall ratios, so classes with different support are comparable
+    (a stacked-bar / ``confusion star/gear'' variant shows the accumulated ratio).
+\end{itemize}
+
+\begin{center}
+\begin{tabular}{c|ccc}
+\toprule
+ \textbf{true}$\backslash$\textbf{pred.} & $c_1$ & $c_2$ & $c_3$ \\
+\midrule
+$c_1$ & \textbf{200} & 5 & 4 \\
+$c_2$ & 2 & \textbf{156} & 3 \\
+$c_3$ & 2 & 3 & \textbf{211} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\sketchnote{A square grid; bold diagonal = hits; bright off-diagonal cell =
+a systematic confusion (e.g.\ on MNIST many true 9's land in the ``4'' column).}
+
+\begin{exambox}[Visualization-literacy: reading a confusion matrix]
+This is a recurring exam item -- you are given a matrix and asked to read it.
+\begin{itemize}
+  \item \emph{``Boxing is never confused with handwaving.''} $\Rightarrow$ the
+    cell (true = boxing, pred = handwaving) \textbf{is 0}. ``Never confused''
+    $=$ zero off-diagonal cell. (Both directions $\to$ check both cells.)
+  \item \emph{``Which class is hardest to classify?''} $\Rightarrow$ the class
+    whose \textbf{diagonal value is lowest} relative to its row total, i.e.\ the
+    row whose mass is \textbf{most spread} across off-diagonal columns (lowest
+    recall). With normalization, the smallest diagonal percentage.
+  \item \emph{``Which class is best classified?''} $\Rightarrow$ highest
+    normalized diagonal entry.
+\end{itemize}
+\end{exambox}
+
+\subsection{Feature vectors from neuron activations (Rauber et al.)}
+
+Rauber et al.\ (TVCG 2017, mandatory reading) treat the \term{activations of a
+layer} as a high-dimensional feature vector and project them to 2D.
+
+\begin{itemize}
+  \item For a multilayer perceptron, neuron $j$ in layer $l$ has weighted input
+    $z_j^{(l)} = b_j^{(l)} + \sum_k w_{j,k}^{(l)} a_k^{(l-1)}$ and activation
+    $a_j^{(l)}$ (sigmoid, ReLU $=\max(0,z)$, or softmax). The layer activation
+    $\mathbf{a}^{(l)} = (a_1^{(l)},\dots,a_{N^{(l)}}^{(l)})$ is a
+    \term{learned representation} of the input.
+  \item These vectors are projected with a \term{similarity-preserving}
+    technique (\term{t-SNE}, UMAP, or hierarchical SNE) into a scatterplot.
+    Color = ground-truth class. The \emph{axes are not interpretable, but the
+    instances are}.
+\end{itemize}
+
+\begin{keybox}[What the projection of activations shows]
+\begin{itemize}
+  \item \term{Single-color clusters} (one class = one well-separated blob)
+    $\Rightarrow$ identical ground-truth classes produce similar activations
+    $\Rightarrow$ \emph{solid model performance}.
+  \item Class \term{separation increases with depth and with training}: deeper
+    layers / later epochs separate classes more cleanly than the raw input.
+  \item \term{Overlapping / mixed-color} regions $\Rightarrow$ classes the
+    network cannot tell apart -- exactly the confusions seen off-diagonal in the
+    confusion matrix.
+  \item \term{Visual outliers} (a point of one color inside another cluster)
+    flag problematic / misclassified cases (e.g.\ a ``3'' that activates like a ``5'').
+\end{itemize}
+Caveat (FMNIST): a similarity-preserving scatterplot \emph{alone} may not
+suffice to explain patterns/outliers -- inspect representative instances too.
+\end{keybox}
+
+\subsection{Interpretability taxonomy (XAI)}
+
+\begin{keybox}[Three orthogonal axes]
+\begin{description}[leftmargin=1.3cm,style=nextline]
+  \item[Scope] \term{Local} = explain the decision for a \emph{single instance};
+    \term{Global} = explain the \emph{whole model} behavior. (A globally complex
+    model can still have locally explainable decision boundaries.)
+  \item[When] \term{Intrinsic} = the model is inherently interpretable (read the
+    model itself); \term{Post-hoc} = explain after training with a separate method.
+  \item[Coupling] \term{Model-specific} = exploits a known, inherently
+    interpretable structure; \term{Model-agnostic} = treats the model as a
+    \emph{black box} (inner structure too complex or unknown), probing only via
+    inputs and outputs.
+\end{description}
+\end{keybox}
+
+\term{Model-specific / intrinsic} examples: \term{linear regression}
+($y=\beta_0+\beta_1 x_1+\dots+\beta_p x_p+\epsilon$; read the weights $\beta$
+with confidence intervals -- but note weights mix with feature scales, so use
+\emph{effect} $=\beta_j x_i^j$ plots, not raw weights, to judge contribution),
+\term{decision trees} (splitting condition, Gini impurity, samples-per-class per
+node), and CNN feature visualizations of spatial activations.
+
+\begin{exambox}[Exam ``List'': name the model-agnostic methods]
+\begin{enumerate}[label=\arabic*.]
+  \item \term{Local perturbations} (probe one instance by editing its features).
+  \item \term{LIME} -- Local Interpretable Model-agnostic Explanations.
+  \item \term{SHAP} / Shapley-value feature attribution.
+  \item \term{Partial Dependence Plots (PDP)} and \term{ICE} curves.
+  \item \term{Counterfactual explanations}.
+  \item \term{Saliency / attention maps} (gradient/attribution based).
+\end{enumerate}
+All are post-hoc and need only input--output access (no internal weights).
+\end{exambox}
+
+\subsection{Model-agnostic methods}
+
+\begin{algobox}[Local perturbations / LIME (Ribeiro et al.\ 2016)]
+\textbf{Idea:} explain one prediction by \emph{perturbing the input around that
+instance} and observing how the black-box output changes; fit a \emph{simple,
+interpretable local surrogate} (e.g.\ sparse linear model) to the
+perturbed samples to approximate the decision boundary nearby.\\
+\textbf{Scope / coupling:} \term{local}, \term{model-agnostic}, post-hoc.\\
+\textbf{Properties:} works on \term{interpretable features} (need not be
+quantitative -- e.g.\ image \term{superpixels} masked in/out, or a 3D object's
+texture/hue altered). Reveals what a single decision relies on (e.g.\ a model
+keying on \emph{texture rather than shape}).\\
+\textbf{Hyperparameters:} perturbation/sampling neighborhood (kernel width),
+number of samples, surrogate complexity (\#\,features kept).\\
+\textbf{Pitfalls:} explanation depends on the (arbitrary) neighborhood
+definition; only locally faithful; unstable -- nearby instances can get
+different explanations.
+\end{algobox}
+
+\begin{algobox}[SHAP / Shapley feature attribution]
+\textbf{Idea:} from cooperative game theory -- distribute the prediction fairly
+among features as \term{Shapley values}, the average marginal contribution of a
+feature over all orderings of feature coalitions.\\
+\textbf{Scope / coupling:} \term{local} attribution (aggregates to global),
+\term{model-agnostic}.\\
+\textbf{Properties:} additive, consistent attribution per feature; positive vs.\
+negative contributions to a specific prediction.\\
+\textbf{Pitfalls:} exact computation is exponential in \#\,features (approximated
+in practice); like PDP it can be misled by correlated features.
+\end{algobox}
+
+\begin{algobox}[Partial Dependence Plot (PDP) -- Krause et al.\ 2016]
+\textbf{Idea:} the \emph{marginal effect} of one (or two) feature(s) on the
+prediction, \emph{averaged over all other features' values in the data}.
+Systematically set the chosen feature to each level (try all recorded levels for
+categorical features), re-predict for every training row, average the responses,
+and plot level vs.\ average response.\\
+\textbf{Scope / coupling:} \term{global}, \term{model-agnostic}.\\
+\textbf{Reading:} a curve (quantitative feature) or bar chart (categorical),
+e.g.\ predicted bike rentals rise with temperature, fall with humidity/wind.\\
+\textbf{Hyperparameters:} which feature(s); grid resolution.\\
+\textbf{Pitfall:} \term{assumes feature independence} -- averaging over the
+marginal can create unrealistic feature combinations and hide heterogeneous
+effects. \term{ICE (Individual Conditional Expectation)} curves are the
+\emph{per-instance} variant: one line per data point instead of the average,
+exposing interactions the averaged PDP masks.
+\end{algobox}
+
+\begin{algobox}[Counterfactual explanations]
+\textbf{Idea:} the \term{minimal set of changes to the feature values} that
+\emph{flips} the prediction to a \emph{different output} -- the smallest
+perturbation that crosses the decision boundary.\\
+\textbf{Scope / coupling:} \term{local}, \term{model-agnostic}.\\
+\textbf{Properties:} \emph{not unique} -- many valid counterfactuals exist
+(several different small changes can each flip the label), so often a set is
+sought. A good counterfactual should be \term{plausible / realistic} (lie on the
+data manifold) and \term{sparse / close} (change few features, stay near the
+original). What-if tools (ViCE, Gomez et al.\ 2020) show the change as a glyph
+against the feature's density distribution.\\
+\textbf{Pitfalls:} can be unrealistic if plausibility is not enforced;
+multiplicity makes ``the'' explanation ambiguous.
+\end{algobox}
+
+\begin{exambox}[Counterfactual true/false MCQ]
+\begin{itemize}
+  \item ``A counterfactual is the \emph{minimal} set of changes that flips the
+    prediction.'' $\Rightarrow$ \textbf{TRUE}.
+  \item ``A counterfactual is the \emph{maximum} change to feature values.''
+    $\Rightarrow$ \textbf{FALSE} (it is minimal, not maximal).
+  \item ``There is exactly \emph{one} counterfactual per instance.''
+    $\Rightarrow$ \textbf{FALSE} (counterfactuals are not unique).
+  \item ``Counterfactuals should be \emph{plausible}.'' $\Rightarrow$
+    \textbf{TRUE}.
+\end{itemize}
+\end{exambox}
+
+\term{Saliency / attention maps} (brief): post-hoc, typically \term{local} maps
+that highlight which input regions (pixels, tokens) most influenced a single
+prediction -- a heatmap overlay answering ``where did the model look?''.
+
+\subsection{Surrogate models}
+
+A \term{surrogate model} is a simple, interpretable model (linear model, shallow
+tree) trained to mimic a black-box model's input--output behavior. Used
+\emph{locally} (LIME's local surrogate around one instance) or \emph{globally},
+surrogates make black-box models interpretable by substituting a transparent
+approximation that humans can read.
+
+\begin{pitfall}[Common confusions]
+\begin{itemize}
+  \item Confusion-matrix axes: \emph{rows = truth, columns = prediction}.
+    Reversing them flips your reading of every off-diagonal cell.
+  \item PDP/SHAP \emph{assume feature independence}; do not claim PDP gives
+    per-instance behavior -- that is ICE.
+  \item Counterfactual = \emph{minimal} change and \emph{not unique}; ``maximum''
+    or ``only one'' are wrong.
+  \item Model-\emph{agnostic} $\ne$ model-\emph{specific}: agnostic = black-box,
+    input/output only; specific = exploits a known interpretable structure.
+\end{itemize}
+\end{pitfall}

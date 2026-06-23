@@ -1,0 +1,282 @@
+\section{Evaluation and Validation}
+
+How do you know your visualization actually \term{amplifies cognition}? You
+cannot rely on intuition: the design space is huge and most designs are
+ineffective. Evaluation answers ``how well does my visualization work?''; the
+exam phrases this as ``how will you validate your proposed solution?''. The
+central framework is Munzner's \term{nested model} (Munzner, TVCG 2009; book
+Chapter~4), which tells you, level by level, what can go wrong (\term{threats})
+and which method addresses each threat.
+
+\subsection{Munzner's Nested Model: Four Levels}
+
+Vis design is split into four \term{cascading, nested} levels. The output of an
+\term{upstream} (outer) level is the input to the \term{downstream} (inner) one.
+A block is the outcome of design at a level. The big consequence of nesting: a
+\term{poor choice at an upstream level cascades to all downstream levels}, so a
+perfect idiom and algorithm cannot save a wrong abstraction.
+
+\begin{keybox}[The four levels (outer $\rightarrow$ inner)]
+\begin{enumerate}[label=\arabic*.]
+  \item \term{Domain situation} (\emph{why} / who): target users, their domain,
+        questions, data. Blocks are \emph{identified}.
+  \item \term{Data / task abstraction} (\emph{what} \& \emph{why}): map
+        domain-specific data + questions into domain-independent data types and
+        abstract tasks. Tasks are identified; data is \emph{designed}.
+  \item \term{Visual encoding / interaction idiom} (\emph{how}): how to draw it
+        (visual encoding) and how the user changes it (interaction). Blocks are
+        \emph{designed}.
+  \item \term{Algorithm}: efficient automatic procedure that instantiates the
+        idiom. Blocks are \emph{designed}.
+\end{enumerate}
+\end{keybox}
+
+\sketchnote{four nested rectangles, outer to inner: Domain $\supset$
+Data/Task abstraction $\supset$ Encoding/Interaction idiom $\supset$ Algorithm,
+with ``System implementation'' as the innermost white box.}
+
+\begin{center}
+\begin{tikzpicture}[font=\footnotesize]
+  \node[draw, fill=examorange!25, minimum width=8.4cm, minimum height=5.0cm, anchor=south west] (l1) at (0,0) {};
+  \node[anchor=north west] at (l1.north west) {\bfseries Domain situation};
+  \node[draw, fill=yellow!30, minimum width=7.0cm, minimum height=3.9cm, anchor=south west] (l2) at (0.7,0.45) {};
+  \node[anchor=north west] at (l2.north west) {\bfseries Data / task abstraction};
+  \node[draw, fill=keygreen!25, minimum width=5.6cm, minimum height=2.8cm, anchor=south west] (l3) at (1.4,0.9) {};
+  \node[anchor=north west] at (l3.north west) {\bfseries Encoding / interaction idiom};
+  \node[draw, fill=tuwblue!30, minimum width=4.2cm, minimum height=1.7cm, anchor=south west] (l4) at (2.1,1.35) {};
+  \node[anchor=north west] at (l4.north west) {\bfseries Algorithm};
+  \node[draw, fill=white, minimum width=3.4cm, minimum height=0.55cm] at (4.2,1.75) {\scriptsize System implementation};
+\end{tikzpicture}
+\end{center}
+
+\subsubsection{Threats and Validation per Level}
+
+Each level has its own \term{threat} (the way that level can fail) and its own
+\term{validation method}. Crucially, validations are either \term{immediate}
+(can be done at that level, before downstream levels exist) or \term{downstream}
+(require the inner levels to be implemented first, so they cannot be done until
+the system runs). Immediate validation only gives \emph{partial} evidence;
+downstream validation is necessary for a full demonstration.
+
+\begin{center}\footnotesize
+\begin{longtable}{@{}p{2.6cm}p{3.1cm}p{4.2cm}p{2.2cm}@{}}
+\toprule
+\textbf{Level} & \textbf{Threat} & \textbf{Validation method} & \textbf{Timing}\\
+\midrule
+\endhead
+Domain situation & Wrong problem (you misunderstood their needs) &
+  Observe / interview target users (contextual inquiry, field study) & Immediate\\
+ & & Measure / observe \term{adoption rates} of deployed tool & Downstream\\
+\addlinespace
+Data / task abstraction & Wrong abstraction (you show them the wrong thing) &
+  Test on \term{real target users doing their own tasks}; collect anecdotal
+  evidence of utility & Downstream\\
+ & & Field study of the deployed system in real workflow & Downstream\\
+\addlinespace
+Encoding / interaction idiom & Wrong idiom (the way you show it does not work) &
+  \term{Justify} design vs.\ alternatives using perceptual / cognitive
+  principles; heuristic / expert review & Immediate\\
+ & & Qualitative / quantitative result-image analysis & Downstream\\
+ & & \term{Lab study}: controlled experiment measuring human \term{time and
+  errors} for a task & Downstream\\
+\addlinespace
+Algorithm & Wrong / slow algorithm (your code is too slow or incorrect) &
+  Analyze \term{computational complexity} & Immediate\\
+ & & Measure wall-clock \term{system time and memory}; compare to benchmarks & Downstream\\
+\bottomrule
+\end{longtable}
+\end{center}
+
+\begin{pitfall}[Mismatch between claim and method]
+A weak project validates at the wrong level. You \emph{cannot} validate a new
+\emph{encoding idiom} with wall-clock algorithm timings, and you \emph{cannot}
+address a mischaracterized \emph{task} with a lab study whose task is dictated
+by the experimenter. \term{Choose the validation method according to your
+contribution claim.} Informal usability studies are done \emph{upstream} of a
+real study (to fix usability bugs first) but are \emph{not} themselves a
+validation method.
+\end{pitfall}
+
+\subsection{Types of Evaluation}
+
+Two broad styles, often combined (mixed-methods):
+\begin{itemize}
+  \item \term{Quantitative}: numeric measures, statistical testing (lab/online
+        experiments, eye tracking metrics, algorithm benchmarks).
+  \item \term{Qualitative}: observations, interviews, open-ended feedback,
+        coded transcripts.
+\end{itemize}
+
+\begin{keybox}[Method catalogue (by number of people involved, large $\rightarrow$ few)]
+\begin{itemize}
+  \item \term{Controlled experiment / lab study}: comparative, in a controlled
+        setting; measures performance. Strongest for comparing encoding /
+        interaction choices.
+  \item \term{Crowdsourcing study} (Mechanical Turk, Prolific): web workers,
+        micro-payments. + diverse/large population (ecological validity, large
+        design-space coverage); $-$ no control over conditions. Needs
+        \term{attention checks} / instructional manipulation checks.
+  \item \term{Eye tracking study}: records fixations, saccades, scanpaths;
+        metrics per \term{area of interest (AOI)}.
+  \item \term{Insight-based study}: no predefined tasks; users explore until
+        ``done'', think-aloud, insights \term{coded} and quantified, treated as
+        dependent variables (North, 2006).
+  \item \term{Expert / heuristic evaluation}: ``discount'' method, $\sim$5
+        experts find $>$75\% of problems (Nielsen); checks against vis
+        heuristics (Shneiderman's mantra, perception, color blindness). ICE-T
+        questionnaire operationalizes value $=$ Time $+$ Insight $+$ Essence $+$
+        Confidence. Cognitive walkthrough $=$ expert steps through specific tasks.
+  \item \term{Usability study}: uncovers usability problems; user need not be in
+        the target domain. Done before a validating study, not instead of it.
+  \item \term{Field study}: qualitative, on-site, users work on their own
+        problems in their normal environment. ``Gold standard but time
+        consuming''. Validates domain (existing practice) or abstraction
+        (changed behavior after deployment).
+  \item \term{Case study / qualitative result inspection}: no experiment; reader
+        inspects result images / a walkthrough (comparative or isolated). A
+        reasonable middle ground.
+  \item \term{Qualitative coding}: iterative characterization of transcripts /
+        video / field notes. \term{Open coding}: label each phenomenon
+        (concept), group into categories, build a \term{code book}. Quality
+        assurance via multiple coders and \term{inter-rater reliability}.
+  \item \term{Longitudinal study}: observes use over an extended period (e.g.\
+        adoption, field deployment over time).
+  \item \term{Algorithmic / benchmark evaluation}: complexity analysis plus
+        wall-clock time and memory on standard benchmarks.
+\end{itemize}
+\end{keybox}
+
+\subsection{Controlled Experiment Design}
+
+A controlled experiment isolates the effect of one (or few) factors on measured
+performance, ensuring \term{internal validity}.
+
+\begin{keybox}[Anatomy of a controlled experiment]
+\begin{itemize}
+  \item \term{Hypothesis}: logical, precise, testable, justifiable (state the
+        expected direction).
+  \item \term{Independent variables (factors)}: what you deliberately vary
+        (e.g.\ visualization method, task, data size, population). \term{Levels}
+        $=$ number of variations per factor $=$ test conditions.
+  \item \term{Dependent variables}: the measured outcome (user performance).
+  \item \term{Control variables}: held constant (e.g.\ display size, data
+        characteristics).
+  \item \term{Random variables}: randomly varied across conditions (e.g.\ data
+        variations).
+  \item \term{Confounding variables}: unmeasured variable that unintentionally
+        correlates with an IV; must be avoided to keep internal validity
+        (example: crosses are harder to click than circles, so a difference
+        attributed to ``encoding'' is really about clickability).
+\end{itemize}
+\end{keybox}
+
+\begin{exambox}[List: typical dependent variables]
+\begin{itemize}
+  \item \term{Task completion time} (speed; ideally only the actual solving
+        time, shown after instructions).
+  \item \term{Accuracy / error rate} -- including \term{false positives} and
+        \term{false negatives}.
+  \item Number of interaction steps / actions (logged clicks, mouse moves).
+  \item \term{Subjective preference / satisfaction} (Likert scale,
+        questionnaires e.g.\ System Usability Scale).
+  \item \term{Confidence}, \term{memorability/recall}, and \term{insight count}
+        (for exploratory tasks).
+  \item Eye-tracking measures: first-fixation time, number of fixations in an
+        AOI, saccade amplitude, scanpath transitions.
+\end{itemize}
+\end{exambox}
+
+\subsubsection{Experimental Design and Statistics}
+\begin{itemize}
+  \item \term{Within-subjects} (repeated measures): every participant does every
+        condition. Watch for \term{learning effect} $\rightarrow$
+        \term{counterbalance} condition order (e.g.\ \term{Latin square}).
+  \item \term{Between-subjects}: each group does only one variation of a factor
+        (no learning effect, but needs more participants, more variance).
+  \item \term{Mixed design}: combination of the two.
+  \item \term{Power analysis} decides the number of participants given
+        $\alpha$ (Type I error), $\beta$ (Type II error / power $=1-\beta$) and
+        effect size. Increase power by more participants, fewer conditions,
+        larger effect size, lower variance (homogeneous population, removing
+        outliers, more control variables).
+  \item \term{Statistical significance}: check distribution (e.g.\ Shapiro test);
+        if normal use a (matched) $t$-test / ANOVA with post-hoc (Tukey),
+        otherwise a non-parametric test (Wilcoxon signed-rank).
+\end{itemize}
+
+\begin{pitfall}[Useless user studies]
+Foregone conclusions, fishing for results, confounding factors, experimenter
+bias, lack of external validity (not generalizable), lack of practical
+significance, lack of power. Antidote: define research questions / success
+criteria \emph{before} you start; then the validation method is usually obvious.
+\end{pitfall}
+
+\subsection{Worked Example: Encoding Classes in Static Scatterplots}
+
+\emph{Template answer to ``design a user study to compare visual encodings of
+classes (sets) in a static scatterplot''.} The task is to mark group membership
+of points; candidate channels are \term{color}, \term{shape}, \term{connection}
+(Gestalt), and \term{redundant combinations}.
+
+\begin{keybox}[Full study template]
+\textbf{Hypotheses} (directional, justified by channel rankings / perception):
+\begin{itemize}
+  \item H1: \term{color} $>$ \term{shape} -- color (a position-free identity
+        channel) is more effective than shape per the channel ranking.
+  \item H2: \term{connection} $>$ color -- connection lines (Gestalt grouping)
+        beat color for grouping tasks.
+  \item H3: \term{redundant} $>$ single -- redundant encoding (e.g.\
+        color $+$ shape) beats either single channel (less channel interference).
+\end{itemize}
+\textbf{Independent variable}: encoding $\in$ \{color, shape, connection,
+combinations\} (one factor, $\geq$4 levels).\\
+\textbf{Dependent variables}: \term{accuracy} -- with \term{false positives}
+(items wrongly marked) and \term{false negatives} (items missed) -- and
+\term{task completion time}; optionally subjective preference.\\
+\textbf{Task}: ``click / select all items of a given class.''\\
+\textbf{Confounds to avoid}: marks differ in clickability (crosses are harder to
+click than circles) $\rightarrow$ equalize target size / hit area; also label
+readability, visual appeal.\\
+\textbf{Control variables}: number of classes, class balance, number of points,
+point distribution, chart size, display.\\
+\textbf{Design}: within-subjects with counterbalanced order; power analysis for
+$N$; significance test on accuracy and time.
+\end{keybox}
+
+\subsection{Effectiveness: Why We Visualize Defines the DV}
+
+The choice of task and dependent variable is not arbitrary: it follows from
+\term{why} people use the visualization. Munzner's task abstraction distinguishes
+low-level \term{actions} -- \term{identify}, \term{compare}, \term{summarize} --
+from the data \term{targets} the user is after -- \term{trends}, \term{outliers},
+\term{features}, distributions, correlation, similarity, topology / paths.
+Effectiveness means: faster to interpret, supports more distinctions, fewer
+errors. So a ``find the outlier'' goal becomes an \emph{identify} task with
+accuracy $+$ time as DVs; a ``which is bigger'' goal becomes a \emph{compare}
+task. Match the measured DV to the real low-level action, or the study answers
+the wrong question.
+
+\begin{exambox}[``How would you validate your project / design a user study?'']
+A safe full-marks structure:
+\begin{enumerate}[label=\arabic*.]
+  \item \textbf{Locate the contribution in the nested model} and pick the
+        matching method (encoding/interaction claim $\rightarrow$ lab study;
+        algorithm claim $\rightarrow$ benchmarks; problem claim $\rightarrow$
+        field study; adoption $\rightarrow$ longitudinal).
+  \item \textbf{State a precise, justified hypothesis} and the high-level goal
+        (exploration / confirmation / presentation).
+  \item \textbf{Name IVs and their levels} (encoding/technique, data size,
+        task), \textbf{DVs} (completion time, accuracy with FP/FN, preference,
+        insight count), \textbf{control} and \textbf{confounding} variables.
+  \item \textbf{Choose design} (within- vs between-subjects, counterbalancing),
+        \textbf{participants} via power analysis, and the \textbf{statistical
+        test}.
+  \item Add \textbf{qualitative data} (think-aloud, semi-structured interview,
+        coding) to explain outliers and put numbers in context.
+  \item Discuss \textbf{threats / limitations}: representativeness of tasks,
+        layout, number and background of users; whether ``time $+$ error tell
+        the whole story''.
+\end{enumerate}
+Remember the two big takeaways: \emph{validation method follows the contribution
+claim}, and \emph{upstream errors cascade downstream}.
+\end{exambox}
